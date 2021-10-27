@@ -8,7 +8,7 @@ interface UserStore {
     token: string | null;
     roles: UserRole[];
     loading: boolean;
-    message: string | null;
+    errorMessage: string | null;
 }
 
 export type UserReducerTypes = SignUp | SignIn | SignOut;
@@ -17,7 +17,7 @@ const initialState: UserStore = {
     token: null,
     roles: [],
     loading: false,
-    message: null,
+    errorMessage: null,
 };
 
 export const userReducer = (state = initialState, action: UserReducerTypes): UserStore => {
@@ -28,9 +28,10 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
             return {
                 ...state,
                 loading: true,
-                message: null,
+                errorMessage: null,
             };
         }
+        // TODO: Write into errorMessage any error!
         case types.SIGN_IN_ERROR:
         case types.SIGN_UP_RECEIVE:
         case types.SIGN_UP_ERROR: {

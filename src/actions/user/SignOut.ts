@@ -10,4 +10,7 @@ export type SignOutReceiveAction = {
 
 export type SignOut = SignOutRequestAction | SignOutReceiveAction;
 
-export const signIn = () => async (dispatch: Dispatch<SignOut>) => {};
+export const signOut = () => async (dispatch: Dispatch<SignOut>) => {
+    dispatch({ type: SIGN_OUT_REQUEST });
+    dispatch({ type: SIGN_OUT_RECEIVE });
+};

@@ -13,6 +13,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { signOut } from '../../../actions/user/SignOut';
 
 type navigationBarProps = {};
 
@@ -29,7 +30,19 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         setAnchorEl(null);
     };
 
-    const goToHome = () => {};
+    const goToTheProfile = () => {
+        // TODO: Go to the profile tab
+        handleUserMenuClose();
+    };
+
+    const signOutLocally = () => {
+        dispatch(signOut());
+        handleUserMenuClose();
+    };
+
+    const goToHome = () => {
+        // TODO: Go to the home tab
+    };
 
     const renderAuthorisedUserMenu = (
         <>
@@ -58,8 +71,8 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleUserMenuClose}
             >
-                <MenuItem onClick={handleUserMenuClose}>Profile</MenuItem>
-                <MenuItem onClick={handleUserMenuClose}>Sign out</MenuItem>
+                <MenuItem onClick={goToTheProfile}>Profile</MenuItem>
+                <MenuItem onClick={signOutLocally}>Sign out</MenuItem>
             </Menu>
         </>
     );
