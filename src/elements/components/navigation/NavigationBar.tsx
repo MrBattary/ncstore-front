@@ -13,7 +13,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { Assignment, Favorite, ShoppingCart } from '@mui/icons-material';
+
 import { signOut } from '../../../actions/user/SignOut';
+import SearchField from '../search_field/SearchField';
 
 type navigationBarProps = {};
 
@@ -44,15 +47,36 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         // TODO: Go to the home tab
     };
 
+    const handleOpenCart = () => {
+        // TODO: Go to the cart tab
+    };
+
+    const handleOpenFavorite = () => {
+        // TODO: Go to the favorite tab
+    };
+
+    const handleOpenOrders = () => {
+        // TODO: Go to the orders tab
+    };
+
     const renderAuthorisedUserMenu = (
-        <>
+        <Stack spacing={2} direction='row'>
+            <IconButton size='large' aria-label='orders' color='inherit' onClick={handleOpenOrders}>
+                <Assignment />
+            </IconButton>
+            <IconButton size='large' aria-label='favorite' color='inherit' onClick={handleOpenFavorite}>
+                <Favorite />
+            </IconButton>
+            <IconButton size='large' aria-label='shopping cart' color='inherit' onClick={handleOpenCart}>
+                <ShoppingCart />
+            </IconButton>
             <IconButton
                 size='large'
                 aria-label='account of current user'
                 aria-controls='menu-appbar'
                 aria-haspopup='true'
-                onClick={handleUserMenuOpen}
                 color='inherit'
+                onClick={handleUserMenuOpen}
             >
                 <AccountCircle />
             </IconButton>
@@ -74,7 +98,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
                 <MenuItem onClick={goToTheProfile}>Profile</MenuItem>
                 <MenuItem onClick={signOutLocally}>Sign out</MenuItem>
             </Menu>
-        </>
+        </Stack>
     );
 
     const renderUnauthorisedUserMenu = (
@@ -86,7 +110,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         </Stack>
     );
 
-    const renderUserMenu = () => {
+    const renderMenu = () => {
         if (token) {
             return renderAuthorisedUserMenu;
         } else {
@@ -98,17 +122,13 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position='static'>
                 <Toolbar>
-                    <Link
-                        variant='h5'
-                        color='inherit'
-                        component='div'
-                        underline='none'
-                        style={{ flex: 1 }}
-                        onClick={goToHome}
-                    >
-                        NCStore
-                    </Link>
-                    {renderUserMenu()}
+                    <Stack spacing={2} direction='row' flexGrow={1}>
+                        <Link variant='h5' color='inherit' component='div' underline='none' onClick={goToHome}>
+                            NCStore
+                        </Link>
+                        <SearchField placeholder='Search...' />
+                    </Stack>
+                    {renderMenu()}
                 </Toolbar>
             </AppBar>
         </Box>
