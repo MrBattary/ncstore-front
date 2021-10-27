@@ -1,9 +1,8 @@
-import * as types from '../actions/user/userActionTypes';
 import { UserRole } from '../types/UserRole';
+import * as types from '../actions/user/userActionTypes';
 import { SignUp } from '../actions/user/SignUp';
 
 interface UserStore {
-    authorised: boolean;
     token: string | null;
     roles: UserRole[];
     loading: boolean;
@@ -13,7 +12,6 @@ interface UserStore {
 export type UserReducerTypes = SignUp;
 
 const initialState: UserStore = {
-    authorised: false,
     token: null,
     roles: [],
     loading: false,
@@ -36,5 +34,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 loading: false,
             };
         }
+        default:
+            return state;
     }
 };
