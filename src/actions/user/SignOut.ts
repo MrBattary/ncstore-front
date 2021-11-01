@@ -1,5 +1,6 @@
-import { SIGN_OUT_RECEIVE, SIGN_OUT_REQUEST } from './userActionTypes';
 import { Dispatch } from 'redux';
+
+import { SIGN_OUT_RECEIVE, SIGN_OUT_REQUEST } from './userActionTypes';
 
 export type SignOutRequestAction = {
     type: typeof SIGN_OUT_REQUEST;

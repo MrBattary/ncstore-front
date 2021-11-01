@@ -1,5 +1,5 @@
-import { SIGN_IN_REQUEST, SIGN_IN_RECEIVE, SIGN_IN_ERROR } from './userActionTypes';
 import { Dispatch } from 'redux';
+import { SIGN_IN_REQUEST, SIGN_IN_RECEIVE, SIGN_IN_ERROR } from './userActionTypes';
 
 export type SignInRequestAction = {
     type: typeof SIGN_IN_REQUEST;
