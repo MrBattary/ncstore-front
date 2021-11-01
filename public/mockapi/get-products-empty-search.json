@@ -1,0 +1,16 @@
+[
+  {
+    "productId": "b8a71c88-7ae0-4a54-9697-9ceb5a1f8fc0",
+    "productName": "First product",
+    "productDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eu pharetra ligula, a fringilla magna. Duis nunc dui, suscipit a.",
+    "productPrice": 20,
+    "priceCurrency": "$"
+  },
+  {
+    "productId": "b3a45c91-6ae1-4a23-3650-9ceb5a1f8fc1",
+    "productName": "Second product",
+    "productDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eu pharetra ligula, a fringilla magna. Duis nunc dui, suscipit a.",
+    "productPrice": 30,
+    "priceCurrency": "$"
+  }
+]
