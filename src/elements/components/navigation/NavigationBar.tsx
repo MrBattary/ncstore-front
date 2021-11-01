@@ -15,7 +15,7 @@ import Stack from '@mui/material/Stack';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Assignment, Favorite, ShoppingCart } from '@mui/icons-material';
 
-import { signOut } from '../../../actions/user/SignOut';
+import { signOut } from '../../../actions/users/SignOut';
 import SearchField from '../search_field/SearchField';
 
 type navigationBarProps = {};
