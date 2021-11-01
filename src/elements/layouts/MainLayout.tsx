@@ -1,5 +1,7 @@
 import React from 'react';
 
+import NavigationBar from '../components/navigation/NavigationBar';
+
 import './style.css';
 
 type MainLayoutProps = {
@@ -8,6 +10,7 @@ type MainLayoutProps = {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children = null }) => (
     <div className='layout'>
+        <NavigationBar />
         <div className='layout__content'>{children}</div>
     </div>
 );
