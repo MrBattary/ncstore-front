@@ -22,7 +22,9 @@ const Products: React.FC<productsProps> = ({ history }) => {
     const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
     useEffect(() => {
-        enqueueSnackbar(errorMessage);
+        if (errorMessage) {
+            enqueueSnackbar(errorMessage);
+        }
     }, [enqueueSnackbar, errorMessage]);
 
     const goToProduct = (productId: string) => {

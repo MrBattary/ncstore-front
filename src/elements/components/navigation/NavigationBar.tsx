@@ -53,7 +53,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
     };
 
     const goToHome = () => {
-        // TODO: Go to the home tab
+        history.push('/');
     };
 
     const handleOpenCart = () => {
@@ -137,7 +137,14 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
             <AppBar position='static'>
                 <Toolbar>
                     <Stack spacing={2} direction='row' flexGrow={1}>
-                        <Link variant='h5' color='inherit' component='div' underline='none' onClick={goToHome}>
+                        <Link
+                            variant='h5'
+                            color='inherit'
+                            component='div'
+                            underline='none'
+                            onClick={goToHome}
+                            sx={{ cursor: 'pointer' }}
+                        >
                             NCStore
                         </Link>
                         <SearchField onSearch={handleSearch} placeholder='Search...' />

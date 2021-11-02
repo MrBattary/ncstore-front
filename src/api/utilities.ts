@@ -1,7 +1,6 @@
-export const buildQueryFromObject = (object: any) => {
+export const buildQueryFromObject = (object: object) => {
     let query = '';
     for (const [key, value] of Object.entries(object)) {
-        // @ts-ignore
         query += `${key.toString()}=${value.toString()}&`;
     }
     query = query.slice(0, -1);
@@ -9,5 +8,5 @@ export const buildQueryFromObject = (object: any) => {
 };
 
 export const combineUrls = (urls: string[]) => {
-    return urls.join();
+    return urls.join('');
 };

@@ -39,5 +39,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 errorMessage: action.errorMessage ? action.errorMessage : null,
             };
         }
+        default:
+            return state;
     }
 };

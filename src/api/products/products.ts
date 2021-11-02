@@ -10,7 +10,7 @@ const getProducts = (searchText: string, pagination: Pagination) =>
             coreUrl,
             productsSubUrl,
             '?',
-            buildQueryFromObject(searchText),
+            buildQueryFromObject({ searchText }),
             '&',
             buildQueryFromObject(pagination),
         ])

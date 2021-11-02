@@ -63,11 +63,12 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
     };
 
     return (
-        <Search>
-            <SearchIconWrapper>
-                <SearchIcon onClick={doSearch} />
+        <Search className='search'>
+            <SearchIconWrapper className='search__icon' onClick={doSearch}>
+                <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
+                className='search__input'
                 placeholder={placeholder}
                 inputProps={{ 'aria-label': 'search' }}
                 value={searchText}
