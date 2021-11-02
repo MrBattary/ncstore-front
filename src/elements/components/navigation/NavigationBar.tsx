@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { AppState } from '../../../reducers/rootReducer';
 
@@ -15,15 +16,23 @@ import Stack from '@mui/material/Stack';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Assignment, Favorite, ShoppingCart } from '@mui/icons-material';
 
-import { signOut } from '../../../actions/users/SignOut';
+import { Pagination } from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
+import { signOut } from '../../../actions/users/SignOut';
+import { getProducts } from '../../../actions/products/GetProducts';
 
 type navigationBarProps = {};
 
 const NavigationBar: React.FC<navigationBarProps> = () => {
     /* eslint-disable @typescript-eslint/no-unused-vars */
+    const history = useHistory();
     const dispatch = useDispatch();
     const { token } = useSelector((state: AppState) => state.userReducer);
+
+    const defaultPagination: Pagination = {
+        page: 0,
+        size: 20,
+    };
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleUserMenuOpen = (event: { currentTarget: React.SetStateAction<null | HTMLElement> }) => {
@@ -57,6 +66,11 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
 
     const handleOpenOrders = () => {
         // TODO: Go to the orders tab
+    };
+
+    const handleSearch = (searchText: string) => {
+        dispatch(getProducts(searchText, defaultPagination));
+        history.push('/products');
     };
 
     const renderAuthorisedUserMenu = (
@@ -126,7 +140,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
                         <Link variant='h5' color='inherit' component='div' underline='none' onClick={goToHome}>
                             NCStore
                         </Link>
-                        <SearchField placeholder='Search...' />
+                        <SearchField onSearch={handleSearch} placeholder='Search...' />
                     </Stack>
                     {renderMenu()}
                 </Toolbar>

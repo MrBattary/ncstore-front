@@ -9,6 +9,8 @@ import { AppState } from '../../../reducers/rootReducer';
 import { ProductFromList } from '../../../types/ProductsList';
 import ProductButton from '../../components/product_button/ProductButton';
 
+import './style.css';
+
 type productsProps = {
     history: History;
 };

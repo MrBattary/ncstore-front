@@ -19,10 +19,10 @@ export type GetProductsErrorAction = {
 
 export type GetProducts = GetProductsRequestAction | GetProductsReceiveAction | GetProductsErrorAction;
 
-export const getProducts = (pagination: Pagination) => async (dispatch: Dispatch<GetProducts>) => {
+export const getProducts = (searchText: string, pagination: Pagination) => async (dispatch: Dispatch<GetProducts>) => {
     dispatch({ type: GET_PRODUCTS_REQUEST });
     try {
-        const data = await productsApi.getProducts(pagination);
+        const data = await productsApi.getProducts(searchText, pagination);
         dispatch({ type: GET_PRODUCTS_RECEIVE, payload: data });
     } catch (e) {
         if (e instanceof Error) {

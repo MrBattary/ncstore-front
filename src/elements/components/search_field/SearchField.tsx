@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
+
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 
 type searchFieldProps = {
     placeholder: string;
+    onSearch: (searchText: string) => void;
 };
 
-const SearchField: React.FC<searchFieldProps> = ({ placeholder }) => {
+const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
     const Search = styled('div')(({ theme }) => ({
         flexGrow: 1,
         position: 'relative',
@@ -47,12 +49,31 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder }) => {
         },
     }));
 
+    const [searchText, setSearchText] = useState('');
+
+    const tryToDoSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            doSearch();
+            e.preventDefault();
+        }
+    };
+
+    const doSearch = () => {
+        onSearch(searchText);
+    };
+
     return (
         <Search>
             <SearchIconWrapper>
-                <SearchIcon />
+                <SearchIcon onClick={doSearch} />
             </SearchIconWrapper>
-            <StyledInputBase placeholder={placeholder} inputProps={{ 'aria-label': 'search' }} />
+            <StyledInputBase
+                placeholder={placeholder}
+                inputProps={{ 'aria-label': 'search' }}
+                value={searchText}
+                onChange={() => setSearchText(searchText)}
+                onKeyDown={tryToDoSearch}
+            />
         </Search>
     );
 };
