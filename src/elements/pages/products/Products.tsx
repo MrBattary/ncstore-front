@@ -32,8 +32,18 @@ const Products: React.FC<productsProps> = ({ history }) => {
         console.log(`Go to the product with id ${productId}`);
     };
 
+    const renderProductsNotFoundMessage = () => (
+        <div className='products-content__not-found'>
+            {/* TODO: Add some picture here */}
+            <Typography className='not-found__label' variant='h5'>
+                Oops, we cant find anything...
+            </Typography>
+        </div>
+    );
+
     const renderProductsList = () => {
-        if (products) {
+        debugger;
+        if (products ? products.length : false) {
             return products.map((product: ProductFromList) => (
                 <ProductButton
                     key={product.productId}
@@ -44,13 +54,13 @@ const Products: React.FC<productsProps> = ({ history }) => {
                 />
             ));
         } else {
-            return <Typography variant='h3'>Oops, we cant find anything...</Typography>;
+            return renderProductsNotFoundMessage();
         }
     };
 
     return loading ? null : (
         <>
-            <main className='products-content'>{renderProductsList}</main>
+            <main className='products-content'>{renderProductsList()}</main>
         </>
     );
 };

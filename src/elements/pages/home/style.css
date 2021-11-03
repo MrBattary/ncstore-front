@@ -6,12 +6,10 @@
     height: 93.5vh;
     margin: 0;
     padding: 0;
-    background-color: #98a9ed;
+    background-color: #dadff5;
 }
 
 .home__label {
     margin: 0;
     padding: 0;
-    color: #fff;
-    font-size: 50px;
 }
