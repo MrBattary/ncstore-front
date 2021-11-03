@@ -136,7 +136,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position='static'>
                 <Toolbar>
-                    <Stack spacing={2} direction='row' flexGrow={1}>
+                    <Stack spacing={2} direction='row' alignItems='center' flexGrow={1}>
                         <Link
                             variant='h5'
                             color='inherit'

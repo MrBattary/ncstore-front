@@ -41,20 +41,24 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
     const StyledInputBase = styled(InputBase)(({ theme }) => ({
         color: 'inherit',
         width: '100%',
+        padding: theme.spacing(1, 1, 1, 1),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         '& .MuiInputBase-input': {
-            padding: theme.spacing(1, 1, 1, 1),
-            // vertical padding + font size from searchIcon
-            paddingLeft: `calc(1em + ${theme.spacing(4)})`,
             width: '100%',
         },
     }));
 
     const [searchText, setSearchText] = useState('');
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        setSearchText(e.target.value);
+    };
+
     const tryToDoSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             doSearch();
-            e.preventDefault();
         }
     };
 
@@ -69,10 +73,11 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
             </SearchIconWrapper>
             <StyledInputBase
                 className='search__input'
+                autoFocus
                 placeholder={placeholder}
-                inputProps={{ 'aria-label': 'search' }}
                 value={searchText}
-                onChange={() => setSearchText(searchText)}
+                inputProps={{ 'aria-label': 'search' }}
+                onChange={handleChange}
                 onKeyDown={tryToDoSearch}
             />
         </Search>
