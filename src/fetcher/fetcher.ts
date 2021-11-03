@@ -1,3 +1,10 @@
+export const getHTTPMocked = <T>(url: string) =>
+    fetch('mockapi/get-products-empty-search.json')
+        .then(response => response.json() as unknown as T)
+        .catch(error => {
+            throw error;
+        });
+
 function checkStatus(response: any) {
     if (response.status >= 200 && response.status < 300) {
         return response;
