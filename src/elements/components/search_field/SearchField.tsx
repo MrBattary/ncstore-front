@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
+import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 type searchFieldProps = {
     placeholder: string;
@@ -11,9 +13,11 @@ type searchFieldProps = {
 
 const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
     const Search = styled('div')(({ theme }) => ({
+        display: 'flex',
+        alignItems: 'center',
         flexGrow: 1,
         position: 'relative',
-        borderRadius: theme.shape.borderRadius,
+        borderRadius: 30,
         backgroundColor: alpha(theme.palette.common.white, 0.15),
         '&:hover': {
             backgroundColor: alpha(theme.palette.common.white, 0.25),
@@ -28,11 +32,10 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
         },
     }));
 
-    const SearchIconWrapper = styled('div')(({ theme }) => ({
-        padding: theme.spacing(0, 2),
+    const IconWrapper = styled(IconButton)(({ theme }) => ({
+        padding: theme.spacing(1.5, 1.5),
+        color: 'inherit',
         height: '100%',
-        position: 'absolute',
-        pointerEvents: 'none',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -41,9 +44,8 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
     const StyledInputBase = styled(InputBase)(({ theme }) => ({
         color: 'inherit',
         width: '100%',
-        padding: theme.spacing(1, 1, 1, 1),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        margin: theme.spacing(0, 0.5),
+        padding: theme.spacing(1, 0),
         '& .MuiInputBase-input': {
             width: '100%',
         },
@@ -54,6 +56,10 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         setSearchText(e.target.value);
+    };
+
+    const handleClear = () => {
+        setSearchText('');
     };
 
     const tryToDoSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -68,9 +74,9 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
 
     return (
         <Search className='search'>
-            <SearchIconWrapper className='search__icon' onClick={doSearch}>
+            <IconWrapper className='search__icon' onClick={doSearch}>
                 <SearchIcon />
-            </SearchIconWrapper>
+            </IconWrapper>
             <StyledInputBase
                 className='search__input'
                 autoFocus
@@ -80,6 +86,13 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
                 onChange={handleChange}
                 onKeyDown={tryToDoSearch}
             />
+            <IconWrapper
+                sx={searchText ? { display: 'auto' } : { display: 'none' }}
+                className='clear__icon'
+                onClick={handleClear}
+            >
+                <CancelIcon />
+            </IconWrapper>
         </Search>
     );
 };
