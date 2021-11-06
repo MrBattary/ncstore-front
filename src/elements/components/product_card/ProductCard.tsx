@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 import './style.css';
+import Stack from '@mui/material/Stack';
 
 type productCardProps = {
     productName: string;
@@ -36,15 +37,15 @@ const ProductCard: React.FC<productCardProps> = ({
     const renderPrice = () => {
         if (discountPrice === null) {
             return (
-                <>
+                <Stack direction='row'>
                     <Typography variant='body2' color='text.secondary'>
                         {normalPrice.toString().concat(priceCurrency)}
                     </Typography>
-                </>
+                </Stack>
             );
         } else {
             return (
-                <>
+                <Stack spacing={1} direction='row'>
                     <Typography variant='body2' color='text.secondary'>
                         {discountPrice.toString().concat(priceCurrency)}
                     </Typography>
@@ -55,7 +56,19 @@ const ProductCard: React.FC<productCardProps> = ({
                     >
                         {normalPrice.toString().concat(priceCurrency)}
                     </Typography>
-                </>
+                </Stack>
+            );
+        }
+    };
+
+    const renderSalePercentage = () => {
+        if (discountPrice !== null) {
+            return (
+                <Typography bgcolor='#8cc44b' variant='body2' color='text.primary' padding={0.4} position={'absolute'}>
+                    {Math.round((1 - (discountPrice ? discountPrice : 0) / normalPrice) * -100)
+                        .toString()
+                        .concat('%')}
+                </Typography>
             );
         }
     };
@@ -63,6 +76,7 @@ const ProductCard: React.FC<productCardProps> = ({
     return (
         <Card sx={{ minWidth: 200, width: 300, margin: 1 }}>
             <CardActionArea onClick={goToProduct}>
+                {renderSalePercentage()}
                 <CardMedia
                     component='img'
                     height='140'
