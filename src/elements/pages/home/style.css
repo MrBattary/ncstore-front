@@ -1,0 +1,15 @@
+.home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 93.5vh;
+    margin: 0;
+    padding: 0;
+    background-color: #dadff5;
+}
+
+.home__label {
+    margin: 0;
+    padding: 0;
+}
