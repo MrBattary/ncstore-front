@@ -50,7 +50,7 @@ const ProductCard: React.FC<productCardProps> = ({
                         {discountPrice.toString().concat(priceCurrency)}
                     </Typography>
                     <Typography
-                        sx={{ textDecoration: 'line-through', opacity: 0.3 }}
+                        sx={{ textDecoration: 'line-through', opacity: 0.5 }}
                         variant='body2'
                         color='text.secondary'
                     >
