@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 
-import productsApi from '../../api/products/products';
+import productsApi from '../../api/products';
 import { Pagination } from '../../types/Pagination';
 import { GET_PRODUCTS_ERROR, GET_PRODUCTS_RECEIVE, GET_PRODUCTS_REQUEST } from './productActionTypes';
 import { ProductsList } from '../../types/ProductsList';

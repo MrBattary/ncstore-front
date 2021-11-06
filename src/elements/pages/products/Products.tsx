@@ -48,7 +48,8 @@ const Products: React.FC<productsProps> = ({ history }) => {
                 <ProductCard
                     key={product.productId}
                     productName={product.productName}
-                    productPrice={product.productPrice}
+                    normalPrice={product.normalPrice}
+                    discountPrice={product.discountPrice}
                     priceCurrency={product.priceCurrency}
                     onClick={() => goToProduct(product.productId)}
                     onBuy={() => buyProduct(product.productId)}

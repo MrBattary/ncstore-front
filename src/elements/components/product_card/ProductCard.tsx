@@ -12,7 +12,8 @@ import './style.css';
 
 type productCardProps = {
     productName: string;
-    productPrice: number;
+    normalPrice: number;
+    discountPrice: number | null;
     priceCurrency: string;
     onClick: (event: React.MouseEvent) => void;
     onBuy: (event: React.MouseEvent) => void;
@@ -21,7 +22,8 @@ type productCardProps = {
 
 const ProductCard: React.FC<productCardProps> = ({
     productName,
-    productPrice,
+    normalPrice,
+    discountPrice,
     priceCurrency,
     onClick,
     onBuy,
@@ -29,6 +31,33 @@ const ProductCard: React.FC<productCardProps> = ({
 }) => {
     const goToProduct = (e: React.MouseEvent) => {
         onClick(e);
+    };
+
+    const renderPrice = () => {
+        if (discountPrice === null) {
+            return (
+                <>
+                    <Typography variant='body2' color='text.secondary'>
+                        {normalPrice.toString().concat(priceCurrency)}
+                    </Typography>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <Typography variant='body2' color='text.secondary'>
+                        {discountPrice.toString().concat(priceCurrency)}
+                    </Typography>
+                    <Typography
+                        sx={{ textDecoration: 'line-through', opacity: 0.3 }}
+                        variant='body2'
+                        color='text.secondary'
+                    >
+                        {normalPrice.toString().concat(priceCurrency)}
+                    </Typography>
+                </>
+            );
+        }
     };
 
     return (
@@ -45,9 +74,7 @@ const ProductCard: React.FC<productCardProps> = ({
                     <Typography gutterBottom variant='h5' component='div'>
                         {productName}
                     </Typography>
-                    <Typography variant='body2' color='text.secondary'>
-                        {productPrice.toString().concat(priceCurrency)}
-                    </Typography>
+                    {renderPrice()}
                 </CardContent>
             </CardActionArea>
             <CardActions>

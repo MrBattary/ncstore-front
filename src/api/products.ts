@@ -1,11 +1,11 @@
-import { Pagination } from '../../types/Pagination';
-import { getHTTP } from '../../fetcher/fetcher';
-import { GetProductsResponse } from './responses';
-import { buildQueryFromObject, combineUrls } from '../utilities';
-import { coreUrl, productsSubUrl } from '../urls';
+import { Pagination } from '../types/Pagination';
+import { getHTTP } from '../fetcher/fetcher';
+import { buildQueryFromObject, combineUrls } from './utilities';
+import { coreUrl, productsSubUrl } from './urls';
+import { ProductsList } from '../types/ProductsList';
 
 const getProducts = (searchText: string, pagination: Pagination) =>
-    getHTTP<GetProductsResponse>(
+    getHTTP<ProductsList>(
         combineUrls([
             coreUrl,
             productsSubUrl,
