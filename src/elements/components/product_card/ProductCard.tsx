@@ -7,6 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 
 import './style.css';
 
@@ -36,26 +37,38 @@ const ProductCard: React.FC<productCardProps> = ({
     const renderPrice = () => {
         if (discountPrice === null) {
             return (
-                <>
+                <Stack direction='row'>
                     <Typography variant='body2' color='text.secondary'>
                         {normalPrice.toString().concat(priceCurrency)}
                     </Typography>
-                </>
+                </Stack>
             );
         } else {
             return (
-                <>
+                <Stack spacing={1} direction='row'>
                     <Typography variant='body2' color='text.secondary'>
                         {discountPrice.toString().concat(priceCurrency)}
                     </Typography>
                     <Typography
-                        sx={{ textDecoration: 'line-through', opacity: 0.3 }}
+                        sx={{ textDecoration: 'line-through', opacity: 0.5 }}
                         variant='body2'
                         color='text.secondary'
                     >
                         {normalPrice.toString().concat(priceCurrency)}
                     </Typography>
-                </>
+                </Stack>
+            );
+        }
+    };
+
+    const renderSalePercentage = () => {
+        if (discountPrice !== null) {
+            return (
+                <Typography bgcolor='#8cc44b' variant='body2' color='text.primary' padding={0.4} position={'absolute'}>
+                    {Math.round((1 - (discountPrice ? discountPrice : 0) / normalPrice) * -100)
+                        .toString()
+                        .concat('%')}
+                </Typography>
             );
         }
     };
@@ -63,6 +76,7 @@ const ProductCard: React.FC<productCardProps> = ({
     return (
         <Card sx={{ minWidth: 200, width: 300, margin: 1 }}>
             <CardActionArea onClick={goToProduct}>
+                {renderSalePercentage()}
                 <CardMedia
                     component='img'
                     height='140'
