@@ -33,11 +33,17 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         }
         // TODO: Write into errorMessage any error!
         case types.SIGN_IN_ERROR:
-        case types.SIGN_UP_RECEIVE:
+        case types.SIGN_UP_RECEIVE: {
+            return {
+                ...state,
+                loading: false,
+            };
+        }
         case types.SIGN_UP_ERROR: {
             return {
                 ...state,
                 loading: false,
+                errorMessage: action.errorMessage ? action.errorMessage : null,
             };
         }
         case types.SIGN_IN_RECEIVE: {

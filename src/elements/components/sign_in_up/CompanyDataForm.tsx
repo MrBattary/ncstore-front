@@ -1,17 +1,22 @@
 import React, {useState} from "react";
 import {Box, Button, Checkbox, FormControlLabel, TextField} from "@mui/material";
+import {useDispatch} from "react-redux";
+import {signUpCompany} from "../../../actions/users/SignUp";
+import {CompanySignUpDetails} from "../../../types/SignUpDetails";
+import {UserRole} from "../../../types/UserRole";
 
 
 type companyDataForm = {};
 
 const CompanyDataForm: React.FC<companyDataForm> = () => {
+    const dispatch = useDispatch();
+
     const formValues = {
         email: '',
         password: '',
         passwordRetype: '',
         companyName: '',
         foundationDate: null,
-        supplier: false,
     };
     const formErrorsText = {
         email: '',
@@ -19,7 +24,6 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
         passwordRetype: '',
         companyName: '',
         foundationDate: '',
-        supplier: '',
     };
     const formErrors = {
         email: false,
@@ -27,7 +31,6 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
         passwordRetype: false,
         companyName: false,
         foundationDate: false,
-        supplier: false,
     }
 
     const [values, setValues] = useState(formValues);
@@ -42,43 +45,46 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
         })
         validate( name, value)
     }
+
     const validate = (name: string, value: string) => {
         let tempErrorsText = { ...errorsText }
         let tempErrors = { ...errors }
         let wasSuccess = true
         if (name === 'email'){
-            tempErrorsText.email = value.length > 0 ? "" : "This field is required."
             tempErrors.email = !(value.length > 0)
-            wasSuccess = tempErrors.email
+            tempErrorsText.email = !tempErrors.email ? "" : "This field is required."
+            wasSuccess = !tempErrors.email
         }
         if (name === 'email') {
             if(tempErrorsText.email.length === 0) {
-                tempErrorsText.email = (/$^|.+@.+..+/).test(value) ? "" : "Email is not valid."
                 tempErrors.email = !(/$^|.+@.+..+/).test(value)
+                tempErrorsText.email = !tempErrors.email ? "" : "Email is not valid."
             }
-            wasSuccess = tempErrors.email
+            wasSuccess = !tempErrors.email
         }
         if (name === 'password') {
-            tempErrorsText.password = (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/).test(value) ? "" : "Not meet requirements."
             tempErrors.password = !(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/).test(value)
-            wasSuccess = tempErrors.password
+            tempErrorsText.password = !tempErrors.password ? "" : "Not meet requirements."
+            wasSuccess = !tempErrors.password
         }
         if (name === 'passwordRetype') {
-            tempErrorsText.passwordRetype = values.password === value ? "" : "Passwords dont match."
             tempErrors.passwordRetype = values.password !== value
-            wasSuccess = tempErrors.passwordRetype
+            tempErrorsText.passwordRetype = !tempErrors.passwordRetype ? "" : "Passwords dont match."
+            wasSuccess = !tempErrors.passwordRetype
         }
         if(name === 'companyName'){
-            tempErrorsText.companyName = value.length > 0 ? "" : "This field is required."
             tempErrors.companyName =  !(value.length > 0)
-            wasSuccess = tempErrors.companyName
+            tempErrorsText.companyName = !tempErrors.companyName ? "" : "This field is required."
+            wasSuccess = !tempErrors.companyName
         }
+
         setErrorsText({
             ...tempErrorsText
         })
         setErrors({
             ...tempErrors
         })
+
         return wasSuccess
     }
 
@@ -87,12 +93,24 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
         event.preventDefault();
 
         const data = new FormData(event.currentTarget);
-        // eslint-disable-next-line no-console
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-            supplier: data.get('supplier')
-        });
+        let isValidated = true;
+
+        isValidated = isValidated && validate('email', data.get('email') as string)
+        isValidated = isValidated && validate('password', data.get('password') as string)
+        isValidated = isValidated && validate('passwordRetype', data.get('passwordRetype') as string)
+        isValidated = isValidated && validate('companyName', data.get('companyName') as string)
+
+        if(isValidated) {
+            const signUpDetails : CompanySignUpDetails = {
+                email: data.get('email') as string,
+                companyName: data.get('companyName') as string,
+                foundationDate: data.get('foundationDate') === '' ? null : new Date(data.get('foundationDate') as string),
+                password: data.get('password') as string,
+                roles: data.get('supplier') === null ? [UserRole.CUSTOMER] : [UserRole.CUSTOMER, UserRole.SUPPLIER]
+            }
+
+            dispatch(signUpCompany(signUpDetails))
+        }
     };
 
 
@@ -136,8 +154,7 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
                        onChange={handleInputChange}/>
             <FormControlLabel
                 control={
-                    <Checkbox color="primary" id="supplier" name="supplier"
-                                   value={values.supplier}/>
+                    <Checkbox color="primary" id="supplier" name="supplier"/>
                 }
                 label="Become supplier"
             />
