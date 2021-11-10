@@ -1,8 +1,8 @@
-import { UserRole } from '../types/UserRole';
+import {UserRole} from '../types/UserRole';
 import * as types from '../actions/users/userActionTypes';
-import { SignUp } from '../actions/users/SignUp';
-import { SignIn } from '../actions/users/SignIn';
-import { SignOut } from '../actions/users/SignOut';
+import {SignUp} from '../actions/users/SignUp';
+import {SignIn} from '../actions/users/SignIn';
+import {SignOut} from '../actions/users/SignOut';
 
 interface UserStore {
     token: string | null;

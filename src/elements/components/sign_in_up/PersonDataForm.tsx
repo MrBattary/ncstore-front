@@ -43,25 +43,25 @@ const PersonDataForm: React.FC<personDataForm> = () => {
     const [errors, setErrors] = useState(formErrors);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
+        const {name, value} = e.target
         setValues({
             ...values,
             [name]: value
         })
-        validate( name, value)
+        validate(name, value)
     }
 
     const validate = (name: string, value: string) => {
-        let tempErrorsText = { ...errorsText }
-        let tempErrors = { ...errors }
+        let tempErrorsText = {...errorsText}
+        let tempErrors = {...errors}
         let wasSuccess = true
-        if (name === 'email'){
+        if (name === 'email') {
             tempErrors.email = !(value.length > 0)
             tempErrorsText.email = !tempErrors.email ? "" : "This field is required."
             wasSuccess = !tempErrors.email
         }
         if (name === 'email') {
-            if(tempErrorsText.email.length === 0) {
+            if (tempErrorsText.email.length === 0) {
                 tempErrors.email = !(/$^|.+@.+..+/).test(value)
                 tempErrorsText.email = !tempErrors.email ? "" : "Email is not valid."
             }
@@ -77,23 +77,23 @@ const PersonDataForm: React.FC<personDataForm> = () => {
             tempErrorsText.passwordRetype = !tempErrors.passwordRetype ? "" : "Passwords dont match."
             wasSuccess = !tempErrors.passwordRetype
         }
-        if(name === 'nickName'){
-            tempErrors.nickName =  !(value.length > 0)
+        if (name === 'nickName') {
+            tempErrors.nickName = !(value.length > 0)
             tempErrorsText.nickName = !tempErrors.nickName ? "" : "This field is required."
             wasSuccess = !tempErrors.nickName
         }
-        if(name === 'firstName'){
-            tempErrors.firstName =  !(value.length > 0)
+        if (name === 'firstName') {
+            tempErrors.firstName = !(value.length > 0)
             tempErrorsText.firstName = !tempErrors.firstName ? "" : "This field is required."
             wasSuccess = !tempErrors.firstName
         }
-        if(name === 'lastName'){
-            tempErrors.lastName =  !(value.length > 0)
+        if (name === 'lastName') {
+            tempErrors.lastName = !(value.length > 0)
             tempErrorsText.lastName = !tempErrors.lastName ? "" : "This field is required."
             wasSuccess = !tempErrors.lastName
         }
-        if(name === 'birthday'){
-            tempErrors.birthday =  !(value.length > 0)
+        if (name === 'birthday') {
+            tempErrors.birthday = !(value.length > 0)
             tempErrorsText.birthday = !tempErrors.birthday ? "" : "This field is required."
             wasSuccess = !tempErrors.birthday
         }
@@ -155,7 +155,7 @@ const PersonDataForm: React.FC<personDataForm> = () => {
         isValidated = isValidated && validate('password', data.get('password') as string)
         isValidated = isValidated && validate('passwordRetype', data.get('passwordRetype') as string)
         isValidated = isValidated && validate('nickName', data.get('nickName') as string)
-        if(data.get('supplier') !== null){
+        if (data.get('supplier') !== null) {
             isValidated = isValidated && validate('firstName', data.get('firstName') as string)
             isValidated = isValidated && validate('lastName', data.get('lastName') as string)
             isValidated = isValidated && validate('birthday', data.get('birthday') as string)
@@ -163,8 +163,8 @@ const PersonDataForm: React.FC<personDataForm> = () => {
 
         console.log(data.get('birthday'))
 
-        if(isValidated) {
-            const signUpDetails : PersonSignUpDetails = {
+        if (isValidated) {
+            const signUpDetails: PersonSignUpDetails = {
                 email: data.get('email') as string,
                 password: data.get('password') as string,
                 nickname: data.get('nickName') as string,
@@ -214,7 +214,9 @@ const PersonDataForm: React.FC<personDataForm> = () => {
                        helperText={errorsText.nickName}
                        error={errors.nickName}/>
             <FormControlLabel
-                control={<Checkbox color="primary" id="supplier" name="supplier" onChange={e => {addSupplierDependentFields(e.target.checked)}} />}
+                control={<Checkbox color="primary" id="supplier" name="supplier" onChange={e => {
+                    addSupplierDependentFields(e.target.checked)
+                }}/>}
                 label="Become supplier"
             />
             {renderAdditional()}

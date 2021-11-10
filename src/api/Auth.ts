@@ -4,7 +4,7 @@ import {coreUrl, signUpCompanySubUrl, signUpPersonSubUrl} from "./urls";
 import {CompanySignUpDetails, PersonSignUpDetails} from "../types/SignUpDetails";
 import {EmptyType} from "../types/EmptyType";
 
-const signUpCompany = (companySignUpDetails : CompanySignUpDetails) =>
+const signUpCompany = (companySignUpDetails: CompanySignUpDetails) =>
     postHTTP<EmptyType>(
         combineUrls([
             coreUrl,
@@ -12,7 +12,7 @@ const signUpCompany = (companySignUpDetails : CompanySignUpDetails) =>
         companySignUpDetails
     );
 
-const signUpPerson = (personSignUpDetails : PersonSignUpDetails) =>
+const signUpPerson = (personSignUpDetails: PersonSignUpDetails) =>
     postHTTP<EmptyType>(
         combineUrls([
             coreUrl,
