@@ -115,10 +115,17 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         </Stack>
     );
 
+    const handleSignUp = () => {
+        history.push('/signup');
+    };
+    const handleSignIn = () => {
+        history.push('/signin');
+    };
+
     const renderUnauthorisedUserMenu = (
         <Stack spacing={1} direction='row'>
-            <Button color='inherit'>Sign in</Button>
-            <Button variant='outlined' color='inherit'>
+            <Button color='inherit' onClick={handleSignIn}>Sign in</Button>
+            <Button variant='outlined' color='inherit' onClick={handleSignUp}>
                 Sign up
             </Button>
         </Stack>
