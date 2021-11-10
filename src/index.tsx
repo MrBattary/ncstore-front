@@ -13,6 +13,7 @@ import Products from './elements/pages/products/Products';
 
 import './index.css';
 import SignUp from "./elements/pages/sign_in_or_up/SignUp";
+import SignIn from "./elements/pages/sign_in_or_up/SignIn";
 
 ReactDOM.render(
     <Provider store={store}>
@@ -23,6 +24,7 @@ ReactDOM.render(
                         <Route exact path='/' component={Home} />
                         <Route exact path='/products' component={Products} />
                         <Route exact path='/signup' component={SignUp} />
+                        <Route exact path='/signin' component={SignIn} />
                     </MainLayout>
                 </Switch>
             </BrowserRouter>

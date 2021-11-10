@@ -3,6 +3,7 @@ import {combineUrls} from "./utilities";
 import {coreUrl, signUpCompanySubUrl, signUpPersonSubUrl} from "./urls";
 import {CompanySignUpDetails, PersonSignUpDetails} from "../types/SignUpDetails";
 import {EmptyType} from "../types/EmptyType";
+import {SignInDetails, SignInResponse} from "../types/SignInDetails";
 
 const signUpCompany = (companySignUpDetails: CompanySignUpDetails) =>
     postHTTP<EmptyType>(
@@ -20,9 +21,18 @@ const signUpPerson = (personSignUpDetails: PersonSignUpDetails) =>
         personSignUpDetails
     );
 
+const signIn = (signInDetails: SignInDetails) =>
+    postHTTP<SignInResponse>(
+        combineUrls([
+            coreUrl,
+            signUpPersonSubUrl]),
+        signInDetails
+    );
+
 const authApi = {
     signUpCompany,
-    signUpPerson
+    signUpPerson,
+    signIn
 };
 
 export default authApi;
