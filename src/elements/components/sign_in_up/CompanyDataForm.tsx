@@ -4,6 +4,7 @@ import {useDispatch} from "react-redux";
 import {signUpCompany} from "../../../actions/users/SignUp";
 import {CompanySignUpDetails} from "../../../types/SignUpDetails";
 import {UserRole} from "../../../types/UserRole";
+import {validateField, validateFormData, validatePasswordsEquality} from "../../../utils/SignUpValidator";
 
 
 type companyDataForm = {};
@@ -38,54 +39,28 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
     const [errors, setErrors] = useState(formErrors);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
+        const {name, value} = e.target
         setValues({
             ...values,
             [name]: value
         })
-        validate( name, value)
-    }
+        let validatorVerdict;
 
-    const validate = (name: string, value: string) => {
-        let tempErrorsText = { ...errorsText }
-        let tempErrors = { ...errors }
-        let wasSuccess = true
-        if (name === 'email'){
-            tempErrors.email = !(value.length > 0)
-            tempErrorsText.email = !tempErrors.email ? "" : "This field is required."
-            wasSuccess = !tempErrors.email
-        }
-        if (name === 'email') {
-            if(tempErrorsText.email.length === 0) {
-                tempErrors.email = !(/$^|.+@.+..+/).test(value)
-                tempErrorsText.email = !tempErrors.email ? "" : "Email is not valid."
-            }
-            wasSuccess = !tempErrors.email
-        }
-        if (name === 'password') {
-            tempErrors.password = !(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/).test(value)
-            tempErrorsText.password = !tempErrors.password ? "" : "Not meet requirements."
-            wasSuccess = !tempErrors.password
-        }
         if (name === 'passwordRetype') {
-            tempErrors.passwordRetype = values.password !== value
-            tempErrorsText.passwordRetype = !tempErrors.passwordRetype ? "" : "Passwords dont match."
-            wasSuccess = !tempErrors.passwordRetype
-        }
-        if(name === 'companyName'){
-            tempErrors.companyName =  !(value.length > 0)
-            tempErrorsText.companyName = !tempErrors.companyName ? "" : "This field is required."
-            wasSuccess = !tempErrors.companyName
+            validatorVerdict = validatePasswordsEquality(values.password, value)
+
+        } else {
+            validatorVerdict = validateField(name, value)
         }
 
         setErrorsText({
-            ...tempErrorsText
+            ...errorsText,
+            [name]: validatorVerdict.errorText
         })
         setErrors({
-            ...tempErrors
+            ...errors,
+            [name]: !validatorVerdict.isValid
         })
-
-        return wasSuccess
     }
 
 
@@ -93,15 +68,11 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
         event.preventDefault();
 
         const data = new FormData(event.currentTarget);
-        let isValidated = true;
 
-        isValidated = isValidated && validate('email', data.get('email') as string)
-        isValidated = isValidated && validate('password', data.get('password') as string)
-        isValidated = isValidated && validate('passwordRetype', data.get('passwordRetype') as string)
-        isValidated = isValidated && validate('companyName', data.get('companyName') as string)
+        let validatorVerdict = validateFormData(data)
 
-        if(isValidated) {
-            const signUpDetails : CompanySignUpDetails = {
+        if (validatorVerdict.isValidated) {
+            const signUpDetails: CompanySignUpDetails = {
                 email: data.get('email') as string,
                 companyName: data.get('companyName') as string,
                 foundationDate: data.get('foundationDate') === '' ? null : new Date(data.get('foundationDate') as string),
@@ -110,6 +81,15 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
             }
 
             dispatch(signUpCompany(signUpDetails))
+        } else {
+            setErrors({
+                ...errors,
+                ...validatorVerdict.validatorErrors
+            })
+            setErrorsText({
+                ...errorsText,
+                ...validatorVerdict.validatorErrorsText
+            })
         }
     };
 
@@ -131,13 +111,15 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
                        onChange={handleInputChange}
                        helperText={errorsText.email}
                        error={errors.email}/>
-            <TextField id="password" name="password" label="Password" variant="outlined" type="password" fullWidth required
+            <TextField id="password" name="password" label="Password" variant="outlined" type="password" fullWidth
+                       required
                        margin="normal"
                        value={values.password}
                        onChange={handleInputChange}
                        helperText={errorsText.password}
                        error={errors.password}/>
-            <TextField id="passwordRetype" name="passwordRetype" label="Re-enter password" variant="outlined" type="password"
+            <TextField id="passwordRetype" name="passwordRetype" label="Re-enter password" variant="outlined"
+                       type="password"
                        fullWidth required margin="normal"
                        value={values.passwordRetype}
                        onChange={handleInputChange}

@@ -4,6 +4,7 @@ import {useDispatch} from "react-redux";
 import {PersonSignUpDetails} from "../../../types/SignUpDetails";
 import {UserRole} from "../../../types/UserRole";
 import {signUpPerson} from "../../../actions/users/SignUp";
+import {validateField, validateFormData, validatePasswordsEquality} from "../../../utils/SignUpValidator";
 
 type personDataForm = {};
 
@@ -48,64 +49,23 @@ const PersonDataForm: React.FC<personDataForm> = () => {
             ...values,
             [name]: value
         })
-        validate(name, value)
-    }
+        let validatorVerdict;
 
-    const validate = (name: string, value: string) => {
-        let tempErrorsText = {...errorsText}
-        let tempErrors = {...errors}
-        let wasSuccess = true
-        if (name === 'email') {
-            tempErrors.email = !(value.length > 0)
-            tempErrorsText.email = !tempErrors.email ? "" : "This field is required."
-            wasSuccess = !tempErrors.email
-        }
-        if (name === 'email') {
-            if (tempErrorsText.email.length === 0) {
-                tempErrors.email = !(/$^|.+@.+..+/).test(value)
-                tempErrorsText.email = !tempErrors.email ? "" : "Email is not valid."
-            }
-            wasSuccess = !tempErrors.email
-        }
-        if (name === 'password') {
-            tempErrors.password = !(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/).test(value)
-            tempErrorsText.password = !tempErrors.password ? "" : "Not meet requirements."
-            wasSuccess = !tempErrors.password
-        }
         if (name === 'passwordRetype') {
-            tempErrors.passwordRetype = values.password !== value
-            tempErrorsText.passwordRetype = !tempErrors.passwordRetype ? "" : "Passwords dont match."
-            wasSuccess = !tempErrors.passwordRetype
-        }
-        if (name === 'nickName') {
-            tempErrors.nickName = !(value.length > 0)
-            tempErrorsText.nickName = !tempErrors.nickName ? "" : "This field is required."
-            wasSuccess = !tempErrors.nickName
-        }
-        if (name === 'firstName') {
-            tempErrors.firstName = !(value.length > 0)
-            tempErrorsText.firstName = !tempErrors.firstName ? "" : "This field is required."
-            wasSuccess = !tempErrors.firstName
-        }
-        if (name === 'lastName') {
-            tempErrors.lastName = !(value.length > 0)
-            tempErrorsText.lastName = !tempErrors.lastName ? "" : "This field is required."
-            wasSuccess = !tempErrors.lastName
-        }
-        if (name === 'birthday') {
-            tempErrors.birthday = !(value.length > 0)
-            tempErrorsText.birthday = !tempErrors.birthday ? "" : "This field is required."
-            wasSuccess = !tempErrors.birthday
+            validatorVerdict = validatePasswordsEquality(values.password, value)
+
+        } else {
+            validatorVerdict = validateField(name, value)
         }
 
         setErrorsText({
-            ...tempErrorsText
+            ...errorsText,
+            [name]: validatorVerdict.errorText
         })
         setErrors({
-            ...tempErrors
+            ...errors,
+            [name]: !validatorVerdict.isValid
         })
-
-        return wasSuccess
     }
 
     const [viewSupplierField, setViewSupplierField] = useState(false);
@@ -149,21 +109,10 @@ const PersonDataForm: React.FC<personDataForm> = () => {
         event.preventDefault();
 
         const data = new FormData(event.currentTarget);
-        let isValidated = true;
 
-        isValidated = isValidated && validate('email', data.get('email') as string)
-        isValidated = isValidated && validate('password', data.get('password') as string)
-        isValidated = isValidated && validate('passwordRetype', data.get('passwordRetype') as string)
-        isValidated = isValidated && validate('nickName', data.get('nickName') as string)
-        if (data.get('supplier') !== null) {
-            isValidated = isValidated && validate('firstName', data.get('firstName') as string)
-            isValidated = isValidated && validate('lastName', data.get('lastName') as string)
-            isValidated = isValidated && validate('birthday', data.get('birthday') as string)
-        }
+        let validatorVerdict = validateFormData(data)
 
-        console.log(data.get('birthday'))
-
-        if (isValidated) {
+        if (validatorVerdict.isValidated) {
             const signUpDetails: PersonSignUpDetails = {
                 email: data.get('email') as string,
                 password: data.get('password') as string,
@@ -175,6 +124,15 @@ const PersonDataForm: React.FC<personDataForm> = () => {
             }
 
             dispatch(signUpPerson(signUpDetails))
+        } else {
+            setErrors({
+                ...errors,
+                ...validatorVerdict.validatorErrors
+            })
+            setErrorsText({
+                ...errorsText,
+                ...validatorVerdict.validatorErrorsText
+            })
         }
     };
 

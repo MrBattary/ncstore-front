@@ -1,6 +1,6 @@
 import {postHTTP} from "../fetcher/fetcher";
 import {combineUrls} from "./utilities";
-import {coreUrl, signUpCompanySubUrl, signUpPersonSubUrl} from "./urls";
+import {coreUrl, signInSubUrl, signUpCompanySubUrl, signUpPersonSubUrl} from "./urls";
 import {CompanySignUpDetails, PersonSignUpDetails} from "../types/SignUpDetails";
 import {EmptyType} from "../types/EmptyType";
 import {SignInDetails, SignInResponse} from "../types/SignInDetails";
@@ -25,7 +25,7 @@ const signIn = (signInDetails: SignInDetails) =>
     postHTTP<SignInResponse>(
         combineUrls([
             coreUrl,
-            signUpPersonSubUrl]),
+            signInSubUrl]),
         signInDetails
     );
 
