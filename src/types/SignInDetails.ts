@@ -1,8 +1,13 @@
+import { UserType } from './UserType';
+import { UserRole } from './UserRole';
+
 export type SignInDetails = {
     email: string;
     password: string;
 };
 
 export type SignInResponse = {
-    userToken: string;
-}
+    type: UserType;
+    token: string;
+    roles: Array<UserRole>;
+};
