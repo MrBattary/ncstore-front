@@ -110,7 +110,7 @@ const PersonDataForm: React.FC<personDataForm> = () => {
                         type='date'
                         fullWidth
                         margin='normal'
-                        required
+                        InputLabelProps={{ shrink: true }}
                         value={values.birthday}
                         onChange={handleInputChange}
                         helperText={errorsText.birthday}
