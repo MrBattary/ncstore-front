@@ -134,7 +134,7 @@ const PersonDataForm: React.FC<personDataForm> = () => {
             const signUpDetails: PersonSignUpDetails = {
                 email: data.get('email') as string,
                 password: data.get('password') as string,
-                nickname: data.get('nickName') as string,
+                nickName: data.get('nickName') as string,
                 firstName: data.get('firstName') as string,
                 lastName: data.get('lastName') as string,
                 birthday: data.get('birthday') === null ? null : new Date(data.get('birthday') as string),

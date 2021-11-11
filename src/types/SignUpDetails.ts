@@ -1,4 +1,4 @@
-import {UserRole} from "./UserRole";
+import { UserRole } from './UserRole';
 
 export type CompanySignUpDetails = {
     email: string;
@@ -11,9 +11,9 @@ export type CompanySignUpDetails = {
 export type PersonSignUpDetails = {
     email: string;
     password: string;
-    nickname: string;
-    firstName: string;
-    lastName: string;
+    nickName: string;
+    firstName: string | null;
+    lastName: string | null;
     birthday: Date | null;
     roles: Array<UserRole>;
 };
