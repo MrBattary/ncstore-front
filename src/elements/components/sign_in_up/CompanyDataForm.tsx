@@ -165,7 +165,7 @@ const CompanyDataForm: React.FC<companyDataForm> = () => {
                 type='date'
                 fullWidth
                 margin='normal'
-                value={values.foundationDate}
+                value={values.foundationDate ? values.foundationDate : ''}
                 onChange={handleInputChange}
             />
             <FormControlLabel

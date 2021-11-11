@@ -58,7 +58,7 @@ export const validateField = (name: string, value: string) => {
     if (name === 'password') {
         //regex to validate password: minimum 8 symbols, 1 digit, 1 upper case, 1 lower case
         isValid = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/.test(value);
-        errorText = isValid ? '' : 'Not meet requirements: 8 symbols, 1 digit, 1 upper, 1 lower';
+        errorText = isValid ? '' : 'Not meet requirements.';
     }
     if (name === 'companyName') {
         isValid = value.length > 0;
