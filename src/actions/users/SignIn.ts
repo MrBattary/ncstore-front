@@ -2,16 +2,18 @@ import { Dispatch } from 'redux';
 
 import { SIGN_IN_REQUEST, SIGN_IN_RECEIVE, SIGN_IN_ERROR } from './userActionTypes';
 import authApi from '../../api/auth';
-import { SignInDetails } from '../../types/SignInDetails';
+import { SignInDetails, SignInResponse } from '../../types/SignInDetails';
 
 export type SignInRequestAction = {
     type: typeof SIGN_IN_REQUEST;
 };
 export type SignInReceiveAction = {
     type: typeof SIGN_IN_RECEIVE;
+    payload: SignInResponse;
 };
 export type SignInErrorAction = {
     type: typeof SIGN_IN_ERROR;
+    errorMessage?: string;
 };
 
 export type SignIn = SignInRequestAction | SignInReceiveAction | SignInErrorAction;

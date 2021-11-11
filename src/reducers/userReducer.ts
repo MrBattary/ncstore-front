@@ -1,10 +1,12 @@
-import {UserRole} from '../types/UserRole';
+import { UserRole } from '../types/UserRole';
 import * as types from '../actions/users/userActionTypes';
-import {SignUp} from '../actions/users/SignUp';
-import {SignIn} from '../actions/users/SignIn';
-import {SignOut} from '../actions/users/SignOut';
+import { SignUp } from '../actions/users/SignUp';
+import { SignIn } from '../actions/users/SignIn';
+import { SignOut } from '../actions/users/SignOut';
+import { UserType } from '../types/UserType';
 
 interface UserStore {
+    userType: UserType | null;
     token: string | null;
     roles: UserRole[];
     loading: boolean;
@@ -14,6 +16,7 @@ interface UserStore {
 export type UserReducerTypes = SignUp | SignIn | SignOut;
 
 const initialState: UserStore = {
+    userType: null,
     token: null,
     roles: [],
     loading: false,
@@ -31,14 +34,13 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 errorMessage: null,
             };
         }
-        // TODO: Write into errorMessage any error!
-        case types.SIGN_IN_ERROR:
         case types.SIGN_UP_RECEIVE: {
             return {
                 ...state,
                 loading: false,
             };
         }
+        case types.SIGN_IN_ERROR:
         case types.SIGN_UP_ERROR: {
             return {
                 ...state,
@@ -50,18 +52,18 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
             return {
                 ...state,
                 loading: false,
-                /*
+                userType: action.payload.type,
                 token: action.payload.token,
                 roles: action.payload.roles,
-                */
             };
         }
         case types.SIGN_OUT_RECEIVE: {
             return {
                 ...state,
-                loading: false,
+                userType: null,
                 token: null,
                 roles: [],
+                loading: false,
             };
         }
         default:
