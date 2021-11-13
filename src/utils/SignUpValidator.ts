@@ -57,7 +57,6 @@ export const validateField = (name: string, value: string) => {
     }
     if (name === 'password') {
         //regex to validate password: minimum 8 symbols, 1 digit, 1 upper case, 1 lower case, 1 special
-        console.log(value);
         isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$#^!%*?&])[A-Za-z\d@$#^!%*?&]{8,}$/.test(value);
         errorText = isValid ? '' : 'Not meet requirements.';
     }

@@ -10,10 +10,11 @@ import store from './store/store';
 import MainLayout from './elements/layouts/MainLayout';
 import Home from './elements/pages/home/Home';
 import Products from './elements/pages/products/Products';
+import SignUp from './elements/pages/sign_up/SignUp';
+import SignIn from './elements/pages/sign_in/SignIn';
 
+import 'antd/dist/antd.css';
 import './index.css';
-import SignUp from "./elements/pages/sign_in_or_up/SignUp";
-import SignIn from "./elements/pages/sign_in_or_up/SignIn";
 
 ReactDOM.render(
     <Provider store={store}>

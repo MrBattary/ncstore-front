@@ -6,9 +6,9 @@ import { UserRole } from '../../../types/UserRole';
 import { signUpPerson } from '../../../actions/users/SignUp';
 import { validateField, validateFormData, validatePasswordsEquality } from '../../../utils/SignUpValidator';
 
-type personDataForm = {};
+type personDataFormProps = {};
 
-const PersonDataForm: React.FC<personDataForm> = () => {
+const PersonDataForm: React.FC<personDataFormProps> = () => {
     const dispatch = useDispatch();
 
     const formValues = {

@@ -1,14 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Avatar, Box, Container, Tab, Typography, Tabs, Paper } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
 import TabPanel from '../../components/tab_panel/TabPanel';
 import SignUpPersonForm from '../../components/sign_in_up/PersonDataForm';
 import SignUpCompanyForm from '../../components/sign_in_up/CompanyDataForm';
+import { AppState } from '../../../reducers/rootReducer';
+import { History } from 'history';
 
-type signUp = {};
+type signUpProps = {
+    history: History;
+};
 
-const SignUp: React.FC<signUp> = () => {
+const SignUp: React.FC<signUpProps> = ({ history }) => {
+    const { enqueueSnackbar } = useSnackbar();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
+
+    useEffect(() => {
+        if (errorMessage) {
+            enqueueSnackbar(errorMessage);
+        }
+    }, [enqueueSnackbar, errorMessage]);
+
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
