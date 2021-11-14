@@ -14,3 +14,7 @@ export const SIGN_IN_ERROR = 'SIGN_IN_ERROR';
 
 export const SIGN_OUT_REQUEST = 'Request/SIGN_OUT';
 export const SIGN_OUT_RECEIVE = 'Receive/SIGN_OUT';
+
+/* Other */
+
+export const SIGN_RESTORE_DEFAULT = 'SIGN_RESTORE_DEFAULT';

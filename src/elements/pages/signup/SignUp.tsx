@@ -10,6 +10,7 @@ import { UserType } from '../../../types/UserType';
 import SignUpCompanyForm from '../../components/signup_forms/SignUpCompanyForm';
 import SignUpPersonForm from '../../components/signup_forms/SignUpPersonForm';
 import { signUpCompany, signUpPerson } from '../../../actions/users/SignUp';
+import { signRestoreDefault } from '../../../actions/users/SignRestoreDefault';
 
 type signUpProps = {
     history: History;
@@ -18,15 +19,28 @@ type signUpProps = {
 const SignUp: React.FC<signUpProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
-    const { loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
+    const { success, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
+
+    const [tab, setTab] = useState(UserType.PERSON);
 
     useEffect(() => {
         if (errorMessage) {
-            enqueueSnackbar(errorMessage);
+            enqueueSnackbar(errorMessage, {
+                variant: 'error',
+            });
+            dispatch(signRestoreDefault());
         }
-    }, [enqueueSnackbar, errorMessage]);
+    }, [enqueueSnackbar, errorMessage, dispatch]);
 
-    const [tab, setTab] = useState(UserType.PERSON);
+    useEffect(() => {
+        if (success) {
+            dispatch(signRestoreDefault());
+            history.push('/signin');
+            enqueueSnackbar('Successfully registered!', {
+                variant: 'success',
+            });
+        }
+    }, [success, dispatch, history, enqueueSnackbar]);
 
     const pushToSignIn = () => {
         if (!loading) {

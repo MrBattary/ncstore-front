@@ -8,6 +8,7 @@ import { Avatar, Box, Container, Paper, Typography } from '@mui/material';
 import { AppState } from '../../../reducers/rootReducer';
 import { signIn } from '../../../actions/users/SignIn';
 import SignInForm from '../../components/signin_form/SignInForm';
+import { signRestoreDefault } from '../../../actions/users/SignRestoreDefault';
 
 type signInProps = {
     history: History;
@@ -20,9 +21,12 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
 
     useEffect(() => {
         if (errorMessage) {
-            enqueueSnackbar(errorMessage);
+            enqueueSnackbar(errorMessage, {
+                variant: 'error',
+            });
+            dispatch(signRestoreDefault());
         }
-    }, [enqueueSnackbar, errorMessage]);
+    }, [enqueueSnackbar, errorMessage, dispatch]);
 
     useEffect(() => {
         if (userType) {
