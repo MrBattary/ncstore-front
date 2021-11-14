@@ -1,15 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Avatar, Box, Container, Tab, Typography, Tabs, Paper } from '@mui/material';
+import { Avatar, Box, Button, ButtonGroup, Container, Paper, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-
-import TabPanel from '../../components/tab_panel/TabPanel';
-import SignUpPersonForm from '../../components/sign_in_up/PersonDataForm';
-import SignUpCompanyForm from '../../components/sign_in_up/CompanyDataForm';
 import { AppState } from '../../../reducers/rootReducer';
 import { History } from 'history';
+import { UserType } from '../../../types/UserType';
+import SignUpCompanyForm from '../../components/signup_forms/SignUpCompanyForm';
 
 type signUpProps = {
     history: History;
@@ -17,7 +15,6 @@ type signUpProps = {
 
 const SignUp: React.FC<signUpProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
 
     useEffect(() => {
@@ -26,10 +23,29 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
         }
     }, [enqueueSnackbar, errorMessage]);
 
-    const [value, setValue] = React.useState(0);
+    const [tab, setTab] = useState(UserType.PERSON);
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
+    const pushToSignIn = () => {
+        history.push('/signin');
+    };
+
+    const renderForm = () => {
+        switch (tab) {
+            default:
+            case UserType.PERSON:
+                return null;
+            case UserType.COMPANY:
+                return (
+                    <>
+                        <SignUpCompanyForm
+                            onFinish={() => {}}
+                            onFinishFailed={() => {}}
+                            onClickToSignIn={pushToSignIn}
+                            loading={loading}
+                        />
+                    </>
+                );
+        }
     };
 
     return (
@@ -57,18 +73,11 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
                             alignItems: 'center',
                         }}
                     >
-                        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={value} onChange={handleChange} aria-label='basic tabs example'>
-                                <Tab label='Person' />
-                                <Tab label='Company' />
-                            </Tabs>
-                        </Box>
-                        <TabPanel value={value} index={0}>
-                            <SignUpPersonForm />
-                        </TabPanel>
-                        <TabPanel value={value} index={1}>
-                            <SignUpCompanyForm />
-                        </TabPanel>
+                        <ButtonGroup variant='contained'>
+                            <Button onClick={() => setTab(UserType.PERSON)}>Person</Button>
+                            <Button onClick={() => setTab(UserType.COMPANY)}>Company</Button>
+                        </ButtonGroup>
+                        {renderForm()}
                     </Box>
                 </Box>
             </Paper>
