@@ -31,7 +31,9 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
     }, [userType, history]);
 
     const pushToSignUp = () => {
-        history.push('/signup');
+        if (!loading) {
+            history.push('/signup');
+        }
     };
 
     const handleSubmit = (e: any) => {
@@ -60,7 +62,7 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
                     </Typography>
                     <SignInForm
                         onFinish={handleSubmit}
-                        onFinishFailed={handleSubmit}
+                        onFinishFailed={() => {}}
                         onClickToSignUp={pushToSignUp}
                         loading={loading}
                     />

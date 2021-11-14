@@ -24,10 +24,9 @@ const SignUpCompanyForm: React.FC<signUpCompanyFormProps> = ({
     onClickToSignIn,
     loading,
 }) => {
-    const [rolesArray, setRolesArray] = useState<UserRole[]>([UserRole.CUSTOMER]);
+    const [rolesArray, setRolesArray] = useState<UserRole[]>([]);
 
     const checkRole = (e: CheckboxChangeEvent) => {
-        console.log(e);
         if (e.target.checked) {
             setRolesArray([...rolesArray, UserRole[e.target.value as UserRole]]);
         } else {
@@ -108,7 +107,7 @@ const SignUpCompanyForm: React.FC<signUpCompanyFormProps> = ({
                     className='sign-up__field'
                     label='Roles'
                     name='roles'
-                    rules={[{ required: true, message: 'Please choose roles!' }]}
+                    rules={[{ required: true, message: 'Please choose at least one role!' }]}
                     tooltip={
                         <>
                             <div>Customer - can purchase software</div>
@@ -116,24 +115,26 @@ const SignUpCompanyForm: React.FC<signUpCompanyFormProps> = ({
                         </>
                     }
                 >
-                    <Col>
-                        <Checkbox
-                            onChange={checkRole}
-                            checked={rolesArray.includes(UserRole.CUSTOMER)}
-                            disabled={rolesArray.includes(UserRole.CUSTOMER) && rolesArray.length === 1}
-                            value={UserRole.CUSTOMER}
-                        >
-                            Customer
-                        </Checkbox>
-                        <Checkbox
-                            onChange={checkRole}
-                            checked={rolesArray.includes(UserRole.SUPPLIER)}
-                            disabled={rolesArray.includes(UserRole.SUPPLIER) && rolesArray.length === 1}
-                            value={UserRole.SUPPLIER}
-                        >
-                            Supplier
-                        </Checkbox>
-                    </Col>
+                    <Checkbox.Group>
+                        <Col>
+                            <Checkbox
+                                onChange={checkRole}
+                                checked={rolesArray.includes(UserRole.CUSTOMER)}
+                                disabled={rolesArray.includes(UserRole.CUSTOMER) && rolesArray.length === 1}
+                                value={UserRole.CUSTOMER}
+                            >
+                                Customer
+                            </Checkbox>
+                            <Checkbox
+                                onChange={checkRole}
+                                checked={rolesArray.includes(UserRole.SUPPLIER)}
+                                disabled={rolesArray.includes(UserRole.SUPPLIER) && rolesArray.length === 1}
+                                value={UserRole.SUPPLIER}
+                            >
+                                Supplier
+                            </Checkbox>
+                        </Col>
+                    </Checkbox.Group>
                 </Form.Item>
                 <LoadingButton
                     className='sign-up__button'
