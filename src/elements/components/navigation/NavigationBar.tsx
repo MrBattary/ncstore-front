@@ -20,11 +20,11 @@ import { Pagination } from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
 import { signOut } from '../../../actions/users/SignOut';
 import { getProducts } from '../../../actions/products/GetProducts';
+import { signRestoreDefault } from '../../../actions/users/SignRestoreDefault';
 
 type navigationBarProps = {};
 
 const NavigationBar: React.FC<navigationBarProps> = () => {
-    /* eslint-disable @typescript-eslint/no-unused-vars */
     const history = useHistory();
     const dispatch = useDispatch();
     const { token } = useSelector((state: AppState) => state.userReducer);
@@ -49,6 +49,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
 
     const signOutLocally = () => {
         dispatch(signOut());
+        dispatch(signRestoreDefault());
         handleUserMenuClose();
     };
 
@@ -124,7 +125,9 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
 
     const renderUnauthorisedUserMenu = (
         <Stack spacing={1} direction='row'>
-            <Button color='inherit' onClick={handleSignIn}>Sign in</Button>
+            <Button color='inherit' onClick={handleSignIn}>
+                Sign in
+            </Button>
             <Button variant='outlined' color='inherit' onClick={handleSignUp}>
                 Sign up
             </Button>

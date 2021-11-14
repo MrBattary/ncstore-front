@@ -30,9 +30,10 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
 
     useEffect(() => {
         if (userType) {
+            dispatch(signRestoreDefault());
             history.push('/');
         }
-    }, [userType, history]);
+    }, [userType, history, dispatch]);
 
     const pushToSignUp = () => {
         if (!loading) {

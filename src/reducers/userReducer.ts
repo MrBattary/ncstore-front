@@ -76,8 +76,8 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.SIGN_RESTORE_DEFAULT: {
             return {
                 ...state,
-                errorMessage: null,
                 success: false,
+                errorMessage: null,
             };
         }
         default:

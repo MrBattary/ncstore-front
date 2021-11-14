@@ -73,7 +73,7 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
                     email,
                     password,
                     companyName,
-                    foundationDate: foundationDate.format('YYYY-MM-DD'),
+                    foundationDate: foundationDate ? foundationDate.format('YYYY-MM-DD') : null,
                     roles,
                 })
             );
