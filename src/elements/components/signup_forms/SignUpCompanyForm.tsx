@@ -56,7 +56,13 @@ const SignUpCompanyForm: React.FC<signUpCompanyFormProps> = ({
                     className='sign-up__field'
                     label='Email'
                     name='email'
-                    rules={[{ required: true, message: 'Please input company email!' }]}
+                    rules={[
+                        { required: true, message: 'Please enter company email!' },
+                        {
+                            type: 'email',
+                            message: 'Please enter the correct email!',
+                        },
+                    ]}
                 >
                     <Input name='email' />
                 </Form.Item>
@@ -64,7 +70,10 @@ const SignUpCompanyForm: React.FC<signUpCompanyFormProps> = ({
                     className='sign-up__field'
                     label='Password'
                     name='password'
-                    rules={[{ required: true, message: 'Please input password!' }]}
+                    rules={[
+                        { required: true, message: 'Please enter password!' },
+                        { min: 8, message: 'Password must be minimum 8 characters!' },
+                    ]}
                 >
                     <Input.Password name='password' />
                 </Form.Item>
@@ -91,7 +100,7 @@ const SignUpCompanyForm: React.FC<signUpCompanyFormProps> = ({
                     className='sign-up__field'
                     label='Company Name'
                     name='companyName'
-                    rules={[{ required: true, message: 'Please input company name!' }]}
+                    rules={[{ required: true, message: 'Please enter company name!' }]}
                 >
                     <Input name='companyName' />
                 </Form.Item>

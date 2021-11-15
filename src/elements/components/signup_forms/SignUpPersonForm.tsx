@@ -35,7 +35,7 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                         className='sign-up__field'
                         label='Firstname'
                         name='firstName'
-                        rules={[{ required: true, message: 'Please input your firstname!' }]}
+                        rules={[{ required: true, message: 'Please enter your firstname!' }]}
                     >
                         <Input name='firstName' />
                     </Form.Item>
@@ -43,7 +43,7 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                         className='sign-up__field'
                         label='Lastname'
                         name='lastName'
-                        rules={[{ required: true, message: 'Please input your lastname!' }]}
+                        rules={[{ required: true, message: 'Please enter your lastname!' }]}
                     >
                         <Input name='lastName' />
                     </Form.Item>
@@ -79,7 +79,13 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                     className='sign-up__field'
                     label='Email'
                     name='email'
-                    rules={[{ required: true, message: 'Please input your email!' }]}
+                    rules={[
+                        { required: true, message: 'Please enter your email address!' },
+                        {
+                            type: 'email',
+                            message: 'Please enter the correct email!',
+                        },
+                    ]}
                 >
                     <Input name='email' />
                 </Form.Item>
@@ -87,7 +93,10 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                     className='sign-up__field'
                     label='Password'
                     name='password'
-                    rules={[{ required: true, message: 'Please input your password!' }]}
+                    rules={[
+                        { required: true, message: 'Please input your password!' },
+                        { min: 8, message: 'Password must be minimum 8 characters!' },
+                    ]}
                 >
                     <Input.Password name='password' />
                 </Form.Item>
@@ -114,7 +123,7 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                     className='sign-up__field'
                     label='Nickname'
                     name='nickName'
-                    rules={[{ required: true, message: 'Please input your nickname!' }]}
+                    rules={[{ required: true, message: 'Please enter your nickname!' }]}
                 >
                     <Input name='nickName' />
                 </Form.Item>

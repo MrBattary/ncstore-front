@@ -33,7 +33,13 @@ const SignInForm: React.FC<signInFormProps> = ({ onFinish, onFinishFailed, onCli
                     className='sign-in__field'
                     label='Email'
                     name='email'
-                    rules={[{ required: true, message: 'Please input your email!' }]}
+                    rules={[
+                        { required: true, message: 'Please enter your email!' },
+                        {
+                            type: 'email',
+                            message: 'Please enter the correct email!',
+                        },
+                    ]}
                 >
                     <Input name='email' />
                 </Form.Item>
@@ -41,7 +47,7 @@ const SignInForm: React.FC<signInFormProps> = ({ onFinish, onFinishFailed, onCli
                     className='sign-in__field'
                     label='Password'
                     name='password'
-                    rules={[{ required: true, message: 'Please input your password!' }]}
+                    rules={[{ required: true, message: 'Please enter password!' }]}
                 >
                     <Input.Password name='password' />
                 </Form.Item>
