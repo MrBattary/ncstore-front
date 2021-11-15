@@ -110,7 +110,11 @@ const SignUpCompanyForm: React.FC<signUpCompanyFormProps> = ({
                     name='foundationDate'
                     rules={[{ required: false, message: 'Please select date!' }]}
                 >
-                    <DatePicker name='foundationDate' format='YYYY-MM-DD' />
+                    <DatePicker
+                        name='foundationDate'
+                        format='YYYY-MM-DD'
+                        disabledDate={today => !today || today.isAfter(new Date())}
+                    />
                 </Form.Item>
                 <Form.Item
                     className='sign-up__field'
