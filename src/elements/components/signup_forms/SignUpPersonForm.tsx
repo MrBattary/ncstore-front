@@ -53,7 +53,11 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                         name='birthday'
                         rules={[{ required: true, message: 'Please select date!' }]}
                     >
-                        <DatePicker name='birthday' format='YYYY-MM-DD' />
+                        <DatePicker
+                            name='birthday'
+                            format='YYYY-MM-DD'
+                            disabledDate={today => !today || today.isAfter(new Date())}
+                        />
                     </Form.Item>
                 </>
             );
