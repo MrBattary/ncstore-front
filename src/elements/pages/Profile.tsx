@@ -3,10 +3,10 @@ import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../reducers/rootReducer';
 import { Container, Paper } from '@mui/material';
-import { signRestoreDefault } from '../../actions/users/SignRestoreDefault';
+import { restoreDefaultUserReducer } from '../../actions/users/RestoreDefaultUserReducer';
 import { useSnackbar } from 'notistack';
-import { PersonData } from '../../types/PersonData';
-import { CompanyData } from '../../types/CompanyData';
+import { PersonProfile } from '../../types/PersonProfile';
+import { CompanyProfile } from '../../types/CompanyProfile';
 
 type profileProps = {
     anotherUserId: string | null;
@@ -19,14 +19,14 @@ const Profile: React.FC<profileProps> = ({ anotherUserId, history }) => {
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { token, success, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [profile, setProfile] = useState<PersonData | CompanyData | null>(null);
+    const [profile, setProfile] = useState<PersonProfile | CompanyProfile | null>(null);
 
     useEffect(() => {
         if (errorMessage) {
             enqueueSnackbar(errorMessage, {
                 variant: 'error',
             });
-            dispatch(signRestoreDefault());
+            dispatch(restoreDefaultUserReducer());
         }
     }, [enqueueSnackbar, errorMessage, dispatch]);
 

@@ -10,7 +10,7 @@ import { UserType } from '../../../types/UserType';
 import SignUpCompanyForm from '../../components/signup_forms/SignUpCompanyForm';
 import SignUpPersonForm from '../../components/signup_forms/SignUpPersonForm';
 import { signUpCompany, signUpPerson } from '../../../actions/users/SignUp';
-import { signRestoreDefault } from '../../../actions/users/SignRestoreDefault';
+import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
 
 type signUpProps = {
     history: History;
@@ -28,20 +28,20 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
             enqueueSnackbar(errorMessage, {
                 variant: 'error',
             });
-            dispatch(signRestoreDefault());
+            dispatch(restoreDefaultUserReducer());
         }
     }, [enqueueSnackbar, errorMessage, dispatch]);
 
     useEffect(() => {
         if (token) {
-            dispatch(signRestoreDefault());
+            dispatch(restoreDefaultUserReducer());
             history.push('/');
         }
     }, [token, history, dispatch]);
 
     useEffect(() => {
         if (success) {
-            dispatch(signRestoreDefault());
+            dispatch(restoreDefaultUserReducer());
             history.push('/signin');
             enqueueSnackbar('Successfully registered!', {
                 variant: 'success',

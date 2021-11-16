@@ -1,13 +1,12 @@
 import { UserType } from './UserType';
 import { UserRole } from './UserRole';
 
-export type PersonData = {
+export type CompanyProfile = {
     email: string;
     balance: number;
     userType: UserType;
-    nickName: string;
-    firstName: string;
-    lastName: string;
-    birthday: Date;
+    companyName: string;
+    description: string | null;
+    foundationDate: Date;
     roles: Array<UserRole>;
 };

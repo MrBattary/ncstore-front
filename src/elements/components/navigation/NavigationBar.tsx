@@ -20,7 +20,7 @@ import { Pagination } from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
 import { signOut } from '../../../actions/users/SignOut';
 import { getProducts } from '../../../actions/products/GetProducts';
-import { signRestoreDefault } from '../../../actions/users/SignRestoreDefault';
+import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
 
 type navigationBarProps = {};
 
@@ -49,7 +49,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
 
     const signOutLocally = () => {
         dispatch(signOut());
-        dispatch(signRestoreDefault());
+        dispatch(restoreDefaultUserReducer());
         handleUserMenuClose();
     };
 
