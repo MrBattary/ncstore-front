@@ -23,7 +23,13 @@ export const postHTTP = <T>(url: string, header: Headers, data: any) =>
         body: JSON.stringify(data),
     })
         .then(response => checkStatus(response))
-        .then(response => response.json() as T)
+        .then(response => {
+            if (header.has('Accept')) {
+                return response.json() as T;
+            } else {
+                return null as unknown as T;
+            }
+        })
         .catch(error => {
             throw error;
         });
@@ -35,7 +41,13 @@ export const putHTTP = <T>(url: string, header: Headers, data: any) =>
         body: JSON.stringify(data),
     })
         .then(response => checkStatus(response))
-        .then(response => response.json() as T)
+        .then(response => {
+            if (header.has('Accept')) {
+                return response.json() as T;
+            } else {
+                return null as unknown as T;
+            }
+        })
         .catch(error => {
             throw error;
         });
@@ -46,7 +58,13 @@ export const deleteHTTP = <T>(url: string, header: Headers) =>
         headers: header,
     })
         .then(response => checkStatus(response))
-        .then(response => response.json() as T)
+        .then(response => {
+            if (header.has('Accept')) {
+                return response.json() as T;
+            } else {
+                return null as unknown as T;
+            }
+        })
         .catch(error => {
             throw error;
         });
