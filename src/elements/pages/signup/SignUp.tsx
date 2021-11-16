@@ -19,7 +19,7 @@ type signUpProps = {
 const SignUp: React.FC<signUpProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
-    const { success, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
+    const { token, success, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
 
     const [tab, setTab] = useState(UserType.PERSON);
 
@@ -31,6 +31,13 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
             dispatch(signRestoreDefault());
         }
     }, [enqueueSnackbar, errorMessage, dispatch]);
+
+    useEffect(() => {
+        if (token) {
+            dispatch(signRestoreDefault());
+            history.push('/');
+        }
+    }, [token, history, dispatch]);
 
     useEffect(() => {
         if (success) {

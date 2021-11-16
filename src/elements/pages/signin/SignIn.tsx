@@ -17,7 +17,7 @@ type signInProps = {
 const SignIn: React.FC<signInProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
-    const { userType, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
+    const { token, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
 
     useEffect(() => {
         if (errorMessage) {
@@ -29,11 +29,11 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
     }, [enqueueSnackbar, errorMessage, dispatch]);
 
     useEffect(() => {
-        if (userType) {
+        if (token) {
             dispatch(signRestoreDefault());
             history.push('/');
         }
-    }, [userType, history, dispatch]);
+    }, [token, history, dispatch]);
 
     const pushToSignUp = () => {
         if (!loading) {
