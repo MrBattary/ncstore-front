@@ -21,7 +21,7 @@ export type GetPersonProfile =
     | GetPersonProfileReceiveAction
     | GetPersonProfileErrorAction;
 
-export const getCompanyProfile = (token: string) => async (dispatch: Dispatch<GetPersonProfile>) => {
+export const getPersonProfile = (token: string) => async (dispatch: Dispatch<GetPersonProfile>) => {
     dispatch({ type: GET_PERSON_PROFILE_REQUEST });
     try {
         const data = await profileApi.getPersonProfile(token);

@@ -43,7 +43,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
     };
 
     const goToTheProfile = () => {
-        // TODO: Go to the profile tab
+        history.push('/profile');
         handleUserMenuClose();
     };
 
