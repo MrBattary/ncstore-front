@@ -3,10 +3,13 @@ import { combineUrls } from './utilities';
 import { companySubUrl, coreUrl, personSubUrl } from './urls';
 import { PersonProfile } from '../types/PersonProfile';
 import { CompanyProfile } from '../types/CompanyProfile';
+import headers from '../fetcher/headers';
 
-const getPersonProfile = () => getHTTP<PersonProfile>(combineUrls([coreUrl, personSubUrl]));
+const getPersonProfile = (token: string) =>
+    getHTTP<PersonProfile>(combineUrls([coreUrl, personSubUrl]), headers.buildHeaderTokenAcceptJson(token));
 
-const getCompanyProfile = () => getHTTP<CompanyProfile>(combineUrls([coreUrl, companySubUrl]));
+const getCompanyProfile = (token: string) =>
+    getHTTP<CompanyProfile>(combineUrls([coreUrl, companySubUrl]), headers.buildHeaderTokenAcceptJson(token));
 
 const profileApi = {
     getPersonProfile,

@@ -5,9 +5,10 @@ function checkStatus(response: any) {
     throw new Error(response.statusText);
 }
 
-export const getHTTP = <T>(url: string) =>
+export const getHTTP = <T>(url: string, header: Headers) =>
     fetch(url, {
         method: 'GET',
+        headers: header,
     })
         .then(response => checkStatus(response))
         .then(response => response.json() as T)
@@ -15,13 +16,10 @@ export const getHTTP = <T>(url: string) =>
             throw error;
         });
 
-export const postHTTP = <T>(url: string, data: any) =>
+export const postHTTP = <T>(url: string, header: Headers, data: any) =>
     fetch(url, {
         method: 'POST',
-        headers: new Headers({
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        }),
+        headers: header,
         body: JSON.stringify(data),
     })
         .then(response => checkStatus(response))
@@ -30,13 +28,10 @@ export const postHTTP = <T>(url: string, data: any) =>
             throw error;
         });
 
-export const putHTTP = <T>(url: string, data: any) =>
+export const putHTTP = <T>(url: string, header: Headers, data: any) =>
     fetch(url, {
         method: 'PUT',
-        headers: new Headers({
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        }),
+        headers: header,
         body: JSON.stringify(data),
     })
         .then(response => checkStatus(response))
@@ -45,9 +40,10 @@ export const putHTTP = <T>(url: string, data: any) =>
             throw error;
         });
 
-export const deleteHTTP = <T>(url: string) =>
+export const deleteHTTP = <T>(url: string, header: Headers) =>
     fetch(url, {
         method: 'DELETE',
+        headers: header,
     })
         .then(response => checkStatus(response))
         .then(response => response.json() as T)

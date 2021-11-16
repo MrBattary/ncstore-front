@@ -24,7 +24,7 @@ export type GetCompanyProfile =
 export const getCompanyProfile = (token: string) => async (dispatch: Dispatch<GetCompanyProfile>) => {
     dispatch({ type: GET_COMPANY_PROFILE_REQUEST });
     try {
-        const data = await profileApi.getCompanyProfile();
+        const data = await profileApi.getCompanyProfile(token);
         dispatch({ type: GET_COMPANY_PROFILE_RECEIVE, payload: data });
     } catch (e) {
         if (e instanceof Error) {
