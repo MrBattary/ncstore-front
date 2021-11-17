@@ -21,6 +21,7 @@ import SearchField from '../search_field/SearchField';
 import { signOut } from '../../../actions/users/SignOut';
 import { getProducts } from '../../../actions/products/GetProducts';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
+import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
 
 type navigationBarProps = {};
@@ -76,6 +77,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
     };
 
     const handleOpenMerchandise = () => {
+        dispatch(restoreDefaultProductsReducer());
         history.push('/merchandise');
     };
 

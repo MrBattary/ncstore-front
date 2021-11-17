@@ -13,6 +13,8 @@ import { ProductFromList } from '../../../types/ProductsList';
 import ProductInfoCard from '../../components/info_product_card/ProductInfoCard';
 
 import './style.css';
+import { getProducts } from '../../../actions/products/GetProducts';
+import { Pagination } from '../../../types/Pagination';
 
 type merchandiseProps = {
     history: History;
@@ -22,8 +24,19 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { products, success, errorMessage } = useSelector((state: AppState) => state.productsReducer);
     const { token, roles } = useSelector((state: AppState) => state.userReducer);
+
+    const defaultPagination: Pagination = {
+        page: 0,
+        size: 20,
+    };
+
+    useEffect(() => {
+        if (!products.length) {
+            dispatch(getProducts('', defaultPagination));
+        }
+    });
 
     useEffect(() => {
         if (errorMessage) {
