@@ -14,20 +14,21 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { Assignment, Favorite, ShoppingCart } from '@mui/icons-material';
+import { Assignment, Favorite, ShoppingCart, Storefront } from '@mui/icons-material';
 
 import { Pagination } from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
 import { signOut } from '../../../actions/users/SignOut';
 import { getProducts } from '../../../actions/products/GetProducts';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
+import { UserRole } from '../../../types/UserRole';
 
 type navigationBarProps = {};
 
 const NavigationBar: React.FC<navigationBarProps> = () => {
     const history = useHistory();
     const dispatch = useDispatch();
-    const { token } = useSelector((state: AppState) => state.userReducer);
+    const { token, roles } = useSelector((state: AppState) => state.userReducer);
 
     const defaultPagination: Pagination = {
         page: 0,
@@ -74,17 +75,44 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         history.push('/products');
     };
 
+    const handleOpenMerchandise = () => {
+        history.push('/merchandise');
+    };
+
+    const renderCustomerIcons = () => {
+        if (roles.includes(UserRole.CUSTOMER)) {
+            return (
+                <>
+                    <IconButton size='large' aria-label='orders' color='inherit' onClick={handleOpenOrders}>
+                        <Assignment />
+                    </IconButton>
+                    <IconButton size='large' aria-label='favorite' color='inherit' onClick={handleOpenFavorite}>
+                        <Favorite />
+                    </IconButton>
+                    <IconButton size='large' aria-label='shopping cart' color='inherit' onClick={handleOpenCart}>
+                        <ShoppingCart />
+                    </IconButton>
+                </>
+            );
+        }
+    };
+
+    const renderSupplierIcons = () => {
+        if (roles.includes(UserRole.SUPPLIER)) {
+            return (
+                <>
+                    <IconButton size='large' aria-label='orders' color='inherit' onClick={handleOpenMerchandise}>
+                        <Storefront />
+                    </IconButton>
+                </>
+            );
+        }
+    };
+
     const renderAuthorisedUserMenu = (
         <Stack spacing={2} direction='row'>
-            <IconButton size='large' aria-label='orders' color='inherit' onClick={handleOpenOrders}>
-                <Assignment />
-            </IconButton>
-            <IconButton size='large' aria-label='favorite' color='inherit' onClick={handleOpenFavorite}>
-                <Favorite />
-            </IconButton>
-            <IconButton size='large' aria-label='shopping cart' color='inherit' onClick={handleOpenCart}>
-                <ShoppingCart />
-            </IconButton>
+            {renderCustomerIcons()}
+            {renderSupplierIcons()}
             <IconButton
                 size='large'
                 aria-label='account of current user'
