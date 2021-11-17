@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,6 +15,7 @@ import ProductInfoCard from '../../components/info_product_card/ProductInfoCard'
 import './style.css';
 import { getProducts } from '../../../actions/products/GetProducts';
 import { Pagination } from '../../../types/Pagination';
+import NewProductForm from '../../components/new_product_form/NewProductForm';
 
 type merchandiseProps = {
     history: History;
@@ -26,6 +27,8 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     const { products, success, errorMessage } = useSelector((state: AppState) => state.productsReducer);
     const { token, roles } = useSelector((state: AppState) => state.userReducer);
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const defaultPagination: Pagination = {
         page: 0,
@@ -57,7 +60,12 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     }, [roles, history]);
 
     const addNewProduct = () => {
-        console.log('Add new product');
+        setIsModalVisible(true);
+    };
+
+    const handleAddNewProduct = (e: any) => {
+        console.log(e);
+        setIsModalVisible(false);
     };
 
     const getProductDetails = () => {
@@ -109,11 +117,16 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                     Add new product
                 </Button>
             </Box>
-
             <div className='merchandise-content__merchandise'>
                 <Divider />
                 {products ? renderProductsInfoCardList() : renderProductsNotFound()}
             </div>
+            <NewProductForm
+                visible={isModalVisible}
+                onFinish={handleAddNewProduct}
+                onFinishFailed={() => {}}
+                onCancel={() => setIsModalVisible(false)}
+            />
         </main>
     );
 };
