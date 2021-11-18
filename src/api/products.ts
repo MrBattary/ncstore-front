@@ -3,6 +3,7 @@ import { getHTTP } from '../fetcher/fetcher';
 import { buildQueryFromObject, combineUrls } from './utilities';
 import { coreUrl, productsSubUrl } from './urls';
 import { ProductsList } from '../types/ProductsList';
+import headers from '../fetcher/headers';
 
 const getProducts = (searchText: string, pagination: Pagination) =>
     getHTTP<ProductsList>(
@@ -13,7 +14,8 @@ const getProducts = (searchText: string, pagination: Pagination) =>
             buildQueryFromObject({ searchText }),
             '&',
             buildQueryFromObject(pagination),
-        ])
+        ]),
+        headers.buildHeaderAcceptJson()
     );
 
 const productsApi = {

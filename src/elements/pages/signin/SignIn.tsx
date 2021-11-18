@@ -8,7 +8,7 @@ import { Avatar, Box, Container, Paper, Typography } from '@mui/material';
 import { AppState } from '../../../reducers/rootReducer';
 import { signIn } from '../../../actions/users/SignIn';
 import SignInForm from '../../components/signin_form/SignInForm';
-import { signRestoreDefault } from '../../../actions/users/SignRestoreDefault';
+import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
 
 type signInProps = {
     history: History;
@@ -17,23 +17,23 @@ type signInProps = {
 const SignIn: React.FC<signInProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
-    const { userType, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
+    const { token, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
 
     useEffect(() => {
         if (errorMessage) {
             enqueueSnackbar(errorMessage, {
                 variant: 'error',
             });
-            dispatch(signRestoreDefault());
+            dispatch(restoreDefaultUserReducer());
         }
     }, [enqueueSnackbar, errorMessage, dispatch]);
 
     useEffect(() => {
-        if (userType) {
-            dispatch(signRestoreDefault());
+        if (token) {
+            dispatch(restoreDefaultUserReducer());
             history.push('/');
         }
-    }, [userType, history, dispatch]);
+    }, [token, history, dispatch]);
 
     const pushToSignUp = () => {
         if (!loading) {

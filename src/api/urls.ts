@@ -7,3 +7,8 @@ export const productsSubUrl = '/products';
 export const signUpCompanySubUrl = '/signup/company';
 export const signUpPersonSubUrl = '/signup/person';
 export const signInSubUrl = '/signin';
+
+/* Person or Company */
+
+export const personInfoSubUrl = '/person/info';
+export const companyInfoSubUrl = '/company/info';
