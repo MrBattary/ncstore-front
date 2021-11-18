@@ -84,9 +84,9 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
 
     const renderFilteredCountryNames = () => {
         return filteredCountryNames.map((countryName: string) => (
-            <Select key={countryName} value={countryName}>
+            <Select.Option key={countryName} value={countryName}>
                 {countryName}
-            </Select>
+            </Select.Option>
         ));
     };
 
