@@ -1,18 +1,22 @@
-import { ProductsList } from '../types/ProductsList';
 import * as types from '../actions/products/productActionTypes';
+import { ProductsList } from '../types/ProductsList';
 import { GetProducts } from '../actions/products/GetProducts';
 import { RestoreDefaultProductsReducer } from '../actions/products/RestoreDefaultProductsReducer';
+import { Product } from '../types/Product';
+import { NewProduct } from '../actions/products/CreateProduct';
 
 interface ProductsStore {
+    product: Product | null;
     products: ProductsList;
     loading: boolean;
     success: boolean;
     errorMessage: string | null;
 }
 
-export type ProductsReducerTypes = GetProducts | RestoreDefaultProductsReducer;
+export type ProductsReducerTypes = GetProducts | NewProduct | RestoreDefaultProductsReducer;
 
 const initialState: ProductsStore = {
+    product: null,
     products: [],
     loading: false,
     success: false,
@@ -21,6 +25,7 @@ const initialState: ProductsStore = {
 
 export const productsReducer = (state = initialState, action: ProductsReducerTypes): ProductsStore => {
     switch (action.type) {
+        case types.NEW_PRODUCT_REQUEST:
         case types.GET_PRODUCTS_REQUEST: {
             return {
                 ...state,
@@ -37,6 +42,15 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 products: action.payload ? action.payload : [],
             };
         }
+        case types.NEW_PRODUCT_RECEIVE: {
+            return {
+                ...state,
+                loading: false,
+                success: true,
+                product: action.payload ? action.payload : null,
+            };
+        }
+        case types.NEW_PRODUCT_ERROR:
         case types.GET_PRODUCTS_ERROR: {
             return {
                 ...state,
@@ -48,6 +62,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
         case types.RESTORE_DEFAULT_PRODUCTS_REDUCER: {
             return {
                 ...state,
+                product: null,
                 products: [],
                 success: false,
                 errorMessage: null,

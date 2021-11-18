@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, InputNumber, Modal, Select, Table } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import countries from 'countries-list';
@@ -10,12 +10,21 @@ import './style.css';
 
 type newProductFormProps = {
     visible: boolean;
+    confirmLoading: boolean;
+    success: boolean;
     onFinish: (event: any) => void;
     onFinishFailed: (event: any) => void;
     onCancel: (event: any) => void;
 };
 
-const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFinishFailed, onCancel }) => {
+const NewProductForm: React.FC<newProductFormProps> = ({
+    visible,
+    confirmLoading,
+    success,
+    onFinish,
+    onFinishFailed,
+    onCancel,
+}) => {
     const countryCodes = Object.keys(countries.countries);
     // @ts-ignore
     const countryNames: string[] = countryCodes.map(code => countries.countries[code].name);
@@ -25,6 +34,14 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
 
     const [form] = useForm();
     const [innerForm] = useForm();
+
+    useEffect(() => {
+        if (success) {
+            form.resetFields();
+            setNormalPrices([]);
+            setFilteredCountryNames(countryNames);
+        }
+    }, [success, form, countryNames]);
 
     const tableColumns = [
         { title: 'Country', key: 'region', dataIndex: 'region' },
@@ -77,9 +94,6 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
 
     const onFinishOuterForm = (e: any) => {
         onFinish({ ...e, normalPrices });
-        setNormalPrices([]);
-        setFilteredCountryNames(countryNames);
-        form.resetFields();
     };
 
     const renderFilteredCountryNames = () => {
@@ -91,7 +105,13 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
     };
 
     return (
-        <Modal visible={visible} onOk={form.submit} onCancel={onCancel} className='new-product-modal'>
+        <Modal
+            visible={visible}
+            confirmLoading={confirmLoading}
+            onOk={form.submit}
+            onCancel={onCancel}
+            className='new-product-modal'
+        >
             <Form
                 className='new-product-modal__form'
                 form={form}
@@ -104,12 +124,47 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
                     className='form__field'
                     label='Product name'
                     name='productName'
-                    rules={[{ required: true, message: 'Please enter the product name!' }]}
+                    rules={[
+                        { required: true, message: 'Please enter the product name!' },
+                        () => ({
+                            validator(_, value) {
+                                if (value.length <= 3) {
+                                    return Promise.reject(new Error('Product name should be more than 3 symbols!'));
+                                }
+                                if (value.length >= 255) {
+                                    return Promise.reject(new Error('Product name should be less than 255 symbols!'));
+                                }
+                                return Promise.resolve();
+                            },
+                        }),
+                    ]}
                 >
-                    <Input name='productName' placeholder='Please enter the product name' />
+                    <Input
+                        name='productName'
+                        minLength={4}
+                        maxLength={254}
+                        placeholder='Please enter the product name'
+                    />
                 </Form.Item>
-                <Form.Item className='form__field' label='Product description' name='productDescription'>
-                    <Input.TextArea name='productDescription' />
+                <Form.Item
+                    required
+                    className='form__field'
+                    label='Product description'
+                    name='productDescription'
+                    rules={[
+                        () => ({
+                            validator(_, value) {
+                                if (value.length < 50) {
+                                    return Promise.reject(
+                                        new Error('Product description should be more than 49 symbols!')
+                                    );
+                                }
+                                return Promise.resolve();
+                            },
+                        }),
+                    ]}
+                >
+                    <Input.TextArea minLength={50} name='productDescription' />
                 </Form.Item>
                 <Form.Item
                     className='form__field'

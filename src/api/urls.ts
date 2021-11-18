@@ -10,5 +10,5 @@ export const signInSubUrl = '/signin';
 
 /* Person or Company */
 
-export const personSubUrl = '/person';
-export const companySubUrl = '/company';
+export const personInfoSubUrl = '/person/info';
+export const companyInfoSubUrl = '/company/info';

@@ -19,16 +19,18 @@ export type GetProductsErrorAction = {
 
 export type GetProducts = GetProductsRequestAction | GetProductsReceiveAction | GetProductsErrorAction;
 
-export const getProducts = (searchText: string, pagination: Pagination) => async (dispatch: Dispatch<GetProducts>) => {
-    dispatch({ type: GET_PRODUCTS_REQUEST });
-    try {
-        const data = await productsApi.getProducts(searchText, pagination);
-        dispatch({ type: GET_PRODUCTS_RECEIVE, payload: data });
-    } catch (e) {
-        if (e instanceof Error) {
-            dispatch({ type: GET_PRODUCTS_ERROR, errorMessage: e.message });
-        } else {
-            dispatch({ type: GET_PRODUCTS_ERROR });
+export const getProducts =
+    (pagination: Pagination, searchText: string | null, supplierId: string | null) =>
+    async (dispatch: Dispatch<GetProducts>) => {
+        dispatch({ type: GET_PRODUCTS_REQUEST });
+        try {
+            const data = await productsApi.getProducts(pagination, searchText, supplierId);
+            dispatch({ type: GET_PRODUCTS_RECEIVE, payload: data });
+        } catch (e) {
+            if (e instanceof Error) {
+                dispatch({ type: GET_PRODUCTS_ERROR, errorMessage: e.message });
+            } else {
+                dispatch({ type: GET_PRODUCTS_ERROR });
+            }
         }
-    }
-};
+    };

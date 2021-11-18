@@ -7,6 +7,7 @@ export type SignInDetails = {
 };
 
 export type SignInResponse = {
+    userId: string;
     type: UserType;
     token: string;
     roles: Array<UserRole>;

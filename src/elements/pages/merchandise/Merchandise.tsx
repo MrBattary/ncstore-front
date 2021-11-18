@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -11,11 +11,16 @@ import { AppState } from '../../../reducers/rootReducer';
 import { UserRole } from '../../../types/UserRole';
 import { ProductFromList } from '../../../types/ProductsList';
 import ProductInfoCard from '../../components/info_product_card/ProductInfoCard';
-
-import './style.css';
 import { getProducts } from '../../../actions/products/GetProducts';
 import { Pagination } from '../../../types/Pagination';
 import NewProductForm from '../../components/new_product_form/NewProductForm';
+import { Product } from '../../../types/Product';
+import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
+import { newProduct } from '../../../actions/products/CreateProduct';
+
+import './style.css';
+import { converters } from '../../../utils/Converters';
+import { NormalPrice } from '../../../types/NormalPrice';
 
 type merchandiseProps = {
     history: History;
@@ -25,25 +30,37 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { products, success, errorMessage } = useSelector((state: AppState) => state.productsReducer);
-    const { token, roles } = useSelector((state: AppState) => state.userReducer);
+    const { product, products, success, loading, errorMessage } = useSelector(
+        (state: AppState) => state.productsReducer
+    );
+    const { token, roles, userId } = useSelector((state: AppState) => state.userReducer);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const defaultPagination: Pagination = {
-        page: 0,
-        size: 20,
-    };
+    const defaultPagination: Pagination = useMemo(
+        () => ({
+            page: 0,
+            size: 20,
+        }),
+        []
+    );
 
     useEffect(() => {
-        if (!products.length) {
-            dispatch(getProducts('', defaultPagination));
+        if (product && !loading) {
+            enqueueSnackbar(`Product ${product.productName} was created!`, {
+                variant: 'success',
+            });
+            setIsModalVisible(false);
+            dispatch(restoreDefaultProductsReducer());
+            dispatch(getProducts(defaultPagination, '', userId));
         }
-    });
+    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId]);
 
     useEffect(() => {
         if (errorMessage) {
-            enqueueSnackbar(errorMessage);
+            enqueueSnackbar(errorMessage, {
+                variant: 'error',
+            });
         }
     }, [enqueueSnackbar, errorMessage]);
 
@@ -51,21 +68,41 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         if (!token) {
             history.push('/signin');
         }
-    }, [token, history]);
+    }, [history, token]);
 
     useEffect(() => {
         if (!roles.includes(UserRole.SUPPLIER)) {
             history.push('/');
         }
-    }, [roles, history]);
+        dispatch(getProducts(defaultPagination, '', userId));
+        // DO NOT REMOVE, Calls only once
+        // eslint-disable-next-line
+    }, []);
 
     const addNewProduct = () => {
         setIsModalVisible(true);
     };
 
-    const handleAddNewProduct = (e: any) => {
-        console.log(e);
-        setIsModalVisible(false);
+    const handleAddNewProduct = (e: Product) => {
+        const { productName, productDescription, normalPrices, discountPrices, parentProductId, categoriesNames } = e;
+        dispatch(restoreDefaultProductsReducer());
+        let convertedNormalPrices: NormalPrice[] = [];
+        if (normalPrices && normalPrices.length > 0) {
+            convertedNormalPrices = converters.convertCountryNamesToLanguageTagFromNormalPrices(normalPrices);
+        }
+        dispatch(
+            newProduct(
+                {
+                    productName: productName,
+                    productDescription: productDescription ? productDescription : null,
+                    normalPrices: convertedNormalPrices,
+                    discountPrices: discountPrices ? discountPrices : [],
+                    parentProductId: parentProductId ? parentProductId : null,
+                    categoriesNames: categoriesNames ? categoriesNames : [],
+                },
+                token ? token : ''
+            )
+        );
     };
 
     const getProductDetails = () => {
@@ -119,10 +156,12 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             </Box>
             <div className='merchandise-content__merchandise'>
                 <Divider />
-                {products ? renderProductsInfoCardList() : renderProductsNotFound()}
+                {products.length ? renderProductsInfoCardList() : renderProductsNotFound()}
             </div>
             <NewProductForm
                 visible={isModalVisible}
+                confirmLoading={loading}
+                success={success && !!product}
                 onFinish={handleAddNewProduct}
                 onFinishFailed={() => {}}
                 onCancel={() => setIsModalVisible(false)}

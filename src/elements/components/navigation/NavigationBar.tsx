@@ -72,7 +72,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
     };
 
     const handleSearch = (searchText: string) => {
-        dispatch(getProducts(searchText, defaultPagination));
+        dispatch(getProducts(defaultPagination, searchText, null));
         history.push('/products');
     };
 
