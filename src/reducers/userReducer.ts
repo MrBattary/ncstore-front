@@ -11,6 +11,7 @@ import { PersonProfile } from '../types/PersonProfile';
 import { CompanyProfile } from '../types/CompanyProfile';
 
 interface UserStore {
+    userId: string | null;
     userType: UserType | null;
     token: string | null;
     roles: UserRole[];
@@ -29,6 +30,7 @@ export type UserReducerTypes =
     | RestoreDefaultUserReducer;
 
 const initialState: UserStore = {
+    userId: null,
     userType: null,
     token: null,
     roles: [],
@@ -72,6 +74,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 ...state,
                 loading: false,
                 success: true,
+                userId: action.payload.userId,
                 userType: action.payload.type,
                 token: action.payload.token,
                 roles: action.payload.roles,

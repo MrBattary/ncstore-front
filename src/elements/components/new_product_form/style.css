@@ -1,0 +1,9 @@
+.form__inner-form {
+    display: flex;
+    align-items: flex-start;
+}
+
+.inner-form__field {
+    width: 100%;
+    max-width: 46%;
+}

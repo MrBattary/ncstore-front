@@ -13,6 +13,7 @@ import SignUp from './elements/pages/signup/SignUp';
 import SignIn from './elements/pages/signin/SignIn';
 import Products from './elements/pages/products/Products';
 import Profile from './elements/pages/profile/Profile';
+import Merchandise from './elements/pages/merchandise/Merchandise';
 
 import 'antd/dist/antd.css';
 import './index.css';
@@ -28,6 +29,7 @@ ReactDOM.render(
                         <Route exact path='/signin' component={SignIn} />
                         <Route exact path='/products' component={Products} />
                         <Route exact path='/profile' component={Profile} />
+                        <Route exact path='/merchandise' component={Merchandise} />
                     </MainLayout>
                 </Switch>
             </BrowserRouter>
