@@ -21,16 +21,10 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
     const countryNames: string[] = countryCodes.map(code => countries.countries[code].name);
 
     const [normalPrices, setNormalPrices] = useState<NormalPrice[]>([]);
-    const [selectedCountryNames, setSelectedCountryNames] = useState<string[]>([]);
     const [filteredCountryNames, setFilteredCountryNames] = useState<string[]>(countryNames);
 
     const [form] = useForm();
     const [innerForm] = useForm();
-
-    const handleRemoveRow = (region: React.Key, e: any) => {
-        e.preventDefault();
-        setNormalPrices(normalPrices.filter(normalPrice => normalPrice.region !== region));
-    };
 
     const tableColumns = [
         { title: 'Country', key: 'region', dataIndex: 'region' },
@@ -43,7 +37,7 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
             title: 'Remove',
             dataIndex: '',
             key: 'x',
-            render: (text: any, record: { region: React.Key }) => (
+            render: (text: any, record: { region: string }) => (
                 <Button
                     variant='outlined'
                     startIcon={<Delete />}
@@ -57,21 +51,26 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
         },
     ];
 
-    const renderFilteredCountryNames = () => {
-        return filteredCountryNames.map((countryName: string) => (
-            <Select key={countryName} value={countryName}>
-                {countryName}
-            </Select>
-        ));
+    const filterAndSetFilteredCountryNames = (newNormalPrices: NormalPrice[]) => {
+        setFilteredCountryNames(
+            countryNames.filter(
+                (countryName: string) => !newNormalPrices.some(normalPrice => normalPrice.region === countryName)
+            )
+        );
+    };
+
+    const handleRemoveRow = (region: string, e: any) => {
+        e.preventDefault();
+        const newNormalPrices = normalPrices.filter(normalPrice => normalPrice.region !== region);
+        setNormalPrices(newNormalPrices);
+        filterAndSetFilteredCountryNames(newNormalPrices);
     };
 
     const onFinishInnerForm = (value: NormalPrice) => {
         if (!normalPrices.some(normalPrice => normalPrice.region === value.region)) {
-            setSelectedCountryNames([...selectedCountryNames, value.region]);
-            setNormalPrices([...normalPrices, value]);
-            setFilteredCountryNames(
-                countryNames.filter((countryName: string) => !selectedCountryNames.includes(countryName))
-            );
+            const newNormalPrices = [...normalPrices, value];
+            setNormalPrices(newNormalPrices);
+            filterAndSetFilteredCountryNames(newNormalPrices);
             innerForm.resetFields();
         }
     };
@@ -81,6 +80,14 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
         setNormalPrices([]);
         setFilteredCountryNames(countryNames);
         form.resetFields();
+    };
+
+    const renderFilteredCountryNames = () => {
+        return filteredCountryNames.map((countryName: string) => (
+            <Select key={countryName} value={countryName}>
+                {countryName}
+            </Select>
+        ));
     };
 
     return (
@@ -129,6 +136,7 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
                     className='form__field'
                     label='Prices'
                     name='normalPrices'
+                    required
                     rules={[
                         () => ({
                             validator(_, value) {
@@ -185,6 +193,8 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
                         <Form.Item
                             label='Price'
                             name='price'
+                            className='inner-form__field'
+                            required
                             rules={[
                                 () => ({
                                     validator(_, value) {
@@ -206,7 +216,7 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
                             <InputNumber min={0} />
                         </Form.Item>
                         <Form.Item className='inner-form__button'>
-                            <Button variant={'outlined'} onClick={innerForm.submit}>
+                            <Button variant={'outlined'} onClick={innerForm.submit} sx={{ marginTop: 2 }}>
                                 Add price
                             </Button>
                         </Form.Item>
@@ -219,7 +229,7 @@ const NewProductForm: React.FC<newProductFormProps> = ({ visible, onFinish, onFi
                     rules={[{ type: 'array' }]}
                 >
                     <Select mode='multiple' placeholder='May you want to select categories'>
-                        {/*<Option value='red'>Red</Option>*/}
+                        {/*TODO: Add categories*/}
                     </Select>
                 </Form.Item>
             </Form>
