@@ -9,6 +9,7 @@ import { Delete } from '@mui/icons-material';
 import './style.css';
 
 type newProductFormProps = {
+    categoriesList: string[];
     visible: boolean;
     confirmLoading: boolean;
     success: boolean;
@@ -18,6 +19,7 @@ type newProductFormProps = {
 };
 
 const NewProductForm: React.FC<newProductFormProps> = ({
+    categoriesList,
     visible,
     confirmLoading,
     success,
@@ -104,6 +106,13 @@ const NewProductForm: React.FC<newProductFormProps> = ({
         ));
     };
 
+    const renderCategories = () =>
+        categoriesList.map((categoryName: string) => (
+            <Select.Option key={categoryName} value={categoryName}>
+                {categoryName}
+            </Select.Option>
+        ));
+
     return (
         <Modal
             visible={visible}
@@ -165,27 +174,6 @@ const NewProductForm: React.FC<newProductFormProps> = ({
                     ]}
                 >
                     <Input.TextArea minLength={50} name='productDescription' />
-                </Form.Item>
-                <Form.Item
-                    className='form__field'
-                    label='Parent product ID'
-                    name='parentProductId'
-                    tooltip={
-                        <>
-                            <div className='field__tooltip'>
-                                If this software is additional to other software, then you can specify the ID of the
-                                main software to increase sales.
-                            </div>
-                            <div className='field__tooltip'>For example ID: b3a45c91-6ae1-4a23-3650-9ceb5a1f8fc1</div>
-                        </>
-                    }
-                >
-                    <Input
-                        name='parentProductId'
-                        minLength={36}
-                        maxLength={36}
-                        placeholder='XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
-                    />
                 </Form.Item>
                 <Form.Item
                     className='form__field'
@@ -284,7 +272,7 @@ const NewProductForm: React.FC<newProductFormProps> = ({
                     rules={[{ type: 'array' }]}
                 >
                     <Select mode='multiple' placeholder='May you want to select categories'>
-                        {/*TODO: Add categories*/}
+                        {renderCategories()}
                     </Select>
                 </Form.Item>
             </Form>

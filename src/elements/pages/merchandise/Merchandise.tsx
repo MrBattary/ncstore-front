@@ -45,6 +45,9 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         []
     );
 
+    // TODO: Replace this with normal request from the backend
+    const categoriesList: string[] = useMemo(() => ['category1', 'category2', 'category3'], []);
+
     useEffect(() => {
         if (product && !loading) {
             enqueueSnackbar(`Product ${product.productName} was created!`, {
@@ -159,6 +162,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 {products.length ? renderProductsInfoCardList() : renderProductsNotFound()}
             </div>
             <NewProductForm
+                categoriesList={categoriesList}
                 visible={isModalVisible}
                 confirmLoading={loading}
                 success={success && !!product}
