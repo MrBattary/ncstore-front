@@ -9,6 +9,7 @@ import { Delete } from '@mui/icons-material';
 import './style.css';
 
 type newProductFormProps = {
+    categoriesList: string[];
     visible: boolean;
     confirmLoading: boolean;
     success: boolean;
@@ -18,6 +19,7 @@ type newProductFormProps = {
 };
 
 const NewProductForm: React.FC<newProductFormProps> = ({
+    categoriesList,
     visible,
     confirmLoading,
     success,
@@ -103,6 +105,13 @@ const NewProductForm: React.FC<newProductFormProps> = ({
             </Select.Option>
         ));
     };
+
+    const renderCategories = () =>
+        categoriesList.map((categoryName: string) => (
+            <Select.Option key={categoryName} value={categoryName}>
+                {categoryName}
+            </Select.Option>
+        ));
 
     return (
         <Modal
@@ -263,7 +272,7 @@ const NewProductForm: React.FC<newProductFormProps> = ({
                     rules={[{ type: 'array' }]}
                 >
                     <Select mode='multiple' placeholder='May you want to select categories'>
-                        {/*TODO: Add categories*/}
+                        {renderCategories()}
                     </Select>
                 </Form.Item>
             </Form>
