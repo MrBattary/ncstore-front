@@ -117,6 +117,7 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
                 <Box
                     sx={{
                         marginTop: 2,
+                        marginBottom: 10,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',

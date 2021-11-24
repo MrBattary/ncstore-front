@@ -54,6 +54,7 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
                 <Box
                     sx={{
                         marginTop: 8,
+                        marginBottom: 45,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
