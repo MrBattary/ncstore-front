@@ -18,7 +18,7 @@ type newProductFormProps = {
     onCancel: (event: any) => void;
 };
 
-const NewProductForm: React.FC<newProductFormProps> = ({
+const ProductForm: React.FC<newProductFormProps> = ({
     categoriesList,
     visible,
     confirmLoading,
@@ -280,4 +280,4 @@ const NewProductForm: React.FC<newProductFormProps> = ({
     );
 };
 
-export default NewProductForm;
+export default ProductForm;

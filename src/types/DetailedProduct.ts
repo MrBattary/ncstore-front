@@ -1,7 +1,7 @@
 import { NormalPrice } from './NormalPrice';
 import { DiscountPrice } from './DiscountPrice';
 
-export type ProductInfo = {
+export type DetailedProduct = {
     productName: string;
     productDescription: string | null;
     supplierId: string | null;

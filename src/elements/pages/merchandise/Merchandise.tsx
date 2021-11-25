@@ -15,7 +15,7 @@ import { ProductFromList } from '../../../types/ProductsList';
 import ProductInfoCard from '../../components/info_product_card/ProductInfoCard';
 import { getProducts } from '../../../actions/products/GetProducts';
 import { Pagination } from '../../../types/Pagination';
-import NewProductForm from '../../components/new_product_form/NewProductForm';
+import ProductForm from '../../components/product_form/ProductForm';
 import { Product } from '../../../types/Product';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { newProduct } from '../../../actions/products/CreateProduct';
@@ -95,7 +95,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         dispatch(restoreDefaultProductsReducer());
         let convertedNormalPrices: NormalPrice[] = [];
         if (normalPrices && normalPrices.length > 0) {
-            convertedNormalPrices = converters.convertCountryNamesToLanguageTagFromNormalPrices(normalPrices);
+            convertedNormalPrices = converters.convertCountryNamesToLanguageTagsFromNormalPrices(normalPrices);
         }
         setSuccessWord(`added`);
         dispatch(
@@ -186,7 +186,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 <Divider />
                 {products.length ? renderProductsInfoCardList() : renderProductsNotFound()}
             </div>
-            <NewProductForm
+            <ProductForm
                 categoriesList={categoriesList}
                 visible={isModalVisible}
                 confirmLoading={loading}

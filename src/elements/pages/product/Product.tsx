@@ -20,7 +20,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { productInfo, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { detailedProduct, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
     useEffect(() => {
         if (errorMessage) {
@@ -53,11 +53,11 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const renderProductPrice = () => {
-        if (!productInfo?.discountPrices.length) {
+        if (!detailedProduct?.discountPrices.length) {
             return (
                 <Stack direction='row'>
                     <Typography variant='h4' color='text.secondary'>
-                        {productInfo?.normalPrices[0].price.toString()}
+                        {detailedProduct?.normalPrices[0].price.toString()}
                     </Typography>
                 </Stack>
             );
@@ -65,14 +65,14 @@ const Product: React.FC<productProps> = ({ history }) => {
             return (
                 <Stack spacing={1} direction='row'>
                     <Typography variant='h4' color='text.secondary'>
-                        {productInfo?.discountPrices[0].price.toString()}
+                        {detailedProduct?.discountPrices[0].price.toString()}
                     </Typography>
                     <Typography
                         sx={{ textDecoration: 'line-through', opacity: 0.5 }}
                         variant='h4'
                         color='text.secondary'
                     >
-                        {productInfo?.normalPrices[0].price.toString()}
+                        {detailedProduct?.normalPrices[0].price.toString()}
                     </Typography>
                 </Stack>
             );
@@ -80,7 +80,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const renderCategoriesButtons = () =>
-        productInfo?.categoriesNames.map((categoryName: string) => (
+        detailedProduct?.categoriesNames.map((categoryName: string) => (
             <Button onClick={() => goToCategory(categoryName)}>{categoryName}</Button>
         ));
 
@@ -100,20 +100,20 @@ const Product: React.FC<productProps> = ({ history }) => {
                             <img
                                 className='product-header__image'
                                 src='/default-product-image.jpg'
-                                alt={`product ${productInfo?.productName}`}
+                                alt={`product ${detailedProduct?.productName}`}
                             />
                             <div className='product-header__fields'>
                                 <div className='fields__name-company'>
                                     <Typography variant='h3' style={{ marginTop: 1 }}>
-                                        {productInfo?.productName}
+                                        {detailedProduct?.productName}
                                     </Typography>
                                     <Link
                                         variant='h4'
                                         underline='none'
                                         style={{ marginBottom: 2 }}
-                                        onClick={() => goToSupplierPage(productInfo?.supplierId)}
+                                        onClick={() => goToSupplierPage(detailedProduct?.supplierId)}
                                     >
-                                        {productInfo?.supplierName}
+                                        {detailedProduct?.supplierName}
                                     </Link>
                                 </div>
                                 {renderProductPrice()}
@@ -133,7 +133,7 @@ const Product: React.FC<productProps> = ({ history }) => {
                                     Product description:
                                 </Typography>
                                 <Typography variant={'body2'} style={{ marginBottom: 1 }}>
-                                    {productInfo?.productDescription}
+                                    {detailedProduct?.productDescription}
                                 </Typography>
                             </div>
                             <ButtonGroup variant='text'>{renderCategoriesButtons()}</ButtonGroup>
@@ -155,7 +155,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const renderProductContent = () => {
-        if (productInfo) {
+        if (detailedProduct) {
             return renderProductData();
         } else {
             return renderProductNotFound();

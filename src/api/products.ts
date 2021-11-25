@@ -1,11 +1,11 @@
 import { Pagination } from '../types/Pagination';
 import { deleteHTTP, getHTTP, postHTTP } from '../fetcher/fetcher';
 import { buildQueryFromObject, combineUrls } from './utilities';
-import { coreUrl, productsSubUrl, productSubUrl } from './urls';
+import { coreUrl, productDetailedSubUrl, productsSubUrl, productSubUrl } from './urls';
 import { ProductsList } from '../types/ProductsList';
 import headers from '../fetcher/headers';
 import { Product } from '../types/Product';
-import { ProductInfo } from '../types/ProductInfo';
+import { DetailedProduct } from '../types/DetailedProduct';
 
 const getProducts = (pagination: Pagination, searchText: string | null, supplierId: string | null) =>
     getHTTP<ProductsList>(
@@ -30,7 +30,13 @@ const newProduct = (product: Product, token: string) =>
     );
 
 const getProduct = (productId: string) =>
-    getHTTP<ProductInfo>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderAcceptJson());
+    getHTTP<DetailedProduct>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderAcceptJson());
+
+const getDetailedProduct = (productId: string, token: string) =>
+    getHTTP<DetailedProduct>(
+        combineUrls([coreUrl, productSubUrl, productId, productDetailedSubUrl]),
+        headers.buildHeaderTokenAcceptJson(token)
+    );
 
 const deleteProduct = (productId: string, token: string) =>
     deleteHTTP<Product>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderTokenAcceptJson(token));
@@ -39,6 +45,7 @@ const productsApi = {
     getProducts,
     newProduct,
     getProduct,
+    getDetailedProduct,
     deleteProduct,
 };
 

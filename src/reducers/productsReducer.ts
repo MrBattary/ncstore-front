@@ -5,11 +5,12 @@ import { RestoreDefaultProductsReducer } from '../actions/products/RestoreDefaul
 import { Product } from '../types/Product';
 import { NewProduct } from '../actions/products/CreateProduct';
 import { GetProduct } from '../actions/products/GetProduct';
-import { ProductInfo } from '../types/ProductInfo';
+import { DetailedProduct } from '../types/DetailedProduct';
 import { DeleteProduct } from '../actions/products/DeleteProduct';
+import { GetDetailedProduct } from '../actions/products/GetDetailedProduct';
 
 interface ProductsStore {
-    productInfo: ProductInfo | null;
+    detailedProduct: DetailedProduct | null;
     product: Product | null;
     products: ProductsList;
     loading: boolean;
@@ -21,11 +22,12 @@ export type ProductsReducerTypes =
     | GetProducts
     | NewProduct
     | GetProduct
+    | GetDetailedProduct
     | DeleteProduct
     | RestoreDefaultProductsReducer;
 
 const initialState: ProductsStore = {
-    productInfo: null,
+    detailedProduct: null,
     product: null,
     products: [],
     loading: false,
@@ -38,6 +40,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
         case types.DELETE_PRODUCT_REQUEST:
         case types.NEW_PRODUCT_REQUEST:
         case types.GET_PRODUCT_REQUEST:
+        case types.GET_DETAILED_PRODUCT_REQUEST:
         case types.GET_PRODUCTS_REQUEST: {
             return {
                 ...state,
@@ -54,12 +57,13 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 products: action.payload ? action.payload : [],
             };
         }
+        case types.GET_DETAILED_PRODUCT_RECEIVE:
         case types.GET_PRODUCT_RECEIVE: {
             return {
                 ...state,
                 loading: false,
                 success: true,
-                productInfo: action.payload ? action.payload : null,
+                detailedProduct: action.payload ? action.payload : null,
             };
         }
         case types.DELETE_PRODUCT_RECEIVE:
@@ -72,8 +76,9 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
             };
         }
         case types.DELETE_PRODUCT_ERROR:
-        case types.GET_PRODUCT_ERROR:
         case types.NEW_PRODUCT_ERROR:
+        case types.GET_PRODUCT_ERROR:
+        case types.GET_DETAILED_PRODUCT_ERROR:
         case types.GET_PRODUCTS_ERROR: {
             return {
                 ...state,
@@ -85,7 +90,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
         case types.RESTORE_DEFAULT_PRODUCTS_REDUCER: {
             return {
                 ...state,
-                productInfo: null,
+                detailedProduct: null,
                 product: null,
                 products: [],
                 success: false,

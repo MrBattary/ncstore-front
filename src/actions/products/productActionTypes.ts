@@ -16,6 +16,12 @@ export const GET_PRODUCT_REQUEST = 'Request/GET_PRODUCT';
 export const GET_PRODUCT_RECEIVE = 'Receive/GET_PRODUCT';
 export const GET_PRODUCT_ERROR = 'GET_PRODUCT_ERROR';
 
+/* Get detailed product */
+
+export const GET_DETAILED_PRODUCT_REQUEST = 'Request/DETAILED_GET_PRODUCT';
+export const GET_DETAILED_PRODUCT_RECEIVE = 'Receive/DETAILED_GET_PRODUCT';
+export const GET_DETAILED_PRODUCT_ERROR = 'GET_DETAILED_PRODUCT_ERROR';
+
 /* Delete product */
 
 export const DELETE_PRODUCT_REQUEST = 'Request/DELETE_PRODUCT';
