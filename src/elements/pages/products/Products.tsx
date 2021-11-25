@@ -28,8 +28,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
     }, [enqueueSnackbar, errorMessage]);
 
     const goToProduct = (productId: string) => {
-        // TODO: dispatch getProductById and history push to that product
-        console.log(`Go to the product with id ${productId}`);
+        history.push(`/products/${productId}`);
     };
 
     const buyProduct = (productId: string) => {

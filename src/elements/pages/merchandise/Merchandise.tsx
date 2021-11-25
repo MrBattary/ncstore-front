@@ -108,7 +108,11 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         );
     };
 
-    const getProductDetails = () => {
+    const goToProduct = (productId: string) => {
+        history.push(`/products/${productId}`);
+    };
+
+    const getProductDetails = (productId: string) => {
         console.log('Get product details');
     };
 
@@ -123,8 +127,8 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                     key={product.productId}
                     productId={product.productId}
                     productName={product.productName}
-                    onClick={getProductDetails}
-                    onDetails={getProductDetails}
+                    onClick={() => goToProduct(product.productId)}
+                    onDetails={() => getProductDetails(product.productId)}
                     onRemove={removeProduct}
                 />
             ))}

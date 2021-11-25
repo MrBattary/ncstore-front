@@ -4,8 +4,11 @@ import { GetProducts } from '../actions/products/GetProducts';
 import { RestoreDefaultProductsReducer } from '../actions/products/RestoreDefaultProductsReducer';
 import { Product } from '../types/Product';
 import { NewProduct } from '../actions/products/CreateProduct';
+import { GetProduct } from '../actions/products/GetProduct';
+import { ProductInfo } from '../types/ProductInfo';
 
 interface ProductsStore {
+    productInfo: ProductInfo | null;
     product: Product | null;
     products: ProductsList;
     loading: boolean;
@@ -13,9 +16,10 @@ interface ProductsStore {
     errorMessage: string | null;
 }
 
-export type ProductsReducerTypes = GetProducts | NewProduct | RestoreDefaultProductsReducer;
+export type ProductsReducerTypes = GetProducts | NewProduct | GetProduct | RestoreDefaultProductsReducer;
 
 const initialState: ProductsStore = {
+    productInfo: null,
     product: null,
     products: [],
     loading: false,
@@ -26,6 +30,7 @@ const initialState: ProductsStore = {
 export const productsReducer = (state = initialState, action: ProductsReducerTypes): ProductsStore => {
     switch (action.type) {
         case types.NEW_PRODUCT_REQUEST:
+        case types.GET_PRODUCT_REQUEST:
         case types.GET_PRODUCTS_REQUEST: {
             return {
                 ...state,
@@ -42,6 +47,14 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 products: action.payload ? action.payload : [],
             };
         }
+        case types.GET_PRODUCT_RECEIVE: {
+            return {
+                ...state,
+                loading: false,
+                success: true,
+                productInfo: action.payload ? action.payload : null,
+            };
+        }
         case types.NEW_PRODUCT_RECEIVE: {
             return {
                 ...state,
@@ -50,6 +63,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 product: action.payload ? action.payload : null,
             };
         }
+        case types.GET_PRODUCT_ERROR:
         case types.NEW_PRODUCT_ERROR:
         case types.GET_PRODUCTS_ERROR: {
             return {
@@ -62,6 +76,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
         case types.RESTORE_DEFAULT_PRODUCTS_REDUCER: {
             return {
                 ...state,
+                productInfo: null,
                 product: null,
                 products: [],
                 success: false,

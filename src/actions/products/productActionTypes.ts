@@ -10,6 +10,12 @@ export const NEW_PRODUCT_REQUEST = 'Request/NEW_PRODUCT';
 export const NEW_PRODUCT_RECEIVE = 'Receive/NEW_PRODUCT';
 export const NEW_PRODUCT_ERROR = 'NEW_PRODUCT_ERROR';
 
+/* Get product */
+
+export const GET_PRODUCT_REQUEST = 'Request/GET_PRODUCT';
+export const GET_PRODUCT_RECEIVE = 'Receive/GET_PRODUCT';
+export const GET_PRODUCT_ERROR = 'GET_PRODUCT_ERROR';
+
 /* Other */
 
 export const RESTORE_DEFAULT_PRODUCTS_REDUCER = 'RESTORE_DEFAULT_PRODUCTS_REDUCER';

@@ -2,6 +2,7 @@ export const coreUrl = 'http://ncstore.local/api';
 
 /* Products */
 export const productsSubUrl = '/products';
+export const productSubUrl = '/products/';
 
 /* Auth */
 export const signUpCompanySubUrl = '/signup/company';
