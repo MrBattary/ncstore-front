@@ -1,0 +1,31 @@
+.content__product-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 5vh;
+}
+
+.product-header__image {
+    max-width: 60%;
+}
+
+.product-header__fields {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.content__product-not-found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 93.5vh;
+    margin: 0;
+    padding: 0;
+    background-color: #dadff5;
+}
+
+.product-details__description {
+    margin-bottom: 3vh;
+}
