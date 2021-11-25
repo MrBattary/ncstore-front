@@ -49,12 +49,11 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
     };
 
     return (
-        <Container>
+        <Container style={{ minHeight: '100vh' }}>
             <Paper>
                 <Box
                     sx={{
                         marginTop: 8,
-                        marginBottom: 45,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
