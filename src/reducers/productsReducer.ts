@@ -6,6 +6,7 @@ import { Product } from '../types/Product';
 import { NewProduct } from '../actions/products/CreateProduct';
 import { GetProduct } from '../actions/products/GetProduct';
 import { ProductInfo } from '../types/ProductInfo';
+import { DeleteProduct } from '../actions/products/DeleteProduct';
 
 interface ProductsStore {
     productInfo: ProductInfo | null;
@@ -16,7 +17,12 @@ interface ProductsStore {
     errorMessage: string | null;
 }
 
-export type ProductsReducerTypes = GetProducts | NewProduct | GetProduct | RestoreDefaultProductsReducer;
+export type ProductsReducerTypes =
+    | GetProducts
+    | NewProduct
+    | GetProduct
+    | DeleteProduct
+    | RestoreDefaultProductsReducer;
 
 const initialState: ProductsStore = {
     productInfo: null,
@@ -29,6 +35,7 @@ const initialState: ProductsStore = {
 
 export const productsReducer = (state = initialState, action: ProductsReducerTypes): ProductsStore => {
     switch (action.type) {
+        case types.DELETE_PRODUCT_REQUEST:
         case types.NEW_PRODUCT_REQUEST:
         case types.GET_PRODUCT_REQUEST:
         case types.GET_PRODUCTS_REQUEST: {
@@ -55,6 +62,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 productInfo: action.payload ? action.payload : null,
             };
         }
+        case types.DELETE_PRODUCT_RECEIVE:
         case types.NEW_PRODUCT_RECEIVE: {
             return {
                 ...state,
@@ -63,6 +71,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 product: action.payload ? action.payload : null,
             };
         }
+        case types.DELETE_PRODUCT_ERROR:
         case types.GET_PRODUCT_ERROR:
         case types.NEW_PRODUCT_ERROR:
         case types.GET_PRODUCTS_ERROR: {

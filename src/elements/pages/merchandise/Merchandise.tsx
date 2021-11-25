@@ -4,6 +4,8 @@ import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useSnackbar } from 'notistack';
+import { Modal } from 'antd';
+import { CloseCircleOutlined } from '@ant-design/icons';
 import { Box, Button, Divider, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 
@@ -17,10 +19,11 @@ import NewProductForm from '../../components/new_product_form/NewProductForm';
 import { Product } from '../../../types/Product';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { newProduct } from '../../../actions/products/CreateProduct';
-
-import './style.css';
 import { converters } from '../../../utils/Converters';
 import { NormalPrice } from '../../../types/NormalPrice';
+import { deleteProduct } from '../../../actions/products/DeleteProduct';
+
+import './style.css';
 
 type merchandiseProps = {
     history: History;
@@ -35,7 +38,8 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     );
     const { token, roles, userId } = useSelector((state: AppState) => state.userReducer);
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [successWord, setSuccessWord] = useState<string>('');
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
     const defaultPagination: Pagination = useMemo(
         () => ({
@@ -50,14 +54,14 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     useEffect(() => {
         if (product && !loading) {
-            enqueueSnackbar(`Product ${product.productName} was created!`, {
+            enqueueSnackbar(`Product ${product.productName} was successfully ${successWord}!`, {
                 variant: 'success',
             });
             setIsModalVisible(false);
             dispatch(restoreDefaultProductsReducer());
             dispatch(getProducts(defaultPagination, '', userId));
         }
-    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId]);
+    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId, successWord]);
 
     useEffect(() => {
         if (errorMessage) {
@@ -93,6 +97,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         if (normalPrices && normalPrices.length > 0) {
             convertedNormalPrices = converters.convertCountryNamesToLanguageTagFromNormalPrices(normalPrices);
         }
+        setSuccessWord(`added`);
         dispatch(
             newProduct(
                 {
@@ -108,6 +113,11 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         );
     };
 
+    const removeProduct = (productId: string) => {
+        setSuccessWord(`removed`);
+        dispatch(deleteProduct(productId, token ? token : ''));
+    };
+
     const goToProduct = (productId: string) => {
         history.push(`/products/${productId}`);
     };
@@ -116,8 +126,19 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         console.log('Get product details');
     };
 
-    const removeProduct = () => {
-        console.log('Remove product');
+    const showRemoveConfirm = (productId: string) => {
+        Modal.confirm({
+            title: 'ATTENTION',
+            icon: <CloseCircleOutlined />,
+            content: "Are you sure you want to remove this product? You can't undo this operation.",
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+                removeProduct(productId);
+            },
+            onCancel() {},
+        });
     };
 
     const renderProductsInfoCardList = () => (
@@ -129,7 +150,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                     productName={product.productName}
                     onClick={() => goToProduct(product.productId)}
                     onDetails={() => getProductDetails(product.productId)}
-                    onRemove={removeProduct}
+                    onRemove={() => showRemoveConfirm(product.productId)}
                 />
             ))}
         </div>

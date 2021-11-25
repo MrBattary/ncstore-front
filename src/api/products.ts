@@ -1,5 +1,5 @@
 import { Pagination } from '../types/Pagination';
-import { getHTTP, postHTTP } from '../fetcher/fetcher';
+import { deleteHTTP, getHTTP, postHTTP } from '../fetcher/fetcher';
 import { buildQueryFromObject, combineUrls } from './utilities';
 import { coreUrl, productsSubUrl, productSubUrl } from './urls';
 import { ProductsList } from '../types/ProductsList';
@@ -32,10 +32,14 @@ const newProduct = (product: Product, token: string) =>
 const getProduct = (productId: string) =>
     getHTTP<ProductInfo>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderAcceptJson());
 
+const deleteProduct = (productId: string, token: string) =>
+    deleteHTTP<Product>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderTokenAcceptJson(token));
+
 const productsApi = {
     getProducts,
     newProduct,
     getProduct,
+    deleteProduct,
 };
 
 export default productsApi;
