@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Modal, Select, Table } from 'antd';
+import { DatePicker, Form, Input, InputNumber, Modal, Select, Table } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import countries from 'countries-list';
 import { NormalPrice } from '../../../types/NormalPrice';
@@ -7,8 +7,12 @@ import Button from '@mui/material/Button';
 import { Delete } from '@mui/icons-material';
 
 import './style.css';
+import { DiscountPrice } from '../../../types/DiscountPrice';
+import { Moment } from 'moment';
+import moment from 'moment/moment';
 
 type newProductFormProps = {
+    isDiscountForm: boolean;
     categoriesList: string[];
     visible: boolean;
     confirmLoading: boolean;
@@ -18,7 +22,14 @@ type newProductFormProps = {
     onCancel: (event: any) => void;
 };
 
+type InnerDiscountForm = {
+    price: number;
+    region: string;
+    times: Moment[];
+};
+
 const ProductForm: React.FC<newProductFormProps> = ({
+    isDiscountForm,
     categoriesList,
     visible,
     confirmLoading,
@@ -32,20 +43,26 @@ const ProductForm: React.FC<newProductFormProps> = ({
     const countryNames: string[] = countryCodes.map(code => countries.countries[code].name);
 
     const [normalPrices, setNormalPrices] = useState<NormalPrice[]>([]);
-    const [filteredCountryNames, setFilteredCountryNames] = useState<string[]>(countryNames);
+    const [filteredCountryNamesForNormalPrices, setFilteredCountryNamesForNormalPrices] =
+        useState<string[]>(countryNames);
+    const [discountPrices, setDiscountPrices] = useState<DiscountPrice[]>([]);
+    const [filteredCountryNamesForDiscountPrices, setFilteredCountryNamesForDiscountPrices] = useState<string[]>([]);
 
     const [form] = useForm();
-    const [innerForm] = useForm();
+    const [innerNormalPricesForm] = useForm();
+    const [innerDiscountPricesForm] = useForm();
 
     useEffect(() => {
         if (success) {
             form.resetFields();
             setNormalPrices([]);
-            setFilteredCountryNames(countryNames);
+            setFilteredCountryNamesForNormalPrices(countryNames);
+            setDiscountPrices([]);
+            setFilteredCountryNamesForDiscountPrices([]);
         }
     }, [success, form, countryNames]);
 
-    const tableColumns = [
+    const normalPricesTableColumns = [
         { title: 'Country', key: 'region', dataIndex: 'region' },
         {
             title: 'Price',
@@ -61,7 +78,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                     variant='outlined'
                     startIcon={<Delete />}
                     onClick={e => {
-                        handleRemoveRow(record.region, e);
+                        handleRemoveRowFromNormalPricesTable(record.region, e);
                     }}
                 >
                     Delete
@@ -70,27 +87,114 @@ const ProductForm: React.FC<newProductFormProps> = ({
         },
     ];
 
-    const filterAndSetFilteredCountryNames = (newNormalPrices: NormalPrice[]) => {
-        setFilteredCountryNames(
+    const discountPricesTableColumns = [
+        { title: 'Country', key: 'region', dataIndex: 'region' },
+        {
+            title: 'Price',
+            key: 'price',
+            dataIndex: 'price',
+        },
+        {
+            title: 'Start Time',
+            key: 'startUtcTime',
+            dataIndex: 'startUtcTime',
+            render: (text: string) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span>,
+        },
+        {
+            title: 'End Time',
+            key: 'endUtcTime',
+            dataIndex: 'endUtcTime',
+            render: (text: string) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span>,
+        },
+        {
+            title: 'Remove',
+            dataIndex: '',
+            key: 'x',
+            render: (text: any, record: { region: string }) => (
+                <Button
+                    variant='outlined'
+                    startIcon={<Delete />}
+                    onClick={e => {
+                        handleRemoveRowFromDiscountPricesTable(record.region, e);
+                    }}
+                >
+                    Delete
+                </Button>
+            ),
+        },
+    ];
+
+    const filterAndSetFilteredCountryNamesForDiscountPrices = (
+        discountPricesValue: DiscountPrice[],
+        normalPricesValue: NormalPrice[],
+        discountPricesOld: DiscountPrice[]
+    ) => {
+        setFilteredCountryNamesForDiscountPrices(() =>
+            normalPricesValue
+                .map(normalPrice => normalPrice.region)
+                .filter(
+                    (normalPriceRegion: string) =>
+                        !discountPricesValue.some(discountPrice => discountPrice.region === normalPriceRegion)
+                )
+                .filter(
+                    (newDiscountPrice: string) =>
+                        !discountPricesOld.some(discountPrice => discountPrice.region === newDiscountPrice)
+                )
+        );
+    };
+
+    const filterAndSetFilteredCountryNamesForNormalPrices = (newNormalPrices: NormalPrice[]) => {
+        setFilteredCountryNamesForNormalPrices(
             countryNames.filter(
                 (countryName: string) => !newNormalPrices.some(normalPrice => normalPrice.region === countryName)
             )
         );
     };
 
-    const handleRemoveRow = (region: string, e: any) => {
+    const filterDiscountPrices = (discountPricesValue: DiscountPrice[], normalPricesValue: NormalPrice[]) =>
+        discountPricesValue.filter(discountPrice =>
+            normalPricesValue.some(normalPriceValue => normalPriceValue.region === discountPrice.region)
+        );
+
+    const handleRemoveRowFromNormalPricesTable = (normalPriceRegion: string, e: any) => {
         e.preventDefault();
-        const newNormalPrices = normalPrices.filter(normalPrice => normalPrice.region !== region);
+        const newNormalPrices = normalPrices.filter(normalPrice => normalPrice.region !== normalPriceRegion);
         setNormalPrices(newNormalPrices);
-        filterAndSetFilteredCountryNames(newNormalPrices);
+        filterAndSetFilteredCountryNamesForNormalPrices(newNormalPrices);
+        const newDiscountPrices = filterDiscountPrices(discountPrices, newNormalPrices);
+        filterAndSetFilteredCountryNamesForDiscountPrices(newDiscountPrices, newNormalPrices, newDiscountPrices);
+        setDiscountPrices(newDiscountPrices);
     };
 
-    const onFinishInnerForm = (value: NormalPrice) => {
+    const handleRemoveRowFromDiscountPricesTable = (discountPriceRegion: string, e: any) => {
+        e.preventDefault();
+        const newDiscountPrices = discountPrices.filter(discountPrice => discountPrice.region !== discountPriceRegion);
+        setDiscountPrices(newDiscountPrices);
+        setFilteredCountryNamesForDiscountPrices([...filteredCountryNamesForDiscountPrices, discountPriceRegion]);
+    };
+
+    const onFinishInnerNormalPricesForm = (value: NormalPrice) => {
         if (!normalPrices.some(normalPrice => normalPrice.region === value.region)) {
             const newNormalPrices = [...normalPrices, value];
             setNormalPrices(newNormalPrices);
-            filterAndSetFilteredCountryNames(newNormalPrices);
-            innerForm.resetFields();
+            filterAndSetFilteredCountryNamesForNormalPrices(newNormalPrices);
+            filterAndSetFilteredCountryNamesForDiscountPrices(discountPrices, newNormalPrices, discountPrices);
+            innerNormalPricesForm.resetFields();
+        }
+    };
+
+    const onFinishInnerDiscountPricesForm = (value: InnerDiscountForm) => {
+        if (!discountPrices.some(discountPrice => discountPrice.region === value.region)) {
+            const addedDiscountPrice: DiscountPrice = {
+                price: value.price,
+                region: value.region,
+                startUtcTime: value.times[0].utc().format(),
+                endUtcTime: value.times[1].utc().format(),
+            };
+            const newDiscountPrices = [...discountPrices, addedDiscountPrice];
+            setDiscountPrices(newDiscountPrices);
+            filterAndSetFilteredCountryNamesForDiscountPrices(newDiscountPrices, normalPrices, discountPrices);
+            innerDiscountPricesForm.resetFields();
         }
     };
 
@@ -98,8 +202,16 @@ const ProductForm: React.FC<newProductFormProps> = ({
         onFinish({ ...e, normalPrices });
     };
 
-    const renderFilteredCountryNames = () => {
-        return filteredCountryNames.map((countryName: string) => (
+    const renderFilteredCountryNamesForNormalPrices = () => {
+        return filteredCountryNamesForNormalPrices.map((countryName: string) => (
+            <Select.Option key={countryName} value={countryName}>
+                {countryName}
+            </Select.Option>
+        ));
+    };
+
+    const renderFilteredCountryNamesForDiscountPrices = () => {
+        return filteredCountryNamesForDiscountPrices.map((countryName: string) => (
             <Select.Option key={countryName} value={countryName}>
                 {countryName}
             </Select.Option>
@@ -112,6 +224,95 @@ const ProductForm: React.FC<newProductFormProps> = ({
                 {categoryName}
             </Select.Option>
         ));
+
+    const renderDiscountPricesForm = () => {
+        if (isDiscountForm) {
+            return (
+                <>
+                    <Form.Item className='form__field' label='Discount prices' name='discountPrices' required>
+                        <Table<DiscountPrice>
+                            columns={discountPricesTableColumns}
+                            dataSource={discountPrices}
+                            pagination={{ pageSize: 20 }}
+                            scroll={{ y: 240 }}
+                        />
+                    </Form.Item>
+                    <Form.Item>
+                        <Form
+                            form={innerDiscountPricesForm}
+                            className='form__inner-form'
+                            onFinish={onFinishInnerDiscountPricesForm}
+                            onFinishFailed={() => {}}
+                            layout='inline'
+                            size='large'
+                        >
+                            <Form.Item
+                                className='inner-form__field'
+                                label='Country'
+                                name='region'
+                                rules={[{ required: true, message: 'Please enter the country!' }]}
+                            >
+                                <Select
+                                    showSearch
+                                    optionFilterProp='children'
+                                    filterOption={(input, option) =>
+                                        option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    }
+                                    filterSort={(optionA, optionB) =>
+                                        optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                    }
+                                >
+                                    {renderFilteredCountryNamesForDiscountPrices()}
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label='Price'
+                                name='price'
+                                className='inner-form__field'
+                                required
+                                rules={[
+                                    () => ({
+                                        validator(_, value) {
+                                            if (Number.isInteger(value) && value >= 0) {
+                                                return Promise.resolve();
+                                            }
+                                            return Promise.reject(new Error('Enter the correct number!'));
+                                        },
+                                    }),
+                                ]}
+                                tooltip={
+                                    <>
+                                        <div className='field__tooltip'>
+                                            The price must be an integer greater than or equal to zero.
+                                        </div>
+                                    </>
+                                }
+                            >
+                                <InputNumber min={0} />
+                            </Form.Item>
+                            <Form.Item
+                                name='times'
+                                className='inner-form__time-picker'
+                                label='Start and end of discount'
+                                rules={[{ type: 'array' as const, required: true, message: 'Please select time!' }]}
+                            >
+                                <DatePicker.RangePicker showTime format='YYYY-MM-DD HH:mm:ss' />
+                            </Form.Item>
+                            <Form.Item className='inner-form__button'>
+                                <Button
+                                    variant={'outlined'}
+                                    onClick={innerDiscountPricesForm.submit}
+                                    sx={{ marginTop: 2 }}
+                                >
+                                    Add discount price
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    </Form.Item>
+                </>
+            );
+        }
+    };
 
     return (
         <Modal
@@ -199,7 +400,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                     ]}
                 >
                     <Table<NormalPrice>
-                        columns={tableColumns}
+                        columns={normalPricesTableColumns}
                         dataSource={normalPrices}
                         pagination={{ pageSize: 20 }}
                         scroll={{ y: 240 }}
@@ -207,9 +408,9 @@ const ProductForm: React.FC<newProductFormProps> = ({
                 </Form.Item>
                 <Form.Item>
                     <Form
-                        form={innerForm}
+                        form={innerNormalPricesForm}
                         className='form__inner-form'
-                        onFinish={onFinishInnerForm}
+                        onFinish={onFinishInnerNormalPricesForm}
                         onFinishFailed={() => {}}
                         layout='inline'
                         size='large'
@@ -230,7 +431,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                     optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
                                 }
                             >
-                                {renderFilteredCountryNames()}
+                                {renderFilteredCountryNamesForNormalPrices()}
                             </Select>
                         </Form.Item>
                         <Form.Item
@@ -259,12 +460,13 @@ const ProductForm: React.FC<newProductFormProps> = ({
                             <InputNumber min={0} />
                         </Form.Item>
                         <Form.Item className='inner-form__button'>
-                            <Button variant={'outlined'} onClick={innerForm.submit} sx={{ marginTop: 2 }}>
+                            <Button variant={'outlined'} onClick={innerNormalPricesForm.submit} sx={{ marginTop: 2 }}>
                                 Add price
                             </Button>
                         </Form.Item>
                     </Form>
                 </Form.Item>
+                {renderDiscountPricesForm()}
                 <Form.Item
                     className='form__field'
                     name='categoriesNames'
@@ -279,5 +481,4 @@ const ProductForm: React.FC<newProductFormProps> = ({
         </Modal>
     );
 };
-
 export default ProductForm;

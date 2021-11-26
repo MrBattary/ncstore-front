@@ -187,6 +187,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 {products.length ? renderProductsInfoCardList() : renderProductsNotFound()}
             </div>
             <ProductForm
+                isDiscountForm={true}
                 categoriesList={categoriesList}
                 visible={isModalVisible}
                 confirmLoading={loading}
