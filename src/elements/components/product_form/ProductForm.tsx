@@ -192,8 +192,8 @@ const ProductForm: React.FC<newProductFormProps> = ({
                 endUtcTime: value.times[1].utc().format(),
             };
             const newDiscountPrices = [...discountPrices, addedDiscountPrice];
-            setDiscountPrices(newDiscountPrices);
             filterAndSetFilteredCountryNamesForDiscountPrices(newDiscountPrices, normalPrices, discountPrices);
+            setDiscountPrices(newDiscountPrices);
             innerDiscountPricesForm.resetFields();
         }
     };
