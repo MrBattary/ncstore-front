@@ -1,26 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useMemo, useState } from 'react';
-import { History } from 'history';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useMemo, useState} from 'react';
+import {History} from 'history';
+import {useDispatch, useSelector} from 'react-redux';
 
-import { useSnackbar } from 'notistack';
-import { Box, Button, Divider, Typography } from '@mui/material';
-import { Add } from '@mui/icons-material';
+import {useSnackbar} from 'notistack';
+import {Box, Button, Divider, Typography} from '@mui/material';
+import {Add} from '@mui/icons-material';
 
-import { AppState } from '../../../reducers/rootReducer';
-import { UserRole } from '../../../types/UserRole';
-import { ProductFromList } from '../../../types/ProductsList';
+import {AppState} from '../../../reducers/rootReducer';
+import {UserRole} from '../../../types/UserRole';
+import {ProductFromList} from '../../../types/ProductsList';
 import ProductInfoCard from '../../components/info_product_card/ProductInfoCard';
-import { getProducts } from '../../../actions/products/GetProducts';
-import { Pagination } from '../../../types/Pagination';
+import {getProducts} from '../../../actions/products/GetProducts';
+import {Pagination} from '../../../types/Pagination';
 import NewProductForm from '../../components/new_product_form/NewProductForm';
-import { Product } from '../../../types/Product';
-import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
-import { newProduct } from '../../../actions/products/CreateProduct';
+import {Product} from '../../../types/Product';
+import {restoreDefaultProductsReducer} from '../../../actions/products/RestoreDefaultProductsReducer';
+import {newProduct} from '../../../actions/products/CreateProduct';
 
 import './style.css';
-import { converters } from '../../../utils/Converters';
-import { NormalPrice } from '../../../types/NormalPrice';
+import {converters} from '../../../utils/Converters';
+import {NormalPrice} from '../../../types/NormalPrice';
+import {SortOrder, SortRule} from "../../../types/SortEnum";
 
 type merchandiseProps = {
     history: History;
@@ -55,7 +56,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             });
             setIsModalVisible(false);
             dispatch(restoreDefaultProductsReducer());
-            dispatch(getProducts(defaultPagination, '', userId));
+            dispatch(getProducts(defaultPagination, '', userId, SortRule.DEFAULT, SortOrder.ASC));
         }
     }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId]);
 
@@ -77,7 +78,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         if (!roles.includes(UserRole.SUPPLIER)) {
             history.push('/');
         }
-        dispatch(getProducts(defaultPagination, '', userId));
+        dispatch(getProducts(defaultPagination, '', userId, SortRule.DEFAULT, SortOrder.ASC));
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);

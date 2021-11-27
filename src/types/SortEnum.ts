@@ -1,14 +1,14 @@
 export enum SortRule {
-    DEFAULT,
-    POPULAR,
-    RATING,
-    PRICE,
-    DATE,
-    DISCOUNT
+    DEFAULT = "DEFAULT",
+    POPULAR = "POPULAR",
+    RATING = "RATING",
+    PRICE = "PRICE",
+    DATE = "DATE",
+    DISCOUNT = "DISCOUNT"
 };
 
 export enum SortOrder {
-    ASC,
-    DESC,
-    RANDOM
+    ASC = "ASC",
+    DESC = "DESC",
+    RANDOM = "RANDOM"
 }

@@ -6,6 +6,7 @@ import HomeCompilation from "../../components/home_compilation/HomeCompilation";
 import {getProducts} from "../../../actions/products/GetProducts";
 import {useDispatch} from "react-redux";
 import {Pagination} from '../../../types/Pagination';
+import {SortOrder, SortRule} from "../../../types/SortEnum";
 
 type homeProps = {};
 
@@ -18,7 +19,7 @@ const Home: React.FC<homeProps> = () => {
     };
 
     const renderBestDiscount = () => {
-        dispatch(getProducts(defaultPagination, "", null));
+        dispatch(getProducts(defaultPagination, "", null, SortRule.DEFAULT, SortOrder.ASC));
         return (
             <>
                 <HomeCompilation compilationName="Best discount"/>
