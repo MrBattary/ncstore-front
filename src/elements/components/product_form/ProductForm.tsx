@@ -10,9 +10,12 @@ import './style.css';
 import { DiscountPrice } from '../../../types/DiscountPrice';
 import { Moment } from 'moment';
 import moment from 'moment/moment';
+import { Product } from '../../../types/Product';
+import { DetailedProduct } from '../../../types/DetailedProduct';
 
 type newProductFormProps = {
     isDiscountForm: boolean;
+    defaultValuesProduct: Product | DetailedProduct | null | undefined;
     categoriesList: string[];
     visible: boolean;
     confirmLoading: boolean;
@@ -30,6 +33,7 @@ type InnerDiscountForm = {
 
 const ProductForm: React.FC<newProductFormProps> = ({
     isDiscountForm,
+    defaultValuesProduct,
     categoriesList,
     visible,
     confirmLoading,
@@ -51,6 +55,29 @@ const ProductForm: React.FC<newProductFormProps> = ({
     const [form] = useForm();
     const [innerNormalPricesForm] = useForm();
     const [innerDiscountPricesForm] = useForm();
+
+    useEffect(() => {
+        if (defaultValuesProduct) {
+            console.log('R');
+            form.setFieldsValue({
+                productName: defaultValuesProduct.productName,
+                productDescription: defaultValuesProduct.productDescription,
+                categoriesNames: defaultValuesProduct.categoriesNames,
+            });
+            setNormalPrices(defaultValuesProduct.normalPrices);
+            filterAndSetFilteredCountryNamesForNormalPrices(defaultValuesProduct.normalPrices);
+            if (isDiscountForm) {
+                setDiscountPrices(defaultValuesProduct.discountPrices);
+                filterAndSetFilteredCountryNamesForDiscountPrices(
+                    defaultValuesProduct.discountPrices,
+                    defaultValuesProduct.normalPrices,
+                    defaultValuesProduct.discountPrices
+                );
+            }
+        }
+        // DO NOT REMOVE, Calls only once
+        // eslint-disable-next-line
+    }, [defaultValuesProduct]);
 
     useEffect(() => {
         if (success) {
@@ -307,7 +334,11 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                 label='Start and end of discount'
                                 rules={[{ type: 'array' as const, required: true, message: 'Please select time!' }]}
                             >
-                                <DatePicker.RangePicker showTime format='YYYY-MM-DD HH:mm:ss' />
+                                <DatePicker.RangePicker
+                                    showTime
+                                    format='YYYY-MM-DD HH:mm:ss'
+                                    disabledDate={today => !today || today.isBefore(new Date())}
+                                />
                             </Form.Item>
                             <Form.Item className='inner-form__button'>
                                 <Button

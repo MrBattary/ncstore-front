@@ -15,11 +15,11 @@ type productInfoCardProps = {
     productId: string;
     productName: string;
     onClick: (event: React.MouseEvent) => void;
-    onDetails: (event: React.MouseEvent) => void;
+    onUpdate: (event: React.MouseEvent) => void;
     onRemove: (event: React.MouseEvent) => void;
 };
 
-const ProductInfoCard: React.FC<productInfoCardProps> = ({ productId, productName, onClick, onDetails, onRemove }) => {
+const ProductInfoCard: React.FC<productInfoCardProps> = ({ productId, productName, onClick, onUpdate, onRemove }) => {
     return (
         <Card className='product-info-card' sx={{ display: 'flex', flexDirection: 'row', margin: 2 }}>
             <CardActionArea sx={{ maxHeight: 140, maxWidth: 140 }} onClick={onClick}>
@@ -58,8 +58,8 @@ const ProductInfoCard: React.FC<productInfoCardProps> = ({ productId, productNam
                     >
                         Remove product
                     </Button>
-                    <Button sx={{ zIndex: 1, margin: 1 }} size='small' variant='outlined' onClick={onDetails}>
-                        Product details
+                    <Button sx={{ zIndex: 1, margin: 1 }} size='small' variant='outlined' onClick={onUpdate}>
+                        Update product
                     </Button>
                 </CardActions>
             </Box>

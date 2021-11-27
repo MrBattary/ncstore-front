@@ -40,7 +40,7 @@ const convertLanguageTagsToCountryNamesFromPricesArray = (normalPrices: NormalPr
 
     countryCodes.forEach(code => {
         // @ts-ignore
-        const tag = `${countries.countries[code].languages[0]}-${code}`;
+        const tag = `${countries.countries[code].languages[0]}_${code}`;
         // @ts-ignore
         tagNameMap.set(tag, countries.countries[code].name);
     });

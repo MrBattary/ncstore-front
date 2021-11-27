@@ -40,10 +40,18 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
         case types.DELETE_PRODUCT_REQUEST:
         case types.NEW_PRODUCT_REQUEST:
         case types.GET_PRODUCT_REQUEST:
-        case types.GET_DETAILED_PRODUCT_REQUEST:
         case types.GET_PRODUCTS_REQUEST: {
             return {
                 ...state,
+                loading: true,
+                success: false,
+                errorMessage: null,
+            };
+        }
+        case types.GET_DETAILED_PRODUCT_REQUEST: {
+            return {
+                ...state,
+                detailedProduct: null,
                 loading: true,
                 success: false,
                 errorMessage: null,

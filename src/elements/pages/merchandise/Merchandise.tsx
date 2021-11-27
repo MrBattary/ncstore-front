@@ -24,6 +24,10 @@ import { NormalPrice } from '../../../types/NormalPrice';
 import { deleteProduct } from '../../../actions/products/DeleteProduct';
 
 import './style.css';
+import { getDetailedProduct } from '../../../actions/products/GetDetailedProduct';
+import { threads } from '../../../utils/Threads';
+import { DiscountPrice } from '../../../types/DiscountPrice';
+import { DetailedProduct } from '../../../types/DetailedProduct';
 
 type merchandiseProps = {
     history: History;
@@ -33,12 +37,13 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { product, products, success, loading, errorMessage } = useSelector(
+    const { product, detailedProduct, products, success, loading, errorMessage } = useSelector(
         (state: AppState) => state.productsReducer
     );
     const { token, roles, userId } = useSelector((state: AppState) => state.userReducer);
 
     const [successWord, setSuccessWord] = useState<string>('');
+    const [detailedProductForUpdateForm, setDetailedProductForUpdateForm] = useState<DetailedProduct | null>();
     const [isUpdateProductFormVisible, setIsUpdateProductFormVisible] = useState<boolean>(false);
     const [isCreateProductFormVisible, setIsCreateProductFormVisible] = useState<boolean>(false);
 
@@ -93,12 +98,12 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     const handleAddNewProduct = (e: Product) => {
         const { productName, productDescription, normalPrices, discountPrices, parentProductId, categoriesNames } = e;
-        dispatch(restoreDefaultProductsReducer());
         let convertedNormalPrices: NormalPrice[] = [];
         if (normalPrices && normalPrices.length > 0) {
             convertedNormalPrices = converters.convertCountryNamesToLanguageTagsFromPricesArray(normalPrices);
         }
         setSuccessWord(`added`);
+        dispatch(restoreDefaultProductsReducer());
         dispatch(
             newProduct(
                 {
@@ -124,10 +129,27 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     };
 
     const getProductDetails = (productId: string) => {
-        setIsUpdateProductFormVisible(true);
+        dispatch(getDetailedProduct(productId, token ? token : ''));
+        let localDetailedProduct = detailedProduct;
+        if (localDetailedProduct) {
+            localDetailedProduct.normalPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
+                localDetailedProduct.normalPrices
+            );
+            localDetailedProduct.discountPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
+                localDetailedProduct.discountPrices
+            ) as DiscountPrice[];
+
+            setDetailedProductForUpdateForm(localDetailedProduct);
+            setIsUpdateProductFormVisible(true);
+        }
     };
 
     const handleUpdateProduct = (e: Product) => {};
+
+    const handleCancelUpdateProduct = () => {
+        setIsUpdateProductFormVisible(false);
+        setDetailedProductForUpdateForm(null);
+    };
 
     const showRemoveConfirm = (productId: string) => {
         Modal.confirm({
@@ -152,7 +174,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                     productId={product.productId}
                     productName={product.productName}
                     onClick={() => goToProduct(product.productId)}
-                    onDetails={() => getProductDetails(product.productId)}
+                    onUpdate={() => getProductDetails(product.productId)}
                     onRemove={() => showRemoveConfirm(product.productId)}
                 />
             ))}
@@ -191,16 +213,18 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             </div>
             <ProductForm
                 isDiscountForm={true}
+                defaultValuesProduct={detailedProductForUpdateForm}
                 categoriesList={categoriesList}
                 visible={isUpdateProductFormVisible}
                 confirmLoading={loading}
-                success={success && !!product}
+                success={false}
                 onFinish={handleUpdateProduct}
                 onFinishFailed={() => {}}
-                onCancel={() => setIsUpdateProductFormVisible(false)}
+                onCancel={handleCancelUpdateProduct}
             />
             <ProductForm
                 isDiscountForm={false}
+                defaultValuesProduct={null}
                 categoriesList={categoriesList}
                 visible={isCreateProductFormVisible}
                 confirmLoading={loading}

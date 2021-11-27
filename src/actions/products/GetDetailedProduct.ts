@@ -25,16 +25,17 @@ export type GetDetailedProduct =
     | GetDetailedProductReceiveAction
     | GetDetailedProductErrorAction;
 
-export const getProduct = (productId: string, token: string) => async (dispatch: Dispatch<GetDetailedProduct>) => {
-    dispatch({ type: GET_DETAILED_PRODUCT_REQUEST });
-    try {
-        const data = await productsApi.getDetailedProduct(productId, token);
-        dispatch({ type: GET_DETAILED_PRODUCT_RECEIVE, payload: data });
-    } catch (e) {
-        if (e instanceof Error) {
-            dispatch({ type: GET_DETAILED_PRODUCT_ERROR, errorMessage: e.message });
-        } else {
-            dispatch({ type: GET_DETAILED_PRODUCT_ERROR });
+export const getDetailedProduct =
+    (productId: string, token: string) => async (dispatch: Dispatch<GetDetailedProduct>) => {
+        dispatch({ type: GET_DETAILED_PRODUCT_REQUEST });
+        try {
+            const data = await productsApi.getDetailedProduct(productId, token);
+            dispatch({ type: GET_DETAILED_PRODUCT_RECEIVE, payload: data });
+        } catch (e) {
+            if (e instanceof Error) {
+                dispatch({ type: GET_DETAILED_PRODUCT_ERROR, errorMessage: e.message });
+            } else {
+                dispatch({ type: GET_DETAILED_PRODUCT_ERROR });
+            }
         }
-    }
-};
+    };
