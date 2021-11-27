@@ -95,7 +95,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         dispatch(restoreDefaultProductsReducer());
         let convertedNormalPrices: NormalPrice[] = [];
         if (normalPrices && normalPrices.length > 0) {
-            convertedNormalPrices = converters.convertCountryNamesToLanguageTagsFromNormalPrices(normalPrices);
+            convertedNormalPrices = converters.convertCountryNamesToLanguageTagsFromPricesArray(normalPrices);
         }
         setSuccessWord(`added`);
         dispatch(

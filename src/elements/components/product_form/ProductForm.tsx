@@ -199,7 +199,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
     };
 
     const onFinishOuterForm = (e: any) => {
-        onFinish({ ...e, normalPrices });
+        onFinish({ ...e, normalPrices, discountPrices });
     };
 
     const renderFilteredCountryNamesForNormalPrices = () => {
