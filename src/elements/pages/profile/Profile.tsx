@@ -12,6 +12,7 @@ import {getCompanyProfile} from '../../../actions/users/GetCompanyProfile';
 import {UserType} from '../../../types/UserType';
 import GeneralProfile from "../../components/profiles/GeneralProfile";
 import UserProfileBalance from "../../components/profiles/UserProfileBalance";
+import ProfileChangePassword from "../../components/profiles/ProfileChangePassword";
 
 type profileProps = {
     history: History;
@@ -52,12 +53,21 @@ const Profile: React.FC<profileProps> = ({history}) => {
         }
     }, [token, history]);
 
+    const handleBalanceAdd = (e: any) => {
+
+    }
+
+    const handleProfileChange = (e: any) => {
+
+    }
+
 
     return loading || !profile ? null : (
         <Container>
             <Stack>
                 <GeneralProfile history={history} profile={profile}/>
-                <UserProfileBalance balance={profile.balance} balanceCurrency="$" loading={loading}/>
+                <UserProfileBalance balance={profile.balance} balanceCurrency="$" loading={loading} onFinish={handleBalanceAdd} onFinishFailed={() => {}}/>
+                <ProfileChangePassword loading={loading} onFinish={handleProfileChange} onFinishFailed={() => {}}/>
             </Stack>
         </Container>
     );

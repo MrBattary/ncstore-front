@@ -7,21 +7,15 @@ import LoadingButton from "@mui/lab/LoadingButton";
 
 import './style.css';
 
-type profileProps = {
+type profileBalanceProps = {
     balance: number;
     balanceCurrency: string;
     loading: boolean;
+    onFinish: (event: any) => void;
+    onFinishFailed: (event: any) => void;
 };
 
-const UserProfileBalance: React.FC<profileProps> = ({balance, balanceCurrency, loading}) => {
-    const onFinish = () => {
-
-    }
-
-    const onFinishFailed = () => {
-
-    }
-
+const UserProfileBalance: React.FC<profileBalanceProps> = ({balance, balanceCurrency, loading, onFinish, onFinishFailed}) => {
     return (
         <Container>
             <Paper elevation={10}>
@@ -33,7 +27,7 @@ const UserProfileBalance: React.FC<profileProps> = ({balance, balanceCurrency, l
                     alignItems: 'center',
                 }}>
                     <Stack spacing={2}>
-                        <Typography align="center" variant="h3">Your balance</Typography>
+                        <Typography align="center" variant="h4">Your balance</Typography>
                         <Typography align="center" variant="h5">{"Balance: " + balance + balanceCurrency}</Typography>
                         <Form
                             className='balance__form'
