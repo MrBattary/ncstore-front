@@ -68,10 +68,10 @@ const Profile: React.FC<profileProps> = ({history, profile}) => {
     const renderCompanyDescription = () => {
         if ((profile as CompanyProfile).description) {
             return (
-                <>
+                <div>
                     {renderHeaderTypographyInProfile("About company")}
                     {renderTypographyInProfile((profile as CompanyProfile).description)}
-                </>
+                </div>
             );
         }
     };
@@ -146,13 +146,12 @@ const Profile: React.FC<profileProps> = ({history, profile}) => {
             <Paper elevation={10}>
                 <Box sx={{
                     marginTop: 8,
-                    paddingTop: 8,
+                    paddingTop: 2,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}>
                     <Stack spacing={5}>
-                        <Typography align="center" variant="h2">Profile Details</Typography>
                         {renderPersonNickname()}
                         {renderCompanyName()}
                         {renderCompanyDescription()}

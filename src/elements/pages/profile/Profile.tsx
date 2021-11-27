@@ -1,25 +1,26 @@
-import React, { useEffect } from 'react';
-import { History } from 'history';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect} from 'react';
+import {History} from 'history';
+import {useDispatch, useSelector} from 'react-redux';
 
-import {Container} from '@mui/material';
-import { useSnackbar } from 'notistack';
+import {Container, Stack} from '@mui/material';
+import {useSnackbar} from 'notistack';
 
-import { AppState } from '../../../reducers/rootReducer';
-import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
-import { getPersonProfile } from '../../../actions/users/GetPersonProfile';
-import { getCompanyProfile } from '../../../actions/users/GetCompanyProfile';
-import { UserType } from '../../../types/UserType';
+import {AppState} from '../../../reducers/rootReducer';
+import {restoreDefaultUserReducer} from '../../../actions/users/RestoreDefaultUserReducer';
+import {getPersonProfile} from '../../../actions/users/GetPersonProfile';
+import {getCompanyProfile} from '../../../actions/users/GetCompanyProfile';
+import {UserType} from '../../../types/UserType';
 import GeneralProfile from "../../components/profiles/GeneralProfile";
+import UserProfileBalance from "../../components/profiles/UserProfileBalance";
 
 type profileProps = {
     history: History;
 };
 
-const Profile: React.FC<profileProps> = ({ history }) => {
-    const { enqueueSnackbar } = useSnackbar();
+const Profile: React.FC<profileProps> = ({history}) => {
+    const {enqueueSnackbar} = useSnackbar();
     const dispatch = useDispatch();
-    const { token, userType, profile, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
+    const {token, userType, profile, loading, errorMessage} = useSelector((state: AppState) => state.userReducer);
 
     useEffect(() => {
         if (errorMessage) {
@@ -52,10 +53,12 @@ const Profile: React.FC<profileProps> = ({ history }) => {
     }, [token, history]);
 
 
-
     return loading || !profile ? null : (
         <Container>
-            <GeneralProfile history={history} profile={profile}/>
+            <Stack>
+                <GeneralProfile history={history} profile={profile}/>
+                <UserProfileBalance balance={profile.balance} balanceCurrency="$" loading={loading}/>
+            </Stack>
         </Container>
     );
 };
