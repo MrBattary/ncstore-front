@@ -39,7 +39,8 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const { token, roles, userId } = useSelector((state: AppState) => state.userReducer);
 
     const [successWord, setSuccessWord] = useState<string>('');
-    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+    const [isUpdateProductFormVisible, setIsUpdateProductFormVisible] = useState<boolean>(false);
+    const [isCreateProductFormVisible, setIsCreateProductFormVisible] = useState<boolean>(false);
 
     const defaultPagination: Pagination = useMemo(
         () => ({
@@ -57,7 +58,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             enqueueSnackbar(`Product ${product.productName} was successfully ${successWord}!`, {
                 variant: 'success',
             });
-            setIsModalVisible(false);
+            setIsCreateProductFormVisible(false);
             dispatch(restoreDefaultProductsReducer());
             dispatch(getProducts(defaultPagination, '', userId));
         }
@@ -87,7 +88,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     }, []);
 
     const addNewProduct = () => {
-        setIsModalVisible(true);
+        setIsCreateProductFormVisible(true);
     };
 
     const handleAddNewProduct = (e: Product) => {
@@ -123,8 +124,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     };
 
     const getProductDetails = (productId: string) => {
-        console.log('Get product details');
+        setIsUpdateProductFormVisible(true);
     };
+
+    const handleUpdateProduct = (e: Product) => {};
 
     const showRemoveConfirm = (productId: string) => {
         Modal.confirm({
@@ -189,12 +192,22 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             <ProductForm
                 isDiscountForm={true}
                 categoriesList={categoriesList}
-                visible={isModalVisible}
+                visible={isUpdateProductFormVisible}
+                confirmLoading={loading}
+                success={success && !!product}
+                onFinish={handleUpdateProduct}
+                onFinishFailed={() => {}}
+                onCancel={() => setIsUpdateProductFormVisible(false)}
+            />
+            <ProductForm
+                isDiscountForm={false}
+                categoriesList={categoriesList}
+                visible={isCreateProductFormVisible}
                 confirmLoading={loading}
                 success={success && !!product}
                 onFinish={handleAddNewProduct}
                 onFinishFailed={() => {}}
-                onCancel={() => setIsModalVisible(false)}
+                onCancel={() => setIsCreateProductFormVisible(false)}
             />
         </main>
     );

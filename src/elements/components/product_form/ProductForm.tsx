@@ -273,8 +273,18 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                 rules={[
                                     () => ({
                                         validator(_, value) {
-                                            if (Number.isInteger(value) && value >= 0) {
-                                                return Promise.resolve();
+                                            debugger;
+                                            const discountRegion = innerDiscountPricesForm.getFieldValue('region');
+                                            let currentNormalPrice = normalPrices.find(
+                                                normalPrice => normalPrice.region === discountRegion
+                                            );
+                                            if (Number.isInteger(value) && value >= 0 && currentNormalPrice) {
+                                                if (
+                                                    (currentNormalPrice.price === 0 && value === 0) ||
+                                                    currentNormalPrice.price > value
+                                                ) {
+                                                    return Promise.resolve();
+                                                }
                                             }
                                             return Promise.reject(new Error('Enter the correct number!'));
                                         },
@@ -283,7 +293,8 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                 tooltip={
                                     <>
                                         <div className='field__tooltip'>
-                                            The price must be an integer greater than or equal to zero.
+                                            The price must be an integer greater than or equal to zero. The discounted
+                                            price should be less than the normal price.
                                         </div>
                                     </>
                                 }
