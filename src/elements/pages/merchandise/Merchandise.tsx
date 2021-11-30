@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,7 +15,7 @@ import ProductInfoCard from '../../components/info_product_card/ProductInfoCard'
 import { getProducts } from '../../../actions/products/GetProducts';
 import { Pagination } from '../../../types/Pagination';
 import ProductForm from '../../components/product_form/ProductForm';
-import { Product } from '../../../types/Product';
+import { ProductWithoutId } from '../../../types/ProductWithoutId';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { newProduct } from '../../../actions/products/CreateProduct';
 import { converters } from '../../../utils/Converters';
@@ -26,15 +25,19 @@ import { deleteProduct } from '../../../actions/products/DeleteProduct';
 import './style.css';
 import { getDetailedProduct } from '../../../actions/products/GetDetailedProduct';
 import { DiscountPrice } from '../../../types/DiscountPrice';
-import { DetailedProduct } from '../../../types/DetailedProduct';
+import { ProductWithSupplier } from '../../../types/ProductWithSupplier';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+import { updateProduct } from '../../../actions/products/UpdateProduct';
 
 type merchandiseProps = {
     history: History;
 };
 
 const enum merchandiseTasks {
-    WAIT_FOR_DETAILED_PRODUCT_DATA = 'WAIT_FOR_DETAILED_PRODUCT_DATA',
+    WAIT_FOR_PRODUCT_FOR_UPDATE = 'WAIT_FOR_PRODUCT_FOR_UPDATE',
+    WAIT_FOR_UPDATED_PRODUCT = 'WAIT_FOR_UPDATED_PRODUCT',
+    WAIT_FOR_ADDED_PRODUCT = 'WAIT_FOR_ADDED_PRODUCT',
+    WAIT_FOR_DELETED_PRODUCT = 'WAIT_FOR_DELETED_PRODUCT',
 }
 
 const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
@@ -46,8 +49,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     );
     const { token, roles, userId } = useSelector((state: AppState) => state.userReducer);
 
-    const [successWord, setSuccessWord] = useState<string>('');
-    const [detailedProductForUpdateForm, setDetailedProductForUpdateForm] = useState<DetailedProduct | null>();
+    const [detailedProductForUpdateForm, setDetailedProductForUpdateForm] = useState<ProductWithSupplier | null>();
     const [isUpdateProductFormVisible, setIsUpdateProductFormVisible] = useState<boolean>(false);
     const [isCreateProductFormVisible, setIsCreateProductFormVisible] = useState<boolean>(false);
     const [task, setNextTask] = useTask();
@@ -64,18 +66,31 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const categoriesList: string[] = useMemo(() => ['category1', 'category2', 'category3'], []);
 
     useEffect(() => {
-        if (product && !loading) {
-            enqueueSnackbar(`Product ${product.productName} was successfully ${successWord}!`, {
+        if (task === merchandiseTasks.WAIT_FOR_ADDED_PRODUCT && product && !loading) {
+            enqueueSnackbar(`Product ${product.productName} was successfully added!`, {
                 variant: 'success',
             });
             setIsCreateProductFormVisible(false);
             dispatch(restoreDefaultProductsReducer());
             dispatch(getProducts(defaultPagination, '', userId));
+            setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId, successWord]);
+    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId, task, setNextTask]);
 
     useEffect(() => {
-        if (task === merchandiseTasks.WAIT_FOR_DETAILED_PRODUCT_DATA && !loading) {
+        if (task === merchandiseTasks.WAIT_FOR_DELETED_PRODUCT && product && !loading) {
+            enqueueSnackbar(`Product ${product.productName} was successfully deleted!`, {
+                variant: 'success',
+            });
+            dispatch(restoreDefaultProductsReducer());
+            dispatch(getProducts(defaultPagination, '', userId));
+            setNextTask(DEFAULT_TASK_ABSENT, 0);
+        }
+    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId, task, setNextTask]);
+
+    useEffect(() => {
+        if (task === merchandiseTasks.WAIT_FOR_PRODUCT_FOR_UPDATE && !loading) {
+            console.log(detailedProduct);
             let localDetailedProduct = detailedProduct;
             if (localDetailedProduct) {
                 localDetailedProduct.normalPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
@@ -84,13 +99,26 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 localDetailedProduct.discountPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
                     localDetailedProduct.discountPrices
                 ) as DiscountPrice[];
-
+                console.log(localDetailedProduct);
                 setDetailedProductForUpdateForm(localDetailedProduct);
                 setIsUpdateProductFormVisible(true);
                 setNextTask(DEFAULT_TASK_ABSENT, 0);
             }
         }
     }, [detailedProduct, loading, setNextTask, task]);
+
+    useEffect(() => {
+        if (task === merchandiseTasks.WAIT_FOR_UPDATED_PRODUCT && !loading && product) {
+            enqueueSnackbar(`Product ${product.productName} was successfully updated!`, {
+                variant: 'success',
+            });
+            setIsUpdateProductFormVisible(false);
+            setDetailedProductForUpdateForm(null);
+            dispatch(restoreDefaultProductsReducer());
+            dispatch(getProducts(defaultPagination, '', userId));
+            setNextTask(DEFAULT_TASK_ABSENT, 0);
+        }
+    }, [task, loading, dispatch, defaultPagination, userId, product, enqueueSnackbar, setNextTask]);
 
     useEffect(() => {
         if (errorMessage) {
@@ -119,13 +147,12 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         setIsCreateProductFormVisible(true);
     };
 
-    const handleAddNewProduct = (e: Product) => {
+    const handleAddNewProduct = (e: ProductWithoutId) => {
         const { productName, productDescription, normalPrices, discountPrices, parentProductId, categoriesNames } = e;
         let convertedNormalPrices: NormalPrice[] = [];
         if (normalPrices && normalPrices.length > 0) {
             convertedNormalPrices = converters.convertCountryNamesToLanguageTagsFromPricesArray(normalPrices);
         }
-        setSuccessWord(`added`);
         dispatch(restoreDefaultProductsReducer());
         dispatch(
             newProduct(
@@ -140,11 +167,12 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 token ? token : ''
             )
         );
+        setNextTask(merchandiseTasks.WAIT_FOR_ADDED_PRODUCT, 0);
     };
 
     const removeProduct = (productId: string) => {
-        setSuccessWord(`removed`);
         dispatch(deleteProduct(productId, token ? token : ''));
+        setNextTask(merchandiseTasks.WAIT_FOR_DELETED_PRODUCT, 0);
     };
 
     const goToProduct = (productId: string) => {
@@ -153,10 +181,40 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     const getProductDetails = (productId: string) => {
         dispatch(getDetailedProduct(productId, token ? token : ''));
-        setNextTask(merchandiseTasks.WAIT_FOR_DETAILED_PRODUCT_DATA, 0);
+        setNextTask(merchandiseTasks.WAIT_FOR_PRODUCT_FOR_UPDATE, 0);
     };
 
-    const handleUpdateProduct = (e: Product) => {};
+    const handleUpdateProduct = (e: ProductWithoutId) => {
+        const { productName, productDescription, normalPrices, discountPrices, parentProductId, categoriesNames } = e;
+        let convertedNormalPrices: NormalPrice[] = [];
+        let convertedDiscountPrices: DiscountPrice[] = [];
+        if (normalPrices && normalPrices.length > 0) {
+            convertedNormalPrices = converters.convertCountryNamesToLanguageTagsFromPricesArray(normalPrices);
+        }
+        if (discountPrices && discountPrices.length > 0) {
+            // @ts-ignore
+            convertedDiscountPrices = converters.convertCountryNamesToLanguageTagsFromPricesArray(discountPrices);
+        }
+        dispatch(
+            updateProduct(
+                {
+                    productId: detailedProductForUpdateForm
+                        ? detailedProductForUpdateForm.productId
+                            ? detailedProductForUpdateForm.productId
+                            : ''
+                        : '',
+                    productName: productName,
+                    productDescription: productDescription,
+                    normalPrices: convertedNormalPrices,
+                    discountPrices: convertedDiscountPrices,
+                    parentProductId: parentProductId ? parentProductId : null,
+                    categoriesNames: categoriesNames ? categoriesNames : [],
+                },
+                token ? token : ''
+            )
+        );
+        setNextTask(merchandiseTasks.WAIT_FOR_UPDATED_PRODUCT, 0);
+    };
 
     const handleCancelUpdateProduct = () => {
         setIsUpdateProductFormVisible(false);
@@ -229,7 +287,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 categoriesList={categoriesList}
                 visible={isUpdateProductFormVisible}
                 confirmLoading={loading}
-                success={false}
+                success={success && !!product}
                 onFinish={handleUpdateProduct}
                 onFinishFailed={() => {}}
                 onCancel={handleCancelUpdateProduct}

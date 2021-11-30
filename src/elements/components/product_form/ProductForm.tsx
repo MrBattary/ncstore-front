@@ -10,12 +10,12 @@ import './style.css';
 import { DiscountPrice } from '../../../types/DiscountPrice';
 import { Moment } from 'moment';
 import moment from 'moment/moment';
-import { Product } from '../../../types/Product';
-import { DetailedProduct } from '../../../types/DetailedProduct';
+import { ProductWithoutId } from '../../../types/ProductWithoutId';
+import { ProductWithSupplier } from '../../../types/ProductWithSupplier';
 
 type newProductFormProps = {
     isDiscountForm: boolean;
-    defaultValuesProduct: Product | DetailedProduct | null | undefined;
+    defaultValuesProduct: ProductWithoutId | ProductWithSupplier | null | undefined;
     categoriesList: string[];
     visible: boolean;
     confirmLoading: boolean;
@@ -58,7 +58,6 @@ const ProductForm: React.FC<newProductFormProps> = ({
 
     useEffect(() => {
         if (defaultValuesProduct) {
-            console.log('R');
             form.setFieldsValue({
                 productName: defaultValuesProduct.productName,
                 productDescription: defaultValuesProduct.productDescription,
@@ -75,7 +74,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                 );
             }
         }
-        // DO NOT REMOVE, Calls only once
+        // DO NOT REMOVE
         // eslint-disable-next-line
     }, [defaultValuesProduct]);
 
@@ -300,7 +299,6 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                 rules={[
                                     () => ({
                                         validator(_, value) {
-                                            debugger;
                                             const discountRegion = innerDiscountPricesForm.getFieldValue('region');
                                             let currentNormalPrice = normalPrices.find(
                                                 normalPrice => normalPrice.region === discountRegion
@@ -374,17 +372,21 @@ const ProductForm: React.FC<newProductFormProps> = ({
             >
                 <Form.Item
                     className='form__field'
-                    label='Product name'
+                    label='CreateProduct name'
                     name='productName'
                     rules={[
                         { required: true, message: 'Please enter the product name!' },
                         () => ({
                             validator(_, value) {
                                 if (value.length <= 3) {
-                                    return Promise.reject(new Error('Product name should be more than 3 symbols!'));
+                                    return Promise.reject(
+                                        new Error('CreateProduct name should be more than 3 symbols!')
+                                    );
                                 }
                                 if (value.length >= 255) {
-                                    return Promise.reject(new Error('Product name should be less than 255 symbols!'));
+                                    return Promise.reject(
+                                        new Error('CreateProduct name should be less than 255 symbols!')
+                                    );
                                 }
                                 return Promise.resolve();
                             },
@@ -401,14 +403,14 @@ const ProductForm: React.FC<newProductFormProps> = ({
                 <Form.Item
                     required
                     className='form__field'
-                    label='Product description'
+                    label='CreateProduct description'
                     name='productDescription'
                     rules={[
                         () => ({
                             validator(_, value) {
-                                if (value.length < 50) {
+                                if (value.length <= 50) {
                                     return Promise.reject(
-                                        new Error('Product description should be more than 49 symbols!')
+                                        new Error('CreateProduct description should be more than 50 symbols!')
                                     );
                                 }
                                 return Promise.resolve();

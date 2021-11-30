@@ -2,15 +2,16 @@ import * as types from '../actions/products/productActionTypes';
 import { ProductsList } from '../types/ProductsList';
 import { GetProducts } from '../actions/products/GetProducts';
 import { RestoreDefaultProductsReducer } from '../actions/products/RestoreDefaultProductsReducer';
-import { Product } from '../types/Product';
 import { NewProduct } from '../actions/products/CreateProduct';
 import { GetProduct } from '../actions/products/GetProduct';
-import { DetailedProduct } from '../types/DetailedProduct';
+import { ProductWithSupplier } from '../types/ProductWithSupplier';
 import { DeleteProduct } from '../actions/products/DeleteProduct';
 import { GetDetailedProduct } from '../actions/products/GetDetailedProduct';
+import { Product } from '../types/Product';
+import { UpdateProduct } from '../actions/products/UpdateProduct';
 
 interface ProductsStore {
-    detailedProduct: DetailedProduct | null;
+    detailedProduct: ProductWithSupplier | null;
     product: Product | null;
     products: ProductsList;
     loading: boolean;
@@ -23,6 +24,7 @@ export type ProductsReducerTypes =
     | NewProduct
     | GetProduct
     | GetDetailedProduct
+    | UpdateProduct
     | DeleteProduct
     | RestoreDefaultProductsReducer;
 
@@ -57,6 +59,16 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 errorMessage: null,
             };
         }
+        case types.UPDATE_PRODUCT_REQUEST: {
+            return {
+                ...state,
+                product: null,
+                detailedProduct: null,
+                loading: true,
+                success: false,
+                errorMessage: null,
+            };
+        }
         case types.GET_PRODUCTS_RECEIVE: {
             return {
                 ...state,
@@ -74,6 +86,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 detailedProduct: action.payload ? action.payload : null,
             };
         }
+        case types.UPDATE_PRODUCT_RECEIVE:
         case types.DELETE_PRODUCT_RECEIVE:
         case types.NEW_PRODUCT_RECEIVE: {
             return {
@@ -83,6 +96,7 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 product: action.payload ? action.payload : null,
             };
         }
+        case types.UPDATE_PRODUCT_ERROR:
         case types.DELETE_PRODUCT_ERROR:
         case types.NEW_PRODUCT_ERROR:
         case types.GET_PRODUCT_ERROR:

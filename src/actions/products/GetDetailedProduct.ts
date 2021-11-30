@@ -5,7 +5,7 @@ import {
     GET_DETAILED_PRODUCT_RECEIVE,
     GET_DETAILED_PRODUCT_REQUEST,
 } from './productActionTypes';
-import { DetailedProduct } from '../../types/DetailedProduct';
+import { ProductWithSupplier } from '../../types/ProductWithSupplier';
 import productsApi from '../../api/products';
 
 export type GetDetailedProductRequestAction = {
@@ -13,7 +13,7 @@ export type GetDetailedProductRequestAction = {
 };
 export type GetDetailedProductReceiveAction = {
     type: typeof GET_DETAILED_PRODUCT_RECEIVE;
-    payload: DetailedProduct;
+    payload: ProductWithSupplier;
 };
 export type GetDetailedProductErrorAction = {
     type: typeof GET_DETAILED_PRODUCT_ERROR;

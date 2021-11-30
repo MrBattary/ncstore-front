@@ -2,14 +2,14 @@ import { Dispatch } from 'redux';
 
 import { GET_PRODUCT_ERROR, GET_PRODUCT_RECEIVE, GET_PRODUCT_REQUEST } from './productActionTypes';
 import productsApi from '../../api/products';
-import { DetailedProduct } from '../../types/DetailedProduct';
+import { ProductWithSupplier } from '../../types/ProductWithSupplier';
 
 export type GetProductRequestAction = {
     type: typeof GET_PRODUCT_REQUEST;
 };
 export type GetProductReceiveAction = {
     type: typeof GET_PRODUCT_RECEIVE;
-    payload: DetailedProduct;
+    payload: ProductWithSupplier;
 };
 export type GetProductErrorAction = {
     type: typeof GET_PRODUCT_ERROR;
