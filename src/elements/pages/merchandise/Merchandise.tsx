@@ -25,13 +25,17 @@ import { deleteProduct } from '../../../actions/products/DeleteProduct';
 
 import './style.css';
 import { getDetailedProduct } from '../../../actions/products/GetDetailedProduct';
-import { threads } from '../../../utils/Threads';
 import { DiscountPrice } from '../../../types/DiscountPrice';
 import { DetailedProduct } from '../../../types/DetailedProduct';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 
 type merchandiseProps = {
     history: History;
 };
+
+const enum merchandiseTasks {
+    WAIT_FOR_DETAILED_PRODUCT_DATA = 'WAIT_FOR_DETAILED_PRODUCT_DATA',
+}
 
 const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const dispatch = useDispatch();
@@ -46,6 +50,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const [detailedProductForUpdateForm, setDetailedProductForUpdateForm] = useState<DetailedProduct | null>();
     const [isUpdateProductFormVisible, setIsUpdateProductFormVisible] = useState<boolean>(false);
     const [isCreateProductFormVisible, setIsCreateProductFormVisible] = useState<boolean>(false);
+    const [task, setNextTask] = useTask();
 
     const defaultPagination: Pagination = useMemo(
         () => ({
@@ -68,6 +73,24 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             dispatch(getProducts(defaultPagination, '', userId));
         }
     }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId, successWord]);
+
+    useEffect(() => {
+        if (task === merchandiseTasks.WAIT_FOR_DETAILED_PRODUCT_DATA && !loading) {
+            let localDetailedProduct = detailedProduct;
+            if (localDetailedProduct) {
+                localDetailedProduct.normalPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
+                    localDetailedProduct.normalPrices
+                );
+                localDetailedProduct.discountPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
+                    localDetailedProduct.discountPrices
+                ) as DiscountPrice[];
+
+                setDetailedProductForUpdateForm(localDetailedProduct);
+                setIsUpdateProductFormVisible(true);
+                setNextTask(DEFAULT_TASK_ABSENT, 0);
+            }
+        }
+    }, [detailedProduct, loading, setNextTask, task]);
 
     useEffect(() => {
         if (errorMessage) {
@@ -130,18 +153,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     const getProductDetails = (productId: string) => {
         dispatch(getDetailedProduct(productId, token ? token : ''));
-        let localDetailedProduct = detailedProduct;
-        if (localDetailedProduct) {
-            localDetailedProduct.normalPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
-                localDetailedProduct.normalPrices
-            );
-            localDetailedProduct.discountPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
-                localDetailedProduct.discountPrices
-            ) as DiscountPrice[];
-
-            setDetailedProductForUpdateForm(localDetailedProduct);
-            setIsUpdateProductFormVisible(true);
-        }
+        setNextTask(merchandiseTasks.WAIT_FOR_DETAILED_PRODUCT_DATA, 0);
     };
 
     const handleUpdateProduct = (e: Product) => {};
