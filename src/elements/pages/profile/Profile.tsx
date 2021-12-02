@@ -13,6 +13,7 @@ import {UserType} from '../../../types/UserType';
 import GeneralProfile from "../../components/profiles/GeneralProfile";
 import UserProfileBalance from "../../components/profiles/UserProfileBalance";
 import ProfileChangePassword from "../../components/profiles/ProfileChangePassword";
+import {changePassword} from "../../../actions/users/PasswordChange";
 
 type profileProps = {
     history: History;
@@ -57,8 +58,16 @@ const Profile: React.FC<profileProps> = ({history}) => {
 
     }
 
-    const handleProfileChange = (e: any) => {
-
+    const handlePasswordChange = (e: any) => {
+        if (e.outOfDate !== false) {
+            const {oldPassword, newPassword} = e;
+            dispatch(changePassword({
+                    oldPassword,
+                    newPassword
+                }, token ? token : '')
+            );
+            history.push("/signin")
+        }
     }
 
 
@@ -66,8 +75,11 @@ const Profile: React.FC<profileProps> = ({history}) => {
         <Container>
             <Stack>
                 <GeneralProfile history={history} profile={profile}/>
-                <UserProfileBalance balance={profile.balance} balanceCurrency="$" loading={loading} onFinish={handleBalanceAdd} onFinishFailed={() => {}}/>
-                <ProfileChangePassword loading={loading} onFinish={handleProfileChange} onFinishFailed={() => {}}/>
+                <UserProfileBalance balance={profile.balance} balanceCurrency="$" loading={loading}
+                                    onFinish={handleBalanceAdd} onFinishFailed={() => {
+                }}/>
+                <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {
+                }}/>
             </Stack>
         </Container>
     );

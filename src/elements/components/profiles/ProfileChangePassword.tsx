@@ -27,11 +27,16 @@ const ProfileChangePassword: React.FC<profileProps> = ({ loading, onFinish, onFi
                 }}>
                     <Stack spacing={2}>
                         <Typography align="center" variant="h4">Change password</Typography>
-                        <Form>
+                        <Form
+                            layout='vertical'
+                            size='large'
+                            onFinish={onFinish}
+                            onFinishFailed={onFinishFailed}
+                        >
                             <Form.Item
                                 className='sign-up__field'
                                 label='Old password'
-                                name='password-old'
+                                name='oldPassword'
                                 rules={[
                                     {required: true, message: 'Please input your old password!'},
                                 ]}
@@ -40,7 +45,7 @@ const ProfileChangePassword: React.FC<profileProps> = ({ loading, onFinish, onFi
                             </Form.Item>
                             <Form.Item
                                 label='New password'
-                                name='password-new'
+                                name='newPassword'
                                 rules={[
                                     {required: true, message: 'Please input your new password!'},
                                     {min: 8, message: 'Password must be minimum 8 characters!'},
@@ -50,13 +55,13 @@ const ProfileChangePassword: React.FC<profileProps> = ({ loading, onFinish, onFi
                             </Form.Item>
                             <Form.Item
                                 label='Confirm new Password'
-                                name='password-new-confirm'
-                                dependencies={['password-new']}
+                                name='passwordNewConfirm'
+                                dependencies={['newPassword']}
                                 rules={[
                                     {required: true, message: 'Please confirm your new password!'},
                                     ({getFieldValue}) => ({
                                         validator(_, value) {
-                                            if (!value || getFieldValue('password-new') === value) {
+                                            if (!value || getFieldValue('newPassword') === value) {
                                                 return Promise.resolve();
                                             }
                                             return Promise.reject(new Error('The two passwords that you entered do not match!'));

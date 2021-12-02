@@ -12,3 +12,7 @@ export const signInSubUrl = '/signin';
 
 export const personInfoSubUrl = '/person/info';
 export const companyInfoSubUrl = '/company/info';
+
+/* User */
+export const changePasswordSubUrl = '/user/password';
+export const addBalanceSubUrl = '/user/balance';

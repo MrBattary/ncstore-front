@@ -9,6 +9,7 @@ import { GetPersonProfile } from '../actions/users/GetPersonProfile';
 import { GetCompanyProfile } from '../actions/users/GetCompanyProfile';
 import { PersonProfile } from '../types/PersonProfile';
 import { CompanyProfile } from '../types/CompanyProfile';
+import {ChangePassword} from "../actions/users/PasswordChange";
 
 interface UserStore {
     userId: string | null;
@@ -27,7 +28,8 @@ export type UserReducerTypes =
     | SignOut
     | GetPersonProfile
     | GetCompanyProfile
-    | RestoreDefaultUserReducer;
+    | RestoreDefaultUserReducer
+    | ChangePassword;
 
 const initialState: UserStore = {
     userId: null,
@@ -102,7 +104,8 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.SIGN_IN_ERROR:
         case types.SIGN_UP_ERROR:
         case types.GET_PERSON_PROFILE_ERROR:
-        case types.GET_COMPANY_PROFILE_ERROR: {
+        case types.GET_COMPANY_PROFILE_ERROR:
+        case types.CHANGE_USER_PASSWORD_ERROR: {
             return {
                 ...state,
                 loading: false,
@@ -115,6 +118,24 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 ...state,
                 success: false,
                 errorMessage: null,
+            };
+        }
+        case types.CHANGE_USER_PASSWORD_REQUEST:{
+            return {
+                ...state,
+                loading: true,
+                success: false,
+                errorMessage: null,
+            };
+        }
+        case types.CHANGE_USER_PASSWORD_RECEIVE:{
+            return {
+                ...state,
+                userType: null,
+                token: null,
+                roles: [],
+                loading: false,
+                success: true,
             };
         }
         default:
