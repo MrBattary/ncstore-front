@@ -89,7 +89,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
     }, [success, form, countryNames]);
 
     const normalPricesTableColumns = [
-        { title: 'Country', key: 'region', dataIndex: 'region' },
+        { title: 'Country', rowKey: 'region', dataIndex: 'region' },
         {
             title: 'Price',
             key: 'price',
@@ -114,7 +114,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
     ];
 
     const discountPricesTableColumns = [
-        { title: 'Country', key: 'region', dataIndex: 'region' },
+        { title: 'Country', key: 'rowKey', dataIndex: 'region' },
         {
             title: 'Price',
             key: 'price',
@@ -372,7 +372,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
             >
                 <Form.Item
                     className='form__field'
-                    label='CreateProduct name'
+                    label='Product name'
                     name='productName'
                     rules={[
                         { required: true, message: 'Please enter the product name!' },
@@ -403,7 +403,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                 <Form.Item
                     required
                     className='form__field'
-                    label='CreateProduct description'
+                    label='Product description'
                     name='productDescription'
                     rules={[
                         () => ({

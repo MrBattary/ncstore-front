@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../reducers/rootReducer';
-import { getProduct } from '../../../actions/products/GetProduct';
+import { getProductForSale } from '../../../actions/products/GetProduct';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { Box, ButtonGroup, Container, Paper, Typography } from '@mui/material';
-
-import './style.css';
 import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
+
+import './style.css';
 
 type productProps = {
     history: History;
@@ -20,7 +20,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { detailedProduct, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { productForSale, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
     useEffect(() => {
         if (errorMessage) {
@@ -31,7 +31,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     useEffect(() => {
         // /products/[fcfc45e7-47a2-45d5-86b7-cfcdf24a8016] - retrieves uuid
         dispatch(restoreDefaultProductsReducer());
-        dispatch(getProduct(window.location.pathname.substr(10)));
+        dispatch(getProductForSale(window.location.pathname.substr(10)));
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);
@@ -53,35 +53,44 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const renderProductPrice = () => {
-        if (!detailedProduct?.discountPrices.length) {
-            return (
-                <Stack direction='row'>
-                    <Typography variant='h4' color='text.secondary'>
-                        {detailedProduct?.normalPrices[0].price.toString()}
-                    </Typography>
-                </Stack>
-            );
-        } else {
-            return (
-                <Stack spacing={1} direction='row'>
-                    <Typography variant='h4' color='text.secondary'>
-                        {detailedProduct?.discountPrices[0].price.toString()}
-                    </Typography>
-                    <Typography
-                        sx={{ textDecoration: 'line-through', opacity: 0.5 }}
-                        variant='h4'
-                        color='text.secondary'
-                    >
-                        {detailedProduct?.normalPrices[0].price.toString()}
-                    </Typography>
-                </Stack>
-            );
+        if (productForSale) {
+            if (!productForSale.discountPrice) {
+                return (
+                    <Stack direction='row'>
+                        <Typography variant='h4' color='text.secondary'>
+                            {productForSale.normalPrice.toString().concat(productForSale.priceCurrency)}
+                        </Typography>
+                    </Stack>
+                );
+            } else {
+                return (
+                    <Stack spacing={1} direction='row'>
+                        <Typography variant='h4' color='text.secondary'>
+                            {productForSale.discountPrice.toString().concat(productForSale.priceCurrency)}
+                        </Typography>
+                        <Typography
+                            sx={{ textDecoration: 'line-through', opacity: 0.5 }}
+                            variant='h4'
+                            color='text.secondary'
+                        >
+                            {productForSale.normalPrice.toString().concat(productForSale.priceCurrency)}
+                        </Typography>
+                        <Typography bgcolor='#8cc44b' variant='h4' color='text.primary' paddingX={0.4}>
+                            {Math.round((1 - productForSale.discountPrice / productForSale.normalPrice) * -100)
+                                .toString()
+                                .concat('%')}
+                        </Typography>
+                    </Stack>
+                );
+            }
         }
     };
 
     const renderCategoriesButtons = () =>
-        detailedProduct?.categoriesNames.map((categoryName: string) => (
-            <Button onClick={() => goToCategory(categoryName)}>{categoryName}</Button>
+        productForSale?.categoriesNames.map((categoryName: string) => (
+            <Button key={categoryName} onClick={() => goToCategory(categoryName)}>
+                {categoryName}
+            </Button>
         ));
 
     const renderProductData = () => {
@@ -100,20 +109,21 @@ const Product: React.FC<productProps> = ({ history }) => {
                             <img
                                 className='product-header__image'
                                 src='/default-product-image.jpg'
-                                alt={`product ${detailedProduct?.productName}`}
+                                alt={`product ${productForSale?.productName}`}
                             />
                             <div className='product-header__fields'>
                                 <div className='fields__name-company'>
-                                    <Typography variant='h3' style={{ marginTop: 1 }}>
-                                        {detailedProduct?.productName}
+                                    <Typography variant='h4' component='p' style={{ marginTop: 1 }}>
+                                        {productForSale?.productName}
                                     </Typography>
                                     <Link
-                                        variant='h4'
-                                        underline='none'
+                                        variant='h5'
+                                        underline='hover'
+                                        component='p'
                                         style={{ marginBottom: 2 }}
-                                        onClick={() => goToSupplierPage(detailedProduct?.supplierId)}
+                                        onClick={() => goToSupplierPage(productForSale?.supplierId)}
                                     >
-                                        {detailedProduct?.supplierName}
+                                        {productForSale?.supplierName}
                                     </Link>
                                 </div>
                                 {renderProductPrice()}
@@ -133,7 +143,7 @@ const Product: React.FC<productProps> = ({ history }) => {
                                     Product description:
                                 </Typography>
                                 <Typography variant={'body2'} style={{ marginBottom: 1 }}>
-                                    {detailedProduct?.productDescription}
+                                    {productForSale?.productDescription}
                                 </Typography>
                             </div>
                             <ButtonGroup variant='text'>{renderCategoriesButtons()}</ButtonGroup>
@@ -155,7 +165,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const renderProductContent = () => {
-        if (detailedProduct) {
+        if (productForSale) {
             return renderProductData();
         } else {
             return renderProductNotFound();

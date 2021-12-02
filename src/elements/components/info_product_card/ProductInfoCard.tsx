@@ -36,10 +36,10 @@ const ProductInfoCard: React.FC<productInfoCardProps> = ({ productId, productNam
                 <CardActionArea onClick={onClick}>
                     <CardContent>
                         <Typography gutterBottom component='div'>
-                            Product name: {productName}
+                            {productName}
                         </Typography>
                         <Typography gutterBottom component='div'>
-                            ID: {productId}
+                            Product ID: {productId}
                         </Typography>
                     </CardContent>
                 </CardActionArea>

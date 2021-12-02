@@ -9,9 +9,11 @@ import { DeleteProduct } from '../actions/products/DeleteProduct';
 import { GetDetailedProduct } from '../actions/products/GetDetailedProduct';
 import { Product } from '../types/Product';
 import { UpdateProduct } from '../actions/products/UpdateProduct';
+import { ProductForSale } from '../types/ProductForSale';
 
 interface ProductsStore {
     detailedProduct: ProductWithSupplier | null;
+    productForSale: ProductForSale | null;
     product: Product | null;
     products: ProductsList;
     loading: boolean;
@@ -30,6 +32,7 @@ export type ProductsReducerTypes =
 
 const initialState: ProductsStore = {
     detailedProduct: null,
+    productForSale: null,
     product: null,
     products: [],
     loading: false,
@@ -77,13 +80,20 @@ export const productsReducer = (state = initialState, action: ProductsReducerTyp
                 products: action.payload ? action.payload : [],
             };
         }
-        case types.GET_DETAILED_PRODUCT_RECEIVE:
-        case types.GET_PRODUCT_RECEIVE: {
+        case types.GET_DETAILED_PRODUCT_RECEIVE: {
             return {
                 ...state,
                 loading: false,
                 success: true,
                 detailedProduct: action.payload ? action.payload : null,
+            };
+        }
+        case types.GET_PRODUCT_RECEIVE: {
+            return {
+                ...state,
+                loading: false,
+                success: true,
+                productForSale: action.payload ? action.payload : null,
             };
         }
         case types.UPDATE_PRODUCT_RECEIVE:

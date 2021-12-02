@@ -90,7 +90,6 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     useEffect(() => {
         if (task === merchandiseTasks.WAIT_FOR_PRODUCT_FOR_UPDATE && !loading) {
-            console.log(detailedProduct);
             let localDetailedProduct = detailedProduct;
             if (localDetailedProduct) {
                 localDetailedProduct.normalPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
@@ -99,7 +98,6 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 localDetailedProduct.discountPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
                     localDetailedProduct.discountPrices
                 ) as DiscountPrice[];
-                console.log(localDetailedProduct);
                 setDetailedProductForUpdateForm(localDetailedProduct);
                 setIsUpdateProductFormVisible(true);
                 setNextTask(DEFAULT_TASK_ABSENT, 0);

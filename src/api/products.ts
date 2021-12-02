@@ -7,6 +7,7 @@ import headers from '../fetcher/headers';
 import { ProductWithoutId } from '../types/ProductWithoutId';
 import { ProductWithSupplier } from '../types/ProductWithSupplier';
 import { Product } from '../types/Product';
+import { ProductForSale } from '../types/ProductForSale';
 
 const getProducts = (pagination: Pagination, searchText: string | null, supplierId: string | null) =>
     getHTTP<ProductsList>(
@@ -30,8 +31,8 @@ const newProduct = (product: ProductWithoutId, token: string) =>
         product
     );
 
-const getProduct = (productId: string) =>
-    getHTTP<ProductWithSupplier>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderAcceptJson());
+const getProductForSale = (productId: string) =>
+    getHTTP<ProductForSale>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderAcceptJson());
 
 const getDetailedProduct = (productId: string, token: string) =>
     getHTTP<ProductWithSupplier>(
@@ -52,7 +53,7 @@ const deleteProduct = (productId: string, token: string) =>
 const productsApi = {
     getProducts,
     newProduct,
-    getProduct,
+    getProductForSale,
     getDetailedProduct,
     updateProduct,
     deleteProduct,

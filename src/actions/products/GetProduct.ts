@@ -2,14 +2,14 @@ import { Dispatch } from 'redux';
 
 import { GET_PRODUCT_ERROR, GET_PRODUCT_RECEIVE, GET_PRODUCT_REQUEST } from './productActionTypes';
 import productsApi from '../../api/products';
-import { ProductWithSupplier } from '../../types/ProductWithSupplier';
+import { ProductForSale } from '../../types/ProductForSale';
 
 export type GetProductRequestAction = {
     type: typeof GET_PRODUCT_REQUEST;
 };
 export type GetProductReceiveAction = {
     type: typeof GET_PRODUCT_RECEIVE;
-    payload: ProductWithSupplier;
+    payload: ProductForSale;
 };
 export type GetProductErrorAction = {
     type: typeof GET_PRODUCT_ERROR;
@@ -18,10 +18,10 @@ export type GetProductErrorAction = {
 
 export type GetProduct = GetProductRequestAction | GetProductReceiveAction | GetProductErrorAction;
 
-export const getProduct = (productId: string) => async (dispatch: Dispatch<GetProduct>) => {
+export const getProductForSale = (productId: string) => async (dispatch: Dispatch<GetProduct>) => {
     dispatch({ type: GET_PRODUCT_REQUEST });
     try {
-        const data = await productsApi.getProduct(productId);
+        const data = await productsApi.getProductForSale(productId);
         dispatch({ type: GET_PRODUCT_RECEIVE, payload: data });
     } catch (e) {
         if (e instanceof Error) {
