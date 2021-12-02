@@ -22,7 +22,13 @@ type profileProps = {
 const Profile: React.FC<profileProps> = ({history}) => {
     const {enqueueSnackbar} = useSnackbar();
     const dispatch = useDispatch();
-    const {token, userType, profile, loading, errorMessage} = useSelector((state: AppState) => state.userReducer);
+    const {
+        token,
+        userType,
+        profile,
+        loading,
+        errorMessage,
+    } = useSelector((state: AppState) => state.userReducer);
 
     useEffect(() => {
         if (errorMessage) {
@@ -66,7 +72,6 @@ const Profile: React.FC<profileProps> = ({history}) => {
                     newPassword
                 }, token ? token : '')
             );
-            history.push("/signin")
         }
     }
 

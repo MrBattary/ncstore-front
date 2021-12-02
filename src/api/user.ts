@@ -8,7 +8,7 @@ import {EmptyType} from "../types/EmptyType";
 const changePassword = (changePasswordDetails: ChangePasswordDetails, token : string) =>
     postHTTP<EmptyType>(
         combineUrls([coreUrl, changePasswordSubUrl]),
-        headers.buildHeaderTokenContentJsonAcceptJson(token),
+        headers.buildHeaderTokenContentJson(token),
         changePasswordDetails
     );
 
