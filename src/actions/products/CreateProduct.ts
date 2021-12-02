@@ -1,8 +1,9 @@
 import { Dispatch } from 'redux';
 
 import { NEW_PRODUCT_ERROR, NEW_PRODUCT_RECEIVE, NEW_PRODUCT_REQUEST } from './productActionTypes';
-import { Product } from '../../types/Product';
+import { ProductWithoutId } from '../../types/ProductWithoutId';
 import productsApi from '../../api/products';
+import { Product } from '../../types/Product';
 
 export type NewProductRequest = {
     type: typeof NEW_PRODUCT_REQUEST;
@@ -18,7 +19,7 @@ export type NewProductError = {
 
 export type NewProduct = NewProductRequest | NewProductReceive | NewProductError;
 
-export const newProduct = (product: Product, token: string) => async (dispatch: Dispatch<NewProduct>) => {
+export const newProduct = (product: ProductWithoutId, token: string) => async (dispatch: Dispatch<NewProduct>) => {
     dispatch({ type: NEW_PRODUCT_REQUEST });
     try {
         const data = await productsApi.newProduct(product, token);

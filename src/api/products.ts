@@ -1,10 +1,13 @@
 import { Pagination } from '../types/Pagination';
-import { getHTTP, postHTTP } from '../fetcher/fetcher';
+import { deleteHTTP, getHTTP, postHTTP, putHTTP } from '../fetcher/fetcher';
 import { buildQueryFromObject, combineUrls } from './utilities';
-import { coreUrl, productsSubUrl } from './urls';
+import { coreUrl, productDetailedSubUrl, productsSubUrl, productSubUrl } from './urls';
 import { ProductsList } from '../types/ProductsList';
 import headers from '../fetcher/headers';
+import { ProductWithoutId } from '../types/ProductWithoutId';
+import { ProductWithSupplier } from '../types/ProductWithSupplier';
 import { Product } from '../types/Product';
+import { ProductForSale } from '../types/ProductForSale';
 
 const getProducts = (pagination: Pagination, searchText: string | null, supplierId: string | null) =>
     getHTTP<ProductsList>(
@@ -21,16 +24,39 @@ const getProducts = (pagination: Pagination, searchText: string | null, supplier
         headers.buildHeaderAcceptJson()
     );
 
-const newProduct = (product: Product, token: string) =>
+const newProduct = (product: ProductWithoutId, token: string) =>
     postHTTP<Product>(
         combineUrls([coreUrl, productsSubUrl]),
         headers.buildHeaderTokenContentJsonAcceptJson(token),
         product
     );
 
+const getProductForSale = (productId: string) =>
+    getHTTP<ProductForSale>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderAcceptJson());
+
+const getDetailedProduct = (productId: string, token: string) =>
+    getHTTP<ProductWithSupplier>(
+        combineUrls([coreUrl, productSubUrl, productId, productDetailedSubUrl]),
+        headers.buildHeaderTokenAcceptJson(token)
+    );
+
+const updateProduct = (product: Product, token: string) =>
+    putHTTP<Product>(
+        combineUrls([coreUrl, productSubUrl, product.productId]),
+        headers.buildHeaderTokenContentJsonAcceptJson(token),
+        product
+    );
+
+const deleteProduct = (productId: string, token: string) =>
+    deleteHTTP<Product>(combineUrls([coreUrl, productSubUrl, productId]), headers.buildHeaderTokenAcceptJson(token));
+
 const productsApi = {
     getProducts,
     newProduct,
+    getProductForSale,
+    getDetailedProduct,
+    updateProduct,
+    deleteProduct,
 };
 
 export default productsApi;

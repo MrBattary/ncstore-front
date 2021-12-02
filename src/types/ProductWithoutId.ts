@@ -1,8 +1,7 @@
 import { NormalPrice } from './NormalPrice';
 import { DiscountPrice } from './DiscountPrice';
 
-export type Product = {
-    productId: string;
+export type ProductWithoutId = {
     productName: string;
     productDescription: string | null;
     normalPrices: Array<NormalPrice>;
