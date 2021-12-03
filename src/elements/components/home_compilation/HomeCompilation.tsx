@@ -3,7 +3,7 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 
 import {ProductFromList} from "../../../types/ProductsList";
-import {Stack} from "@mui/material";
+import {Paper, Stack} from "@mui/material";
 import ProductCard from "../product_card/ProductCard";
 import {useSelector} from "react-redux";
 import {AppState} from "../../../reducers/rootReducer";
@@ -55,12 +55,12 @@ const HomeCompilation: React.FC<homeCompilationProps> = ({compilationName}) => {
 
 
     return (
-        <>
+        <Paper elevation={5} sx={{padding:3}}>
             <Typography variant="h3">
                 {compilationName}
             </Typography>
             {renderCompilation()}
-        </>
+        </Paper>
     );
 };
 

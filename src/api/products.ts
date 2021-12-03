@@ -10,7 +10,7 @@ import { Product } from '../types/Product';
 import {SortOrder, SortRule} from "../types/SortEnum";
 import { ProductForSale } from '../types/ProductForSale';
 
-const getProducts = (pagination: Pagination, searchText: string | null, supplierId: string | null, sortRule:SortRule | null, sortOrder: SortOrder | null) =>
+const getProducts = (pagination: Pagination, searchText: string | null, supplierId: string | null, sort:SortRule | null, sortOrder: SortOrder | null) =>
     getHTTP<ProductsList>(
         combineUrls([
             coreUrl,
@@ -22,7 +22,7 @@ const getProducts = (pagination: Pagination, searchText: string | null, supplier
             '&',
             buildQueryFromObject(pagination),
             '&',
-            buildQueryFromObject({sortRule}),
+            buildQueryFromObject({sort}),
             '&',
             buildQueryFromObject({sortOrder})
         ]),
