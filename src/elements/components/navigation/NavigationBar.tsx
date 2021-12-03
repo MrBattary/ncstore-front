@@ -60,7 +60,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
     };
 
     const handleOpenCart = () => {
-        // TODO: Go to the cart tab
+        history.push('/cart');
     };
 
     const handleOpenFavorite = () => {

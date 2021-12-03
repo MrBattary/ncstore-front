@@ -12,6 +12,7 @@ import Stack from '@mui/material/Stack';
 import './style.css';
 
 type productCardProps = {
+    isDisplayButtons: boolean;
     productName: string;
     normalPrice: number;
     discountPrice: number | null;
@@ -22,6 +23,7 @@ type productCardProps = {
 };
 
 const ProductCard: React.FC<productCardProps> = ({
+    isDisplayButtons,
     productName,
     normalPrice,
     discountPrice,
@@ -73,6 +75,21 @@ const ProductCard: React.FC<productCardProps> = ({
         }
     };
 
+    const renderButtons = () => {
+        if (isDisplayButtons) {
+            return (
+                <CardActions>
+                    <Button size='small' onClick={onBuy}>
+                        Buy now
+                    </Button>
+                    <Button size='small' onClick={onAddToCart}>
+                        Add to cart
+                    </Button>
+                </CardActions>
+            );
+        }
+    };
+
     return (
         <Card sx={{ minWidth: 200, width: 300, margin: 1 }}>
             <CardActionArea onClick={goToProduct}>
@@ -91,14 +108,7 @@ const ProductCard: React.FC<productCardProps> = ({
                     {renderPrice()}
                 </CardContent>
             </CardActionArea>
-            <CardActions>
-                <Button size='small' onClick={onBuy}>
-                    Buy now
-                </Button>
-                <Button size='small' onClick={onAddToCart}>
-                    Add to cart
-                </Button>
-            </CardActions>
+            {renderButtons()}
         </Card>
     );
 };
