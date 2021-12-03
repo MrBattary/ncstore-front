@@ -1,8 +1,9 @@
 import { NormalPrice } from '../types/NormalPrice';
 import countries from 'countries-list';
+import { DiscountPrice } from '../types/DiscountPrice';
 
-const convertCountryNamesToLanguageTagFromNormalPrices = (normalPrices: NormalPrice[]) => {
-    let nameTagNormalPrices = new Array<NormalPrice>();
+const convertCountryNamesToLanguageTagsFromPricesArray = (prices: NormalPrice[] | DiscountPrice[]) => {
+    let nameTagPrices = new Array<NormalPrice | DiscountPrice>();
     const countryCodes = Object.keys(countries.countries);
     const nameTagMap = new Map();
 
@@ -13,13 +14,57 @@ const convertCountryNamesToLanguageTagFromNormalPrices = (normalPrices: NormalPr
         nameTagMap.set(countries.countries[code].name, tag);
     });
 
-    normalPrices.forEach(normalPrice => {
-        nameTagNormalPrices.push({ price: normalPrice.price, region: nameTagMap.get(normalPrice.region) });
+    prices.forEach((price: NormalPrice | DiscountPrice) => {
+        // @ts-ignore
+        if (price.startUtcTime && price.endUtcTime) {
+            nameTagPrices.push({
+                price: price.price,
+                region: nameTagMap.get(price.region),
+                // @ts-ignore
+                startUtcTime: price.startUtcTime,
+                // @ts-ignore
+                endUtcTime: price.endUtcTime,
+            });
+        } else {
+            nameTagPrices.push({ price: price.price, region: nameTagMap.get(price.region) });
+        }
     });
 
-    return nameTagNormalPrices;
+    return nameTagPrices;
+};
+
+const convertLanguageTagsToCountryNamesFromPricesArray = (normalPrices: NormalPrice[] | DiscountPrice[]) => {
+    let nameCountryPrices = new Array<NormalPrice | DiscountPrice>();
+    const countryCodes = Object.keys(countries.countries);
+    const tagNameMap = new Map();
+
+    countryCodes.forEach(code => {
+        // @ts-ignore
+        const tag = `${countries.countries[code].languages[0]}_${code}`;
+        // @ts-ignore
+        tagNameMap.set(tag, countries.countries[code].name);
+    });
+
+    normalPrices.forEach((price: NormalPrice | DiscountPrice) => {
+        // @ts-ignore
+        if (price.startUtcTime && price.endUtcTime) {
+            nameCountryPrices.push({
+                price: price.price,
+                region: tagNameMap.get(price.region),
+                // @ts-ignore
+                startUtcTime: price.startUtcTime,
+                // @ts-ignore
+                endUtcTime: price.endUtcTime,
+            });
+        } else {
+            nameCountryPrices.push({ price: price.price, region: tagNameMap.get(price.region) });
+        }
+    });
+
+    return nameCountryPrices;
 };
 
 export const converters = {
-    convertCountryNamesToLanguageTagFromNormalPrices,
+    convertCountryNamesToLanguageTagsFromPricesArray,
+    convertLanguageTagsToCountryNamesFromPricesArray,
 };

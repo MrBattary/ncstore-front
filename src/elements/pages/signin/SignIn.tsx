@@ -49,7 +49,7 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
     };
 
     return (
-        <Container>
+        <Container style={{ minHeight: '100vh' }}>
             <Paper>
                 <Box
                     sx={{

@@ -7,3 +7,7 @@
     width: 100%;
     max-width: 46%;
 }
+
+.inner-form__time-picker {
+    width: 100%;
+}
