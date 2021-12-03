@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 
-import {Box, Stack, Typography} from '@mui/material';
+import {Box, Stack} from '@mui/material';
 import './style.css';
 import HomeCompilation from "../../components/home_compilation/HomeCompilation";
 import {getProducts} from "../../../actions/products/GetProducts";
@@ -10,6 +10,7 @@ import {SortOrder, SortRule} from "../../../types/SortEnum";
 import useTask, {DEFAULT_TASK_ABSENT} from "../../../utils/TaskHook";
 import {ProductFromList, ProductsList} from "../../../types/ProductsList";
 import {AppState} from "../../../reducers/rootReducer";
+import CardMedia from "@mui/material/CardMedia";
 
 
 type homeProps = {};
@@ -122,13 +123,18 @@ const Home: React.FC<homeProps> = () => {
 
     return (
         <Box sx={{
-            marginTop: 20,
+            marginTop: 15,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-            <Typography variant='h1'>NCStore</Typography>
-            <Stack spacing={10} sx={{marginTop: 10}}>
+            <CardMedia
+                component='img'
+                height='300'
+                image='Home-Banner.jpg'
+                alt={`NCStore`}
+            />
+            <Stack spacing={10} sx={{marginTop: 15}}>
                 {!discountProducts ? null : renderBestDiscount()}
                 {!newProducts ? null : renderNewest()}
                 {!freeProducts ? null : renderFree()}
