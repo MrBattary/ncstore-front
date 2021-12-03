@@ -1,61 +1,121 @@
-import React from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 
 import {Box, Stack, Typography} from '@mui/material';
 import './style.css';
 import HomeCompilation from "../../components/home_compilation/HomeCompilation";
 import {getProducts} from "../../../actions/products/GetProducts";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Pagination} from '../../../types/Pagination';
 import {SortOrder, SortRule} from "../../../types/SortEnum";
+import useTask, {DEFAULT_TASK_ABSENT} from "../../../utils/TaskHook";
+import {ProductFromList, ProductsList} from "../../../types/ProductsList";
+import {AppState} from "../../../reducers/rootReducer";
 
 
 type homeProps = {};
 
-/*const enum homeTasks {
-    WAIT_FOR_PRODUCTS_TO_LOAD = 'WAIT_FOR_PRODUCT_TO_LOAD',
-}*/
+const enum homeTasks {
+    WAIT_FOR_DISCOUNT_PRODUCTS_TO_LOAD = 'WAIT_FOR_DISCOUNT_PRODUCT_TO_LOAD',
+    WAIT_FOR_NEW_PRODUCTS_TO_LOAD = 'WAIT_FOR_NEW_PRODUCT_TO_LOAD',
+    WAIT_FOR_FREE_PRODUCTS_TO_LOAD = 'WAIT_FOR_FREE_PRODUCT_TO_LOAD',
+    WAIT_FOR_YOU_PRODUCTS_TO_LOAD = 'WAIT_FOR_YOU_PRODUCT_TO_LOAD',
+}
 
 const Home: React.FC<homeProps> = () => {
     const dispatch = useDispatch();
-    //const [task, setNextTask] = useTask();
+    const [task, setNextTask] = useTask();
 
-    const defaultPagination: Pagination = {
-        page: 0,
-        size: 6,
-    };
+    const {products, success} = useSelector(
+        (state: AppState) => state.productsReducer
+    );
+
+    const [discountProducts, setDiscountProducts] = useState<ProductsList | null>(null);
+    const [newProducts, setNewProducts] = useState<ProductsList | null>(null);
+    const [freeProducts, setFreeProducts] = useState<ProductsList | null>(null);
+    const [forYouProducts, setForYouProducts] = useState<ProductsList | null>(null);
+
+    const defaultPagination: Pagination = useMemo(
+        () => ({
+            page: 0,
+            size: 6,
+        }),
+        []
+    );
+
+    useEffect(() => {
+        if (task === homeTasks.WAIT_FOR_YOU_PRODUCTS_TO_LOAD && success) {
+            if (products) {
+                setForYouProducts(products.slice());
+                setNextTask(DEFAULT_TASK_ABSENT, 0);
+            }
+        }
+    }, [products, success, setNextTask, task, defaultPagination, dispatch]);
+
+    useEffect(() => {
+        if (task === homeTasks.WAIT_FOR_FREE_PRODUCTS_TO_LOAD && success) {
+            if (products) {
+                setFreeProducts(products.filter((product: ProductFromList) => (product.normalPrice===0 || product.discountPrice===0)).slice());
+                dispatch(getProducts(defaultPagination, '', null, SortRule.DEFAULT, SortOrder.RAND));
+                setNextTask(homeTasks.WAIT_FOR_YOU_PRODUCTS_TO_LOAD, 0);
+            }
+        }
+    }, [products, success, setNextTask, task, defaultPagination, dispatch]);
+
+    useEffect(() => {
+        if (task === homeTasks.WAIT_FOR_NEW_PRODUCTS_TO_LOAD && success) {
+            if (products) {
+                setNewProducts(products.slice());
+                dispatch(getProducts(defaultPagination, '', null, SortRule.PRICE, SortOrder.ASC));
+                setNextTask(homeTasks.WAIT_FOR_FREE_PRODUCTS_TO_LOAD, 0);
+            }
+        }
+    }, [products, success, setNextTask, task, defaultPagination, dispatch]);
+
+    useEffect(() => {
+        if (task === homeTasks.WAIT_FOR_DISCOUNT_PRODUCTS_TO_LOAD && success) {
+            if (products) {
+                setDiscountProducts(products.slice());
+                dispatch(getProducts(defaultPagination, '', null, SortRule.DATE, SortOrder.ASC));
+                setNextTask(homeTasks.WAIT_FOR_NEW_PRODUCTS_TO_LOAD, 0);
+            }
+        }
+    }, [products, success, setNextTask, task, defaultPagination, dispatch]);
+
+    useEffect(() => {
+        dispatch(getProducts(defaultPagination, '', null, SortRule.DISCOUNT, SortOrder.DESC));
+        setNextTask(homeTasks.WAIT_FOR_DISCOUNT_PRODUCTS_TO_LOAD, 0);
+        // DO NOT REMOVE, Calls only once
+        // eslint-disable-next-line
+    }, []);
 
     const renderBestDiscount = () => {
-        dispatch(getProducts(defaultPagination, "", null, SortRule.DISCOUNT, SortOrder.DESC));
         return (
             <>
-                <HomeCompilation compilationName="Best discount"/>
+                <HomeCompilation compilationName="Best discount" products={discountProducts}/>
             </>
         );
     };
 
     const renderNewest = () => {
-        dispatch(getProducts(defaultPagination, "", null, SortRule.DATE, SortOrder.ASC));
         return (
             <>
-                <HomeCompilation compilationName="New in the store"/>
+                <HomeCompilation compilationName="New in the store" products={newProducts}/>
             </>
         );
     };
 
     const renderFree = () => {
-        dispatch(getProducts(defaultPagination, "", null, SortRule.DISCOUNT, SortOrder.DESC));
         return (
             <>
-                <HomeCompilation compilationName="Free"/>
+                <HomeCompilation compilationName="Free" products={freeProducts}/>
             </>
         );
     };
 
     const renderCompilation = () => {
-        dispatch(getProducts(defaultPagination, "", null, SortRule.DISCOUNT, SortOrder.DESC));
         return (
             <>
-                <HomeCompilation compilationName="For you"/>
+                <HomeCompilation compilationName="For you" products={forYouProducts}/>
             </>
         );
     };
@@ -69,10 +129,10 @@ const Home: React.FC<homeProps> = () => {
         }}>
             <Typography variant='h1'>NCStore</Typography>
             <Stack spacing={10} sx={{marginTop: 10}}>
-                {renderBestDiscount()}
-                {renderNewest()}
-                {renderFree()}
-                {renderCompilation()}
+                {!discountProducts ? null : renderBestDiscount()}
+                {!newProducts ? null : renderNewest()}
+                {!freeProducts ? null : renderFree()}
+                {!forYouProducts ? null : renderCompilation()}
             </Stack>
         </Box>
     );

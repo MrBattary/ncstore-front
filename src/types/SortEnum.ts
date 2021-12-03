@@ -10,5 +10,5 @@ export enum SortRule {
 export enum SortOrder {
     ASC = "ASC",
     DESC = "DESC",
-    RANDOM = "RANDOM"
+    RAND = "RAND"
 }
