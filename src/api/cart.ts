@@ -1,10 +1,14 @@
-import { deleteHTTP, getHTTP, putHTTP } from '../fetcher/fetcher';
+import { deleteHTTP, getHTTP, postHTTP, putHTTP } from '../fetcher/fetcher';
 import { Cart } from '../types/Cart';
 import { combineUrls } from './utilities';
 import { cartContinuingSubUrl, cartSubUrl, coreUrl } from './urls';
 import { buildHeaderTokenAcceptJson, buildHeaderTokenContentJsonAcceptJson } from '../fetcher/headers';
 import { CartProductIdAndCount } from '../types/CartProductIdAndCount';
 import { CartProduct } from '../types/CartProduct';
+import { Order } from '../types/Order';
+
+const checkoutCart = (token: string) =>
+    postHTTP<Order>(combineUrls([coreUrl, cartSubUrl]), buildHeaderTokenAcceptJson(token), null);
 
 const deleteItemFromCart = (productId: string, token: string) =>
     deleteHTTP<CartProduct | null>(
@@ -25,6 +29,7 @@ const cartApi = {
     getCart,
     updateItemInCart,
     deleteItemFromCart,
+    checkoutCart,
 };
 
 export default cartApi;
