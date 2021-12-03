@@ -3,6 +3,7 @@ import { Cart } from '../types/Cart';
 import { CartProduct } from '../types/CartProduct';
 import { GetCart } from '../actions/cart/GetCart';
 import { UpdateItemInCart } from '../actions/cart/UpdateItemInCart';
+import { DeleteItemFromCart } from '../actions/cart/DeleteItemFromCart';
 
 interface CartStore {
     cart: Cart;
@@ -12,7 +13,7 @@ interface CartStore {
     errorMessage: string | null;
 }
 
-export type CartReducerTypes = GetCart | UpdateItemInCart;
+export type CartReducerTypes = GetCart | UpdateItemInCart | DeleteItemFromCart;
 
 const initialState: CartStore = {
     cart: [],
@@ -33,6 +34,7 @@ export const cartReducer = (state = initialState, action: CartReducerTypes): Car
                 errorMessage: null,
             };
         }
+        case types.DELETE_ITEM_FROM_CART_REQUEST:
         case types.UPDATE_ITEM_IN_CART_REQUEST: {
             return {
                 ...state,
@@ -50,14 +52,16 @@ export const cartReducer = (state = initialState, action: CartReducerTypes): Car
                 success: true,
             };
         }
+        case types.DELETE_ITEM_FROM_CART_RECEIVE:
         case types.UPDATE_ITEM_IN_CART_RECEIVE: {
             return {
                 ...state,
-                cartProduct: action.payload,
+                cartProduct: action.payload ? action.payload : null,
                 loading: false,
                 success: true,
             };
         }
+        case types.DELETE_ITEM_FROM_CART_ERROR:
         case types.UPDATE_ITEM_IN_CART_ERROR:
         case types.GET_CART_ERROR: {
             return {
