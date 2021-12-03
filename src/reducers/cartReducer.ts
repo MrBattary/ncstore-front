@@ -2,7 +2,7 @@ import * as types from '../actions/cart/cartActionTypes';
 import { Cart } from '../types/Cart';
 import { CartProduct } from '../types/CartProduct';
 import { GetCart } from '../actions/cart/GetCart';
-import { UpdateProductInCart } from '../actions/cart/UpdateProductInCart';
+import { UpdateItemInCart } from '../actions/cart/UpdateItemInCart';
 
 interface CartStore {
     cart: Cart;
@@ -12,7 +12,7 @@ interface CartStore {
     errorMessage: string | null;
 }
 
-export type CartReducerTypes = GetCart | UpdateProductInCart;
+export type CartReducerTypes = GetCart | UpdateItemInCart;
 
 const initialState: CartStore = {
     cart: [],
@@ -33,7 +33,7 @@ export const cartReducer = (state = initialState, action: CartReducerTypes): Car
                 errorMessage: null,
             };
         }
-        case types.UPDATE_PRODUCT_IN_CART_REQUEST: {
+        case types.UPDATE_ITEM_IN_CART_REQUEST: {
             return {
                 ...state,
                 cartProduct: null,
@@ -50,7 +50,7 @@ export const cartReducer = (state = initialState, action: CartReducerTypes): Car
                 success: true,
             };
         }
-        case types.UPDATE_PRODUCT_IN_CART_RECEIVE: {
+        case types.UPDATE_ITEM_IN_CART_RECEIVE: {
             return {
                 ...state,
                 cartProduct: action.payload,
@@ -58,7 +58,7 @@ export const cartReducer = (state = initialState, action: CartReducerTypes): Car
                 success: true,
             };
         }
-        case types.UPDATE_PRODUCT_IN_CART_ERROR:
+        case types.UPDATE_ITEM_IN_CART_ERROR:
         case types.GET_CART_ERROR: {
             return {
                 ...state,

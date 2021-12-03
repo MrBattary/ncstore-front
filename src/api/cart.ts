@@ -6,7 +6,7 @@ import { buildHeaderTokenAcceptJson, buildHeaderTokenContentJsonAcceptJson } fro
 import { CartProductIdAndCount } from '../types/CartProductIdAndCount';
 import { CartProduct } from '../types/CartProduct';
 
-const updateProductInCart = (cartProductIdAndCount: CartProductIdAndCount, token: string) =>
+const updateItemInCart = (cartProductIdAndCount: CartProductIdAndCount, token: string) =>
     putHTTP<CartProduct>(
         combineUrls([coreUrl, cartSubUrl]),
         buildHeaderTokenContentJsonAcceptJson(token),
@@ -17,7 +17,7 @@ const getCart = (token: string) => getHTTP<Cart>(combineUrls([coreUrl, cartSubUr
 
 const cartApi = {
     getCart,
-    updateProductInCart,
+    updateItemInCart,
 };
 
 export default cartApi;
