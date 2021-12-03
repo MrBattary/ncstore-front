@@ -30,6 +30,8 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { cart, loading, success, errorMessage } = useSelector((state: AppState) => state.cartReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { order } = useSelector((state: AppState) => state.ordersReducer);
 
     const [task, setNextTask] = useTask();
 
