@@ -6,9 +6,9 @@ export const GET_CART_ERROR = 'GET_CART_ERROR';
 
 /* Add product to cart */
 
-export const ADD_PRODUCT_TO_CART_REQUEST = 'Request/ADD_PRODUCT_TO_CART';
-export const ADD_PRODUCT_TO_CART_RECEIVE = 'Receive/ADD_PRODUCT_TO_CART';
-export const ADD_PRODUCT_TO_CART_ERROR = 'ADD_PRODUCT_TO_CART_ERROR';
+export const UPDATE_PRODUCT_IN_CART_REQUEST = 'Request/UPDATE_PRODUCT_IN_CART';
+export const UPDATE_PRODUCT_IN_CART_RECEIVE = 'Receive/UPDATE_PRODUCT_IN_CART';
+export const UPDATE_PRODUCT_IN_CART_ERROR = 'UPDATE_PRODUCT_IN_CART_ERROR';
 
 /* Delete product from cart */
 

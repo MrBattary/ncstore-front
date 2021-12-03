@@ -2,6 +2,7 @@ import * as types from '../actions/cart/cartActionTypes';
 import { Cart } from '../types/Cart';
 import { CartProduct } from '../types/CartProduct';
 import { GetCart } from '../actions/cart/GetCart';
+import { UpdateProductInCart } from '../actions/cart/UpdateProductInCart';
 
 interface CartStore {
     cart: Cart;
@@ -11,7 +12,7 @@ interface CartStore {
     errorMessage: string | null;
 }
 
-export type CartReducerTypes = GetCart;
+export type CartReducerTypes = GetCart | UpdateProductInCart;
 
 const initialState: CartStore = {
     cart: [],
@@ -32,6 +33,15 @@ export const cartReducer = (state = initialState, action: CartReducerTypes): Car
                 errorMessage: null,
             };
         }
+        case types.UPDATE_PRODUCT_IN_CART_REQUEST: {
+            return {
+                ...state,
+                cartProduct: null,
+                loading: true,
+                success: false,
+                errorMessage: null,
+            };
+        }
         case types.GET_CART_RECEIVE: {
             return {
                 ...state,
@@ -40,6 +50,15 @@ export const cartReducer = (state = initialState, action: CartReducerTypes): Car
                 success: true,
             };
         }
+        case types.UPDATE_PRODUCT_IN_CART_RECEIVE: {
+            return {
+                ...state,
+                cartProduct: action.payload,
+                loading: false,
+                success: true,
+            };
+        }
+        case types.UPDATE_PRODUCT_IN_CART_ERROR:
         case types.GET_CART_ERROR: {
             return {
                 ...state,
