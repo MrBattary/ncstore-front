@@ -13,14 +13,6 @@ type homeCompilationProps = {
 
 const HomeCompilation: React.FC<homeCompilationProps> = ({compilationName, products}) => {
 
-    const renderCompilation = () => {
-        if (products ? products.length : false) {
-            return renderCompilationOk();
-        } else {
-            return renderCompilationEmpty();
-        }
-    };
-
     const renderCompilationOk = () => {
         if (products) {
             return (<Stack direction="row" spacing={2}>
@@ -53,6 +45,14 @@ const HomeCompilation: React.FC<homeCompilationProps> = ({compilationName, produ
             Oops, we cant find anything...
         </Typography>
     );
+
+    const renderCompilation = () => {
+        if (products ? products.length : false) {
+            return renderCompilationOk();
+        } else {
+            return renderCompilationEmpty();
+        }
+    };
 
 
     return (
