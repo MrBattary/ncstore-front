@@ -11,6 +11,7 @@ import useTask, {DEFAULT_TASK_ABSENT} from "../../../utils/TaskHook";
 import {ProductFromList, ProductsList} from "../../../types/ProductsList";
 import {AppState} from "../../../reducers/rootReducer";
 import CardMedia from "@mui/material/CardMedia";
+import {useHistory} from "react-router-dom";
 
 
 type homeProps = {};
@@ -23,6 +24,7 @@ const enum homeTasks {
 }
 
 const Home: React.FC<homeProps> = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
     const [task, setNextTask] = useTask();
 
@@ -92,7 +94,7 @@ const Home: React.FC<homeProps> = () => {
     const renderBestDiscount = () => {
         return (
             <>
-                <HomeCompilation compilationName="Best discount" products={discountProducts}/>
+                <HomeCompilation history={history} compilationName="Best discount" products={discountProducts}/>
             </>
         );
     };
@@ -100,7 +102,7 @@ const Home: React.FC<homeProps> = () => {
     const renderNewest = () => {
         return (
             <>
-                <HomeCompilation compilationName="New in the store" products={newProducts}/>
+                <HomeCompilation history={history} compilationName="New in the store" products={newProducts}/>
             </>
         );
     };
@@ -108,7 +110,7 @@ const Home: React.FC<homeProps> = () => {
     const renderFree = () => {
         return (
             <>
-                <HomeCompilation compilationName="Free" products={freeProducts}/>
+                <HomeCompilation history={history} compilationName="Free" products={freeProducts}/>
             </>
         );
     };
@@ -116,7 +118,7 @@ const Home: React.FC<homeProps> = () => {
     const renderCompilation = () => {
         return (
             <>
-                <HomeCompilation compilationName="For you" products={forYouProducts}/>
+                <HomeCompilation history={history} compilationName="For you" products={forYouProducts}/>
             </>
         );
     };

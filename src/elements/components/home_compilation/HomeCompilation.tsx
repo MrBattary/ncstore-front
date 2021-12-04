@@ -5,13 +5,29 @@ import Typography from '@mui/material/Typography';
 import {ProductFromList, ProductsList} from "../../../types/ProductsList";
 import {Paper, Stack} from "@mui/material";
 import ProductCard from "../product_card/ProductCard";
+import {History} from "history";
 
 type homeCompilationProps = {
+    history: History;
     compilationName: string;
     products: ProductsList | null;
 };
 
-const HomeCompilation: React.FC<homeCompilationProps> = ({compilationName, products}) => {
+const HomeCompilation: React.FC<homeCompilationProps> = ({history, compilationName, products}) => {
+
+    const goToProduct = (productId: string) => {
+        history.push(`/products/${productId}`);
+    };
+
+    const buyProduct = (productId: string) => {
+        // TODO: dispatch
+        console.log(`Buy product ${productId} right now`);
+    };
+
+    const addProductToCart = (productId: string) => {
+        // TODO: dispatch
+        console.log(`Add product ${productId} to the console`);
+    };
 
     const renderCompilationOk = () => {
         if (products) {
@@ -23,15 +39,9 @@ const HomeCompilation: React.FC<homeCompilationProps> = ({compilationName, produ
                         normalPrice={product.normalPrice}
                         discountPrice={product.discountPrice}
                         priceCurrency={product.priceCurrency}
-                        onClick={() => {
-                        }}
-                        onBuy={() => {
-                        }}
-                        onAddToCart={() => {
-                        }}
-                        /*                        onClick={() => goToProduct(product.productId)}
-                                                onBuy={() => buyProduct(product.productId)}
-                                                onAddToCart={() => addProductToCart(product.productId)}*/
+                        onClick={() => goToProduct(product.productId)}
+                        onBuy={() => buyProduct(product.productId)}
+                        onAddToCart={() => addProductToCart(product.productId)}
                     />
                 ))}
             </Stack>);
