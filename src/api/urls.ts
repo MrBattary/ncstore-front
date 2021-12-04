@@ -18,3 +18,6 @@ export const companyInfoSubUrl = '/company/info';
 /* User */
 export const changePasswordSubUrl = '/user/password';
 export const addBalanceSubUrl = '/user/balance';
+
+/* Payment */
+export const paymentSubUrl = '/payment'

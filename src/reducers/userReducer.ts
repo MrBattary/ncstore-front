@@ -10,6 +10,7 @@ import { GetCompanyProfile } from '../actions/users/GetCompanyProfile';
 import { PersonProfile } from '../types/PersonProfile';
 import { CompanyProfile } from '../types/CompanyProfile';
 import {ChangePassword} from "../actions/users/PasswordChange";
+import {GetPaymentToken} from "../actions/users/Payment";
 
 interface UserStore {
     userId: string | null;
@@ -20,6 +21,7 @@ interface UserStore {
     loading: boolean;
     success: boolean;
     errorMessage: string | null;
+    paymentToken: string | null;
 }
 
 export type UserReducerTypes =
@@ -29,7 +31,8 @@ export type UserReducerTypes =
     | GetPersonProfile
     | GetCompanyProfile
     | RestoreDefaultUserReducer
-    | ChangePassword;
+    | ChangePassword
+    | GetPaymentToken;
 
 const initialState: UserStore = {
     userId: null,
@@ -40,6 +43,7 @@ const initialState: UserStore = {
     loading: false,
     success: false,
     errorMessage: null,
+    paymentToken: null,
 };
 
 export const userReducer = (state = initialState, action: UserReducerTypes): UserStore => {
@@ -105,6 +109,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.SIGN_UP_ERROR:
         case types.GET_PERSON_PROFILE_ERROR:
         case types.GET_COMPANY_PROFILE_ERROR:
+        case types.GET_PAYMENT_TOKEN_ERROR:
         case types.CHANGE_USER_PASSWORD_ERROR: {
             return {
                 ...state,
@@ -120,6 +125,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 errorMessage: null,
             };
         }
+        case types.GET_PAYMENT_TOKEN_REQUEST:
         case types.CHANGE_USER_PASSWORD_REQUEST:{
             return {
                 ...state,
@@ -134,6 +140,14 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 userType: null,
                 token: null,
                 roles: [],
+                loading: false,
+                success: true,
+            };
+        }
+        case types.GET_PAYMENT_TOKEN_RECEIVE:{
+            return {
+                ...state,
+                paymentToken: action.payload.paymentToken,
                 loading: false,
                 success: true,
             };
