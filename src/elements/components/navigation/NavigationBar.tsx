@@ -1,8 +1,8 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory} from 'react-router-dom';
 
-import { AppState } from '../../../reducers/rootReducer';
+import {AppState} from '../../../reducers/rootReducer';
 
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
@@ -14,15 +14,16 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { Assignment, Favorite, ShoppingCart, Storefront } from '@mui/icons-material';
+import {Assignment, Favorite, ShoppingCart, Storefront} from '@mui/icons-material';
 
-import { Pagination } from '../../../types/Pagination';
+import {Pagination} from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
-import { signOut } from '../../../actions/users/SignOut';
-import { getProducts } from '../../../actions/products/GetProducts';
-import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
-import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
-import { UserRole } from '../../../types/UserRole';
+import {signOut} from '../../../actions/users/SignOut';
+import {getProducts} from '../../../actions/products/GetProducts';
+import {restoreDefaultUserReducer} from '../../../actions/users/RestoreDefaultUserReducer';
+import {restoreDefaultProductsReducer} from '../../../actions/products/RestoreDefaultProductsReducer';
+import {UserRole} from '../../../types/UserRole';
+import {SortOrder, SortRule} from "../../../types/SortEnum";
 
 type navigationBarProps = {};
 
@@ -72,7 +73,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
     };
 
     const handleSearch = (searchText: string) => {
-        dispatch(getProducts(defaultPagination, searchText, null));
+        dispatch(getProducts(defaultPagination, searchText, null, SortRule.DEFAULT, SortOrder.ASC));
         history.push('/products');
     };
 
