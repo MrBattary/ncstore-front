@@ -136,7 +136,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                 Save: <span style={{ color: '#8cc44b' }}>{save}</span>
             </Typography>
             <Typography className='right-side__after' style={{ marginBottom: 10 }} variant='h5'>
-                After: {afterBalance}
+                After: {afterBalance < 0 ? <span style={{ color: 'red' }}>{afterBalance}</span> : afterBalance}
             </Typography>
             <div className='right-side__checkout'>
                 <Button

@@ -51,7 +51,10 @@ const CartItem: React.FC<cartItemProps> = ({ loading, product, onClick, onChange
 
     return (
         <Card className='cart-item' sx={{ display: 'flex', flexDirection: 'row', margin: 2 }}>
-            <Box className='cart-item__content' sx={{ display: 'flex', flexDirection: 'row' }}>
+            <Box
+                className='cart-item__content'
+                sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+            >
                 <CardActionArea onClick={onClick}>
                     <CardContent>
                         <Typography gutterBottom component='div'>
@@ -60,7 +63,12 @@ const CartItem: React.FC<cartItemProps> = ({ loading, product, onClick, onChange
                         {renderProductPrice()}
                     </CardContent>
                 </CardActionArea>
-                <InputNumber min={1} value={value} onChange={changeNumberOfProduct} />
+                <InputNumber
+                    min={1}
+                    value={value}
+                    style={{ margin: '28px', height: '35px' }}
+                    onChange={changeNumberOfProduct}
+                />
                 <CardActions sx={{ flexDirection: 'row-reverse' }}>
                     <Button
                         sx={{
