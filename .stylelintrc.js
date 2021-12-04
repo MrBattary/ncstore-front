@@ -1,5 +1,5 @@
 module.exports = {
-    extends: ['stylelint-config-standard', 'stylelint-config-rational-orders'],
+    extends: ['stylelint-config-standard', 'stylelint-config-rational-order'],
     rules: {
         'at-rule-no-unknown': null,
         indentation: 4,
