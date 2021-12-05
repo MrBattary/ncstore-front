@@ -1,19 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { History } from 'history';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useMemo, useState} from 'react';
+import {History} from 'history';
+import {useDispatch, useSelector} from 'react-redux';
 
-import { useSnackbar } from 'notistack';
-import { Modal } from 'antd';
-import { CloseCircleOutlined } from '@ant-design/icons';
-import { Box, Button, Divider, Typography } from '@mui/material';
-import { Add } from '@mui/icons-material';
+import {useSnackbar} from 'notistack';
+import {Modal} from 'antd';
+import {CloseCircleOutlined} from '@ant-design/icons';
+import {Box, Button, Divider, Typography} from '@mui/material';
+import {Add} from '@mui/icons-material';
 
-import { AppState } from '../../../reducers/rootReducer';
-import { UserRole } from '../../../types/UserRole';
-import { ProductFromList } from '../../../types/ProductsList';
+import {AppState} from '../../../reducers/rootReducer';
+import {UserRole} from '../../../types/UserRole';
+import {ProductFromList} from '../../../types/ProductsList';
 import ProductInfoCard from '../../components/info_product_card/ProductInfoCard';
-import { getProducts } from '../../../actions/products/GetProducts';
-import { Pagination } from '../../../types/Pagination';
+import {getProducts} from '../../../actions/products/GetProducts';
+import {Pagination} from '../../../types/Pagination';
 import ProductForm from '../../components/product_form/ProductForm';
 import { ProductWithoutId } from '../../../types/ProductWithoutId';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
@@ -26,6 +26,7 @@ import { DiscountPrice } from '../../../types/DiscountPrice';
 import { ProductWithSupplier } from '../../../types/ProductWithSupplier';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 import { updateProduct } from '../../../actions/products/UpdateProduct';
+import {SortOrder, SortRule} from '../../../types/SortEnum';
 
 import './style.css';
 
@@ -62,6 +63,9 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         []
     );
 
+    const defaultSortRule : SortRule = SortRule.DATE;
+    const defaultSortOrder : SortOrder = SortOrder.ASC;
+
     // TODO: Replace this with normal request from the backend
     const categoriesList: string[] = useMemo(() => ['category1', 'category2', 'category3'], []);
 
@@ -72,10 +76,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             });
             setIsCreateProductFormVisible(false);
             dispatch(restoreDefaultProductsReducer());
-            dispatch(getProducts(defaultPagination, '', userId));
+            dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [enqueueSnackbar, success, product, dispatch, defaultPagination, userId, task, setNextTask]);
+    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, defaultSortRule, defaultSortOrder, userId, task, setNextTask]);
 
     useEffect(() => {
         if (task === merchandiseTasks.WAIT_FOR_DELETED_PRODUCT && product && success) {
@@ -83,10 +87,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 variant: 'success',
             });
             dispatch(restoreDefaultProductsReducer());
-            dispatch(getProducts(defaultPagination, '', userId));
+            dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [enqueueSnackbar, success, product, dispatch, defaultPagination, userId, task, setNextTask]);
+    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId, defaultSortRule, defaultSortOrder, task, setNextTask]);
 
     useEffect(() => {
         if (task === merchandiseTasks.WAIT_FOR_PRODUCT_FOR_UPDATE && success) {
@@ -113,10 +117,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             setIsUpdateProductFormVisible(false);
             setDetailedProductForUpdateForm(null);
             dispatch(restoreDefaultProductsReducer());
-            dispatch(getProducts(defaultPagination, '', userId));
+            dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [task, dispatch, defaultPagination, userId, product, enqueueSnackbar, setNextTask, success]);
+    }, [task, loading, dispatch, defaultPagination, userId, defaultSortRule, defaultSortOrder, product, enqueueSnackbar, setNextTask]);
 
     useEffect(() => {
         if (errorMessage) {
@@ -136,7 +140,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         if (!roles.includes(UserRole.SUPPLIER)) {
             history.push('/');
         }
-        dispatch(getProducts(defaultPagination, '', userId));
+        dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);

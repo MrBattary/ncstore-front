@@ -7,9 +7,10 @@ import headers from '../fetcher/headers';
 import { ProductWithoutId } from '../types/ProductWithoutId';
 import { ProductWithSupplier } from '../types/ProductWithSupplier';
 import { Product } from '../types/Product';
+import {SortOrder, SortRule} from "../types/SortEnum";
 import { ProductForSale } from '../types/ProductForSale';
 
-const getProducts = (pagination: Pagination, searchText: string | null, supplierId: string | null) =>
+const getProducts = (pagination: Pagination, searchText: string | null, supplierId: string | null, sort:SortRule | null, sortOrder: SortOrder | null) =>
     getHTTP<ProductsList>(
         combineUrls([
             coreUrl,
@@ -20,6 +21,10 @@ const getProducts = (pagination: Pagination, searchText: string | null, supplier
             buildQueryFromObject({ supplierId }),
             '&',
             buildQueryFromObject(pagination),
+            '&',
+            buildQueryFromObject({sort}),
+            '&',
+            buildQueryFromObject({sortOrder})
         ]),
         headers.buildHeaderAcceptJson()
     );
