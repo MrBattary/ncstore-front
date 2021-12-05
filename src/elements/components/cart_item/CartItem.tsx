@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CartProduct } from '../../../types/CartProduct';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
@@ -19,11 +19,22 @@ type cartItemProps = {
 };
 
 const CartItem: React.FC<cartItemProps> = ({ loading, product, onClick, onChange, onRemove }) => {
+    const [prevValue, setPrevValue] = useState<number>(product.productCount);
     const [value, setValue] = useState<number>(product.productCount);
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            if (prevValue !== value) {
+                setPrevValue(value);
+                onChange(product.productId, value);
+            }
+        }, 1000);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [onChange, prevValue, product.productId, value]);
 
     const changeNumberOfProduct = (newNumber: number) => {
         setValue(newNumber);
-        onChange(product.productId, newNumber);
     };
 
     const renderProductPrice = () => {

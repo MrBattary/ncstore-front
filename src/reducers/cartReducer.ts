@@ -28,7 +28,6 @@ export const cartReducer = (state = initialState, action: CartReducerTypes): Car
         case types.GET_CART_REQUEST: {
             return {
                 ...state,
-                cart: [],
                 loading: true,
                 success: false,
                 errorMessage: null,

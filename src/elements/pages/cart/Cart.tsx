@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -61,7 +61,9 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         setSave(
             cart.reduce(
                 (total, cartItem) =>
-                    total + (cartItem.discountPrice ? cartItem.discountPrice : 0) * cartItem.productCount,
+                    total +
+                    (cartItem.discountPrice ? cartItem.normalPrice - cartItem.discountPrice : 0) *
+                        cartItem.productCount,
                 0
             )
         );
@@ -94,10 +96,13 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         // eslint-disable-next-line
     }, []);
 
-    const handleChangeProductNumber = (productId: string, numberOfProducts: number) => {
-        dispatch(updateItemInCart({ productId: productId, productCount: numberOfProducts }, token ? token : ''));
-        setNextTask(cartTasks.WAIT_FOR_CHANGE_CART, 0);
-    };
+    const handleChangeProductNumber = useCallback(
+        (productId: string, numberOfProducts: number) => {
+            dispatch(updateItemInCart({ productId: productId, productCount: numberOfProducts }, token ? token : ''));
+            setNextTask(cartTasks.WAIT_FOR_CHANGE_CART, 0);
+        },
+        [dispatch, setNextTask, token]
+    );
 
     const handleRemoveItemFromCart = (productId: string) => {
         dispatch(deleteItemFromCart(productId, token ? token : ''));
@@ -128,15 +133,32 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         <div className='nonempty-cart__right-side'>
             <Typography className='right-side__balance' style={{ marginBottom: 10 }} variant='h5'>
                 Balance: {profile ? profile.balance : 0}
+                {cart[0].priceCurrency}
             </Typography>
             <Typography className='right-side__total' style={{ marginBottom: 10 }} variant='h5'>
                 Total: {totalPrice}
+                {cart[0].priceCurrency}
             </Typography>
             <Typography className='right-side__save' style={{ marginBottom: 10 }} variant='h5'>
-                Save: <span style={{ color: '#8cc44b' }}>{save}</span>
+                Save:{' '}
+                <span style={{ color: '#8cc44b' }}>
+                    {save}
+                    {cart[0].priceCurrency}
+                </span>
             </Typography>
             <Typography className='right-side__after' style={{ marginBottom: 10 }} variant='h5'>
-                After: {afterBalance < 0 ? <span style={{ color: 'red' }}>{afterBalance}</span> : afterBalance}
+                After:{' '}
+                {afterBalance < 0 ? (
+                    <span style={{ color: 'red' }}>
+                        {afterBalance}
+                        {cart[0].priceCurrency}
+                    </span>
+                ) : (
+                    <span>
+                        {afterBalance}
+                        {cart[0].priceCurrency}
+                    </span>
+                )}
             </Typography>
             <div className='right-side__checkout'>
                 <Button
