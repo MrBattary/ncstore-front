@@ -1,10 +1,10 @@
-import {postHTTP} from "../fetcher/fetcher";
+import {getHTTP, postHTTP} from "../fetcher/fetcher";
 import {combineUrls} from "./utilities";
-import {addBalanceSubUrl, changePasswordSubUrl, coreUrl} from "./urls";
+import {balanceSubUrl, changePasswordSubUrl, coreUrl} from "./urls";
 import headers from "../fetcher/headers";
 import {ChangePasswordDetails} from "../types/ChangePasswordDetails";
 import {EmptyType} from "../types/EmptyType";
-import {AddBalancePayment, NewBalanceValue} from "../types/Payment";
+import {AddBalancePayment, BalanceGetResponse, NewBalanceValue} from "../types/Balance";
 
 const changePassword = (changePasswordDetails: ChangePasswordDetails, token : string) =>
     postHTTP<EmptyType>(
@@ -15,14 +15,21 @@ const changePassword = (changePasswordDetails: ChangePasswordDetails, token : st
 
 const addBalance = (addBalancePayment: AddBalancePayment, token : string) =>
     postHTTP<NewBalanceValue>(
-        combineUrls([coreUrl, addBalanceSubUrl]),
+        combineUrls([coreUrl, balanceSubUrl]),
         headers.buildHeaderTokenContentJsonAcceptJson(token),
         addBalancePayment
     );
 
+const getBalance = (token : string) =>
+    getHTTP<BalanceGetResponse>(
+        combineUrls([coreUrl, balanceSubUrl]),
+        headers.buildHeaderTokenAcceptJson(token),
+    );
+
 const userApi = {
     changePassword,
-    addBalance
+    addBalance,
+    getBalance
 };
 
 export default userApi;

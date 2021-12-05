@@ -9,6 +9,7 @@ import { AppState } from '../../../reducers/rootReducer';
 import { signIn } from '../../../actions/users/SignIn';
 import SignInForm from '../../components/signin_form/SignInForm';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
+import {getBalance} from "../../../actions/users/GetBalance";
 
 type signInProps = {
     history: History;
@@ -31,6 +32,7 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
     useEffect(() => {
         if (token) {
             dispatch(restoreDefaultUserReducer());
+            dispatch(getBalance(token))
             history.push('/');
         }
     }, [token, history, dispatch]);
