@@ -2,24 +2,25 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { Button, Divider, Typography } from '@mui/material';
+import { AccountBalanceWallet, CreditCard, ShoppingCart } from '@mui/icons-material';
+import { Modal } from 'antd';
 import { useSnackbar } from 'notistack';
 
 import { AppState } from '../../../reducers/rootReducer';
 import { UserRole } from '../../../types/UserRole';
 import { getCart } from '../../../actions/cart/GetCart';
-import { Button, Divider, Typography } from '@mui/material';
-import { ShoppingCart } from '@mui/icons-material';
 import { checkoutFromCart } from '../../../actions/orders/CheckoutFromCart';
 import { CartProduct } from '../../../types/CartProduct';
 import CartItem from '../../components/cart_item/CartItem';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { deleteItemFromCart } from '../../../actions/cart/DeleteItemFromCart';
-import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
-
-import './style.css';
 import { UserType } from '../../../types/UserType';
 import { getPersonProfile } from '../../../actions/users/GetPersonProfile';
 import { getCompanyProfile } from '../../../actions/users/GetCompanyProfile';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+
+import './style.css';
 
 type cartProps = {
     history: History;
@@ -41,6 +42,9 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     const [totalPrice, setTotalPrice] = useState<number>(0);
     const [save, setSave] = useState<number>(0);
     const [afterBalance, setAfterBalance] = useState<number>(0);
+    const [isCheckoutModalVisible, setCheckoutModalVisible] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [isOrderModalVisible, setOrderModalVisible] = useState<boolean>(false);
     const [task, setNextTask] = useTask();
 
     useEffect(() => {
@@ -109,8 +113,12 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         setNextTask(cartTasks.WAIT_FOR_CHANGE_CART, 0);
     };
 
-    const handleCheckout = () => {
+    const handleCheckoutFromBalance = () => {
         dispatch(checkoutFromCart(token ? token : ''));
+    };
+
+    const handleCheckoutFromCard = () => {
+        console.log('Checkout from card');
     };
 
     const goToProduct = (productId: string) => {
@@ -165,7 +173,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                     className='checkout__checkout-button'
                     size='large'
                     variant='contained'
-                    onClick={handleCheckout}
+                    onClick={() => setCheckoutModalVisible(true)}
                     startIcon={<ShoppingCart />}
                     sx={{ backgroundColor: '#39bd5c', marginTop: 5, '&:hover': { backgroundColor: '#50d96c' } }}
                 >
@@ -185,6 +193,44 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                 <Divider />
                 <div className='left-side__items'>{renderCartItems()}</div>
             </div>
+            <Modal
+                visible={isCheckoutModalVisible}
+                title='Payment method'
+                onCancel={() => setCheckoutModalVisible(false)}
+                footer={[
+                    <Button
+                        key='balance'
+                        variant='outlined'
+                        color='inherit'
+                        onClick={handleCheckoutFromBalance}
+                        disabled={afterBalance < 0}
+                        startIcon={<AccountBalanceWallet />}
+                    >
+                        Balance
+                    </Button>,
+                    <Button
+                        key='card'
+                        variant='outlined'
+                        color='inherit'
+                        onClick={handleCheckoutFromCard}
+                        startIcon={<CreditCard />}
+                        style={{ marginLeft: 10, marginRight: 10 }}
+                    >
+                        Card
+                    </Button>,
+                    <Button
+                        key='cancel'
+                        variant='outlined'
+                        color='inherit'
+                        onClick={() => setCheckoutModalVisible(false)}
+                    >
+                        Cancel
+                    </Button>,
+                ]}
+            >
+                <Typography>You can choose to pay from the balance or pay by card.</Typography>
+                <Typography>If the balance is negative, payment from the balance is not possible.</Typography>
+            </Modal>
         </div>
     );
 
