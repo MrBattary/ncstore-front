@@ -18,6 +18,7 @@ import { deleteItemFromCart } from '../../../actions/cart/DeleteItemFromCart';
 import { UserType } from '../../../types/UserType';
 import { getPersonProfile } from '../../../actions/users/GetPersonProfile';
 import { getCompanyProfile } from '../../../actions/users/GetCompanyProfile';
+import OrderModal from '../../components/order_modal/OrderModal';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 
 import './style.css';
@@ -28,6 +29,7 @@ type cartProps = {
 
 const enum cartTasks {
     WAIT_FOR_CHANGE_CART = 'WAIT_FOR_CHANGE_CART',
+    WAIT_FOR_CHECKOUT = 'WAIT_FOR_CHECKOUT',
 }
 
 // TODO: Add sync of cart
@@ -37,13 +39,11 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { cart, loading, success, errorMessage } = useSelector((state: AppState) => state.cartReducer);
     const { roles, token, userType, profile } = useSelector((state: AppState) => state.userReducer);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { order } = useSelector((state: AppState) => state.ordersReducer);
+    const { order, success: successOrder } = useSelector((state: AppState) => state.ordersReducer);
     const [totalPrice, setTotalPrice] = useState<number>(0);
     const [save, setSave] = useState<number>(0);
     const [afterBalance, setAfterBalance] = useState<number>(0);
     const [isCheckoutModalVisible, setCheckoutModalVisible] = useState<boolean>(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isOrderModalVisible, setOrderModalVisible] = useState<boolean>(false);
     const [task, setNextTask] = useTask();
 
@@ -73,6 +73,14 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         );
         setAfterBalance((profile ? profile.balance : 0) - total);
     }, [cart, profile]);
+
+    useEffect(() => {
+        if (task === cartTasks.WAIT_FOR_CHECKOUT && successOrder) {
+            setCheckoutModalVisible(false);
+            setOrderModalVisible(true);
+            setNextTask(DEFAULT_TASK_ABSENT, 0);
+        }
+    }, [setNextTask, successOrder, task]);
 
     useEffect(() => {
         if (errorMessage) {
@@ -115,6 +123,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
 
     const handleCheckoutFromBalance = () => {
         dispatch(checkoutFromCart(token ? token : ''));
+        setNextTask(cartTasks.WAIT_FOR_CHECKOUT, 0);
     };
 
     const handleCheckoutFromCard = () => {
@@ -231,6 +240,12 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                 <Typography>You can choose to pay from the balance or pay by card.</Typography>
                 <Typography>If the balance is negative, payment from the balance is not possible.</Typography>
             </Modal>
+            <OrderModal
+                isModalVisible={isOrderModalVisible}
+                order={order}
+                onClick={goToProduct}
+                onClose={() => setOrderModalVisible(false)}
+            />
         </div>
     );
 

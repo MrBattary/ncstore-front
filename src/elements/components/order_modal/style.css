@@ -1,0 +1,21 @@
+.order-modal {
+    width: 50%;
+    min-width: 450px;
+}
+
+.order-content__paid {
+    margin: 0;
+}
+
+.order-content__license-key {
+    display: inline-block;
+    margin: 0;
+    color: transparent;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.order-content__license-key:hover {
+    color: #000;
+    text-shadow: none;
+    cursor: pointer;
+}
