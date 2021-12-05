@@ -17,6 +17,7 @@ import {changePassword} from "../../../actions/users/PasswordChange";
 import PaymentModal from "../../components/payment/PaymentModal";
 import {getPaymentToken} from "../../../actions/users/Payment";
 import {Modal} from "antd";
+import {addBalance} from "../../../actions/users/BalanceAdd";
 
 type profileProps = {
     history: History;
@@ -27,6 +28,8 @@ const Profile: React.FC<profileProps> = ({history}) => {
     const dispatch = useDispatch();
 
     const [isPaymentFormVisible, setIsPaymentFormVisible] = useState<boolean>(false);
+    const [isWaitingForPaymentToProceed, setIsWaitingForPaymentToProceed] = useState<boolean>(false);
+    const [paymentAmount, setPaymentAmount] = useState<number>(0);
 
     const {
         token,
@@ -35,7 +38,23 @@ const Profile: React.FC<profileProps> = ({history}) => {
         profile,
         loading,
         errorMessage,
+        balance,
+        success
     } = useSelector((state: AppState) => state.userReducer);
+
+
+    const renderErrorModal = () => {
+        Modal.error({
+            title: 'Payment error',
+            content: 'We can not proceed a payment for you. Maybe you do not have enough money on your card or payment service is down. Try again later.',
+        });
+    }
+
+    const renderSuccessModal = () => {
+        Modal.success({
+            content: 'Your payment was successful!',
+        });
+    }
 
     useEffect(() => {
         if (errorMessage) {
@@ -45,6 +64,18 @@ const Profile: React.FC<profileProps> = ({history}) => {
             dispatch(restoreDefaultUserReducer());
         }
     }, [enqueueSnackbar, errorMessage, dispatch]);
+
+    useEffect(() => {
+        if(isWaitingForPaymentToProceed && !loading){
+            setIsWaitingForPaymentToProceed(false)
+            if(success){
+                renderSuccessModal()
+            }
+            else{
+                renderErrorModal()
+            }
+        }
+    }, [isWaitingForPaymentToProceed, loading, success, dispatch]);
 
     useEffect(() => {
         if (token) {
@@ -74,15 +105,22 @@ const Profile: React.FC<profileProps> = ({history}) => {
     }, []);
 
     const handleBalanceAdd = (e: any) => {
-        if(paymentToken) {
+        if (paymentToken) {
             setIsPaymentFormVisible(true);
-        }else{
+            const {amount} = e;
+            setPaymentAmount(amount);
+        } else {
             renderErrorModal()
         }
     }
 
-    const handleBalancePayment = (e: any) => {
-
+    const handleBalancePayment = (e: any, nonce: string) => {
+        if (nonce && nonce.length !== 0) {
+            dispatch(addBalance({paymentAmount, nonce}, token ? token : ''));
+            setIsWaitingForPaymentToProceed(true);
+            dispatch(getPaymentToken(token ? token : ''));
+            setIsPaymentFormVisible(false);
+        }
     }
 
     const handlePasswordChange = (e: any) => {
@@ -96,24 +134,20 @@ const Profile: React.FC<profileProps> = ({history}) => {
         }
     }
 
-    const renderErrorModal = () => {
-        Modal.error({
-            title: 'Payment error',
-            content: 'We can not proceed a payment for you. Maybe you are not authorized or payment service is down. Try again later.',
-        });
-    }
 
 
     return loading || !profile ? null : (
         <Container>
             <Stack>
                 <GeneralProfile history={history} profile={profile}/>
-                <UserProfileBalance balance={profile.balance} balanceCurrency="$" loading={loading}
+                <UserProfileBalance balance={balance ? balance : 0} balanceCurrency="$" loading={loading}
                                     onFinish={handleBalanceAdd} onFinishFailed={() => {
                 }}/>
                 <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {
                 }}/>
-                <PaymentModal isVisible={isPaymentFormVisible} handleOk={handleBalancePayment} handleCancel={() => setIsPaymentFormVisible(false)} paymentToken={paymentToken ? paymentToken : ''}/>
+                <PaymentModal isVisible={isPaymentFormVisible} handleOk={handleBalancePayment}
+                              handleCancel={() => setIsPaymentFormVisible(false)}
+                              paymentToken={paymentToken ? paymentToken : ''}/>
             </Stack>
         </Container>
     );

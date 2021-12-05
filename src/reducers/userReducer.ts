@@ -11,6 +11,7 @@ import { PersonProfile } from '../types/PersonProfile';
 import { CompanyProfile } from '../types/CompanyProfile';
 import {ChangePassword} from "../actions/users/PasswordChange";
 import {GetPaymentToken} from "../actions/users/Payment";
+import {AddBalance} from "../actions/users/BalanceAdd";
 
 interface UserStore {
     userId: string | null;
@@ -22,6 +23,7 @@ interface UserStore {
     success: boolean;
     errorMessage: string | null;
     paymentToken: string | null;
+    balance: number | null;
 }
 
 export type UserReducerTypes =
@@ -32,7 +34,8 @@ export type UserReducerTypes =
     | GetCompanyProfile
     | RestoreDefaultUserReducer
     | ChangePassword
-    | GetPaymentToken;
+    | GetPaymentToken
+    | AddBalance;
 
 const initialState: UserStore = {
     userId: null,
@@ -44,6 +47,7 @@ const initialState: UserStore = {
     success: false,
     errorMessage: null,
     paymentToken: null,
+    balance: null
 };
 
 export const userReducer = (state = initialState, action: UserReducerTypes): UserStore => {
@@ -110,6 +114,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.GET_PERSON_PROFILE_ERROR:
         case types.GET_COMPANY_PROFILE_ERROR:
         case types.GET_PAYMENT_TOKEN_ERROR:
+        case types.ADD_BALANCE_ERROR:
         case types.CHANGE_USER_PASSWORD_ERROR: {
             return {
                 ...state,
@@ -151,6 +156,14 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 loading: false,
                 success: true,
             };
+        }
+        case types.ADD_BALANCE_RECEIVE:{
+            return {
+                ...state,
+                balance: action.payload.newBalance,
+                loading: false,
+                success: true,
+            }
         }
         default:
             return state;

@@ -3,7 +3,7 @@ export type PaymentToken = {
 }
 
 export type AddBalancePayment = {
-    addAmount: number;
+    paymentAmount: number;
     nonce: string;
 }
 
