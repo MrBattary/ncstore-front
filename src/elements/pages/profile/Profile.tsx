@@ -140,7 +140,7 @@ const Profile: React.FC<profileProps> = ({history}) => {
         <Container>
             <Stack>
                 <GeneralProfile history={history} profile={profile}/>
-                <UserProfileBalance balance={balance ? balance : 0} balanceCurrency="$" loading={loading}
+                <UserProfileBalance balance={balance ? balance.balance : 0} balanceCurrency={balance ? balance.currency : "$"} loading={loading}
                                     onFinish={handleBalanceAdd} onFinishFailed={() => {
                 }}/>
                 <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {

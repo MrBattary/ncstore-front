@@ -13,6 +13,7 @@ import {ChangePassword} from "../actions/users/PasswordChange";
 import {GetPaymentToken} from "../actions/users/Payment";
 import {AddBalance} from "../actions/users/BalanceAdd";
 import {GetBalance} from "../actions/users/GetBalance";
+import {Balance} from "../types/Balance";
 
 interface UserStore {
     userId: string | null;
@@ -24,7 +25,7 @@ interface UserStore {
     success: boolean;
     errorMessage: string | null;
     paymentToken: string | null;
-    balance: number | null;
+    balance: Balance | null;
 }
 
 export type UserReducerTypes =
@@ -129,7 +130,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.RESTORE_DEFAULT_USER_REDUCER: {
             return {
                 ...state,
-                balance: 0,
+                balance: null,
                 success: false,
                 errorMessage: null,
             };
@@ -164,7 +165,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.ADD_BALANCE_RECEIVE:{
             return {
                 ...state,
-                balance: action.payload.newBalance,
+                balance: action.payload,
                 loading: false,
                 success: true,
             }
@@ -172,7 +173,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.GET_BALANCE_RECEIVE:{
             return {
                 ...state,
-                balance: action.payload.balance,
+                balance: action.payload,
                 loading: false,
                 success: true,
             }

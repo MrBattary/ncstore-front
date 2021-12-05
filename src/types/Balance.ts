@@ -1,10 +1,9 @@
-export type BalanceGetResponse ={
+export type Balance ={
     balance : number;
+    currency: string;
 }
+
 export type AddBalancePayment = {
     paymentAmount: number;
     nonce: string;
-}
-export type NewBalanceValue = {
-    newBalance: number;
 }

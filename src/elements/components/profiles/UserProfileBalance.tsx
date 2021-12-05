@@ -28,7 +28,7 @@ const UserProfileBalance: React.FC<profileBalanceProps> = ({balance, balanceCurr
                 }}>
                     <Stack spacing={2}>
                         <Typography align="center" variant="h4">Your balance</Typography>
-                        <Typography align="center" variant="h5">{"Balance: " + balance + balanceCurrency}</Typography>
+                        <Typography align="center" variant="h5">{"Balance: " + balance + " " + balanceCurrency}</Typography>
                         <Form
                             className='balance__form'
                             layout='vertical'

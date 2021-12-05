@@ -1,14 +1,14 @@
 import {Dispatch} from "redux";
 import {ADD_BALANCE_ERROR, ADD_BALANCE_RECEIVE, ADD_BALANCE_REQUEST} from "./userActionTypes";
 import userApi from "../../api/user";
-import {AddBalancePayment, NewBalanceValue} from "../../types/Balance";
+import {AddBalancePayment, Balance} from "../../types/Balance";
 
 export type AddBalanceRequestAction = {
     type: typeof ADD_BALANCE_REQUEST;
 };
 export type AddBalanceReceiveAction = {
     type: typeof ADD_BALANCE_RECEIVE;
-    payload: NewBalanceValue;
+    payload: Balance;
 };
 export type AddBalanceErrorAction = {
     type: typeof ADD_BALANCE_ERROR;

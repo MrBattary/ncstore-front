@@ -5,14 +5,14 @@ import {
     GET_BALANCE_REQUEST
 } from "./userActionTypes";
 import userApi from "../../api/user";
-import {BalanceGetResponse} from "../../types/Balance";
+import {Balance} from "../../types/Balance";
 
 export type GetBalanceRequestAction = {
     type: typeof GET_BALANCE_REQUEST;
 };
 export type GetBalanceReceiveAction = {
     type: typeof GET_BALANCE_RECEIVE;
-    payload: BalanceGetResponse;
+    payload: Balance;
 };
 export type GetBalanceErrorAction = {
     type: typeof GET_BALANCE_ERROR;

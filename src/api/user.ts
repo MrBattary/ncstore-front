@@ -4,7 +4,7 @@ import {balanceSubUrl, changePasswordSubUrl, coreUrl} from "./urls";
 import headers from "../fetcher/headers";
 import {ChangePasswordDetails} from "../types/ChangePasswordDetails";
 import {EmptyType} from "../types/EmptyType";
-import {AddBalancePayment, BalanceGetResponse, NewBalanceValue} from "../types/Balance";
+import {AddBalancePayment, Balance} from "../types/Balance";
 
 const changePassword = (changePasswordDetails: ChangePasswordDetails, token : string) =>
     postHTTP<EmptyType>(
@@ -14,14 +14,14 @@ const changePassword = (changePasswordDetails: ChangePasswordDetails, token : st
     );
 
 const addBalance = (addBalancePayment: AddBalancePayment, token : string) =>
-    postHTTP<NewBalanceValue>(
+    postHTTP<Balance>(
         combineUrls([coreUrl, balanceSubUrl]),
         headers.buildHeaderTokenContentJsonAcceptJson(token),
         addBalancePayment
     );
 
 const getBalance = (token : string) =>
-    getHTTP<BalanceGetResponse>(
+    getHTTP<Balance>(
         combineUrls([coreUrl, balanceSubUrl]),
         headers.buildHeaderTokenAcceptJson(token),
     );
