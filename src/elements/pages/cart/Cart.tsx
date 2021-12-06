@@ -55,21 +55,31 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     }, [dispatch, setNextTask, success, task, token]);
 
     useEffect(() => {
-        const total = cart.reduce(
-            (total, cartItem) =>
-                total +
-                (cartItem.discountPrice ? cartItem.discountPrice : cartItem.normalPrice) * cartItem.productCount,
-            0
-        );
+        const total =
+            Math.round(
+                (cart.reduce(
+                    (total, cartItem) =>
+                        total +
+                        (cartItem.discountPrice ? cartItem.discountPrice : cartItem.normalPrice) *
+                            cartItem.productCount,
+                    0
+                ) +
+                    Number.EPSILON) *
+                    100
+            ) / 100;
         setTotalPrice(total);
         setSave(
-            cart.reduce(
-                (total, cartItem) =>
-                    total +
-                    (cartItem.discountPrice ? cartItem.normalPrice - cartItem.discountPrice : 0) *
-                        cartItem.productCount,
-                0
-            )
+            Math.round(
+                (cart.reduce(
+                    (total, cartItem) =>
+                        total +
+                        (cartItem.discountPrice ? cartItem.normalPrice - cartItem.discountPrice : 0) *
+                            cartItem.productCount,
+                    0
+                ) +
+                    Number.EPSILON) *
+                    100
+            ) / 100
         );
         setAfterBalance((profile ? profile.balance : 0) - total);
     }, [cart, profile]);
@@ -92,8 +102,11 @@ const Cart: React.FC<cartProps> = ({ history }) => {
 
     useEffect(() => {
         if (!roles.includes(UserRole.CUSTOMER) || !token) {
-            history.push('/');
+            history.push('/signin');
         }
+    }, [history, roles, token]);
+
+    useEffect(() => {
         if (token) {
             dispatch(getCart(token));
             if (!profile && userType === UserType.PERSON) {
