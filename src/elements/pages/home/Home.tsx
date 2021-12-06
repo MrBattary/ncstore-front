@@ -1,19 +1,25 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { History } from 'history';
 
-import {Box, Stack} from '@mui/material';
+import CardMedia from '@mui/material/CardMedia';
+import { Box, Stack } from '@mui/material';
+
+import HomeCompilation from '../../components/home_compilation/HomeCompilation';
+import { getProducts } from '../../../actions/products/GetProducts';
+import { useDispatch, useSelector } from 'react-redux';
+import { Pagination } from '../../../types/Pagination';
+import { SortOrder, SortRule } from '../../../types/SortEnum';
+import { ProductFromList, ProductsList } from '../../../types/ProductsList';
+import { AppState } from '../../../reducers/rootReducer';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
+import { UserRole } from '../../../types/UserRole';
+
 import './style.css';
-import HomeCompilation from "../../components/home_compilation/HomeCompilation";
-import {getProducts} from "../../../actions/products/GetProducts";
-import {useDispatch, useSelector} from "react-redux";
-import {Pagination} from '../../../types/Pagination';
-import {SortOrder, SortRule} from "../../../types/SortEnum";
-import useTask, {DEFAULT_TASK_ABSENT} from "../../../utils/TaskHook";
-import {ProductFromList, ProductsList} from "../../../types/ProductsList";
-import {AppState} from "../../../reducers/rootReducer";
-import CardMedia from "@mui/material/CardMedia";
 
-
-type homeProps = {};
+type homeProps = {
+    history: History;
+};
 
 const enum homeTasks {
     WAIT_FOR_DISCOUNT_PRODUCTS_TO_LOAD = 'WAIT_FOR_DISCOUNT_PRODUCT_TO_LOAD',
@@ -22,18 +28,17 @@ const enum homeTasks {
     WAIT_FOR_YOU_PRODUCTS_TO_LOAD = 'WAIT_FOR_YOU_PRODUCT_TO_LOAD',
 }
 
-const Home: React.FC<homeProps> = () => {
+const Home: React.FC<homeProps> = ({ history }) => {
     const dispatch = useDispatch();
     const [task, setNextTask] = useTask();
 
-    const {products, success} = useSelector(
-        (state: AppState) => state.productsReducer
-    );
+    const { roles, token } = useSelector((state: AppState) => state.userReducer);
+    const { products, success } = useSelector((state: AppState) => state.productsReducer);
 
-    const [discountProducts, setDiscountProducts] = useState<ProductsList | null>(null);
-    const [newProducts, setNewProducts] = useState<ProductsList | null>(null);
-    const [freeProducts, setFreeProducts] = useState<ProductsList | null>(null);
-    const [forYouProducts, setForYouProducts] = useState<ProductsList | null>(null);
+    const [discountProducts, setDiscountProducts] = useState<ProductsList>([]);
+    const [newProducts, setNewProducts] = useState<ProductsList>([]);
+    const [freeProducts, setFreeProducts] = useState<ProductsList>([]);
+    const [forYouProducts, setForYouProducts] = useState<ProductsList>([]);
 
     const defaultPagination: Pagination = useMemo(
         () => ({
@@ -55,7 +60,11 @@ const Home: React.FC<homeProps> = () => {
     useEffect(() => {
         if (task === homeTasks.WAIT_FOR_FREE_PRODUCTS_TO_LOAD && success) {
             if (products) {
-                setFreeProducts(products.filter((product: ProductFromList) => (product.normalPrice===0 || product.discountPrice===0)).slice());
+                setFreeProducts(
+                    products
+                        .filter((product: ProductFromList) => product.normalPrice === 0 || product.discountPrice === 0)
+                        .slice()
+                );
                 dispatch(getProducts(defaultPagination, '', null, SortRule.DEFAULT, SortOrder.RAND));
                 setNextTask(homeTasks.WAIT_FOR_YOU_PRODUCTS_TO_LOAD, 0);
             }
@@ -89,10 +98,38 @@ const Home: React.FC<homeProps> = () => {
         // eslint-disable-next-line
     }, []);
 
+    const goToProduct = (productId: string) => {
+        history.push(`/products/${productId}`);
+    };
+
+    const handleBuy = (productId: string) => {
+        handleAddToCart(productId);
+        history.push('/cart');
+    };
+
+    const handleAddToCart = (productId: string) => {
+        dispatch(
+            updateItemInCart(
+                {
+                    productId: productId,
+                    productCount: 1,
+                },
+                token ? token : ''
+            )
+        );
+    };
+
     const renderBestDiscount = () => {
         return (
             <>
-                <HomeCompilation compilationName="Best discount" products={discountProducts}/>
+                <HomeCompilation
+                    compilationName='Best discount'
+                    products={discountProducts}
+                    isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
+                    onAddToCart={handleAddToCart}
+                    onBuy={handleBuy}
+                    onClick={goToProduct}
+                />
             </>
         );
     };
@@ -100,7 +137,14 @@ const Home: React.FC<homeProps> = () => {
     const renderNewest = () => {
         return (
             <>
-                <HomeCompilation compilationName="New in the store" products={newProducts}/>
+                <HomeCompilation
+                    compilationName='New in the store'
+                    products={newProducts}
+                    isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
+                    onAddToCart={handleAddToCart}
+                    onBuy={handleBuy}
+                    onClick={goToProduct}
+                />
             </>
         );
     };
@@ -108,7 +152,14 @@ const Home: React.FC<homeProps> = () => {
     const renderFree = () => {
         return (
             <>
-                <HomeCompilation compilationName="Free" products={freeProducts}/>
+                <HomeCompilation
+                    compilationName='Free'
+                    products={freeProducts}
+                    isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
+                    onAddToCart={handleAddToCart}
+                    onBuy={handleBuy}
+                    onClick={goToProduct}
+                />
             </>
         );
     };
@@ -116,29 +167,33 @@ const Home: React.FC<homeProps> = () => {
     const renderCompilation = () => {
         return (
             <>
-                <HomeCompilation compilationName="For you" products={forYouProducts}/>
+                <HomeCompilation
+                    compilationName='For you'
+                    products={forYouProducts}
+                    isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
+                    onAddToCart={handleAddToCart}
+                    onBuy={handleBuy}
+                    onClick={goToProduct}
+                />
             </>
         );
     };
 
     return (
-        <Box sx={{
-            marginTop: 15,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        }}>
-            <CardMedia
-                component='img'
-                height='300'
-                image='Home-Banner.jpg'
-                alt={`NCStore`}
-            />
-            <Stack spacing={10} sx={{marginTop: 15}}>
-                {!discountProducts ? null : renderBestDiscount()}
-                {!newProducts ? null : renderNewest()}
-                {!freeProducts ? null : renderFree()}
-                {!forYouProducts ? null : renderCompilation()}
+        <Box
+            sx={{
+                marginTop: 15,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+            }}
+        >
+            <CardMedia component='img' height='300' image='Home-Banner.jpg' alt={`NCStore`} />
+            <Stack spacing={10} sx={{ marginTop: 15 }}>
+                {!discountProducts.length ? null : renderBestDiscount()}
+                {!newProducts.length ? null : renderNewest()}
+                {!freeProducts.length ? null : renderFree()}
+                {!forYouProducts.length ? null : renderCompilation()}
             </Stack>
         </Box>
     );
