@@ -6,7 +6,7 @@ import dropin from "braintree-web-drop-in"
 
 type paymentModalProps = {
     isVisible: boolean;
-    handleOk: (event: any, nonce:string) => void;
+    handleOk: (event: any, nonce: string) => void;
     handleCancel: (event: any) => void;
     paymentToken: string;
 };
@@ -18,7 +18,7 @@ const PaymentModal: React.FC<paymentModalProps> = ({isVisible, handleOk, handleC
     const initializeBraintree = () => dropin.create({
         authorization: paymentToken,
         container: '#braintree-drop-in-div',
-    }, function (error: any, instance: any) {
+    }, (error: any, instance: any) => {
         if (error) {
             console.error(error)
             handleCancel(null)

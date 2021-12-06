@@ -20,7 +20,6 @@ const UserProfileBalance: React.FC<profileBalanceProps> = ({balance, balanceCurr
         <Container>
             <Paper elevation={10}>
                 <Box sx={{
-                    marginTop: 8,
                     paddingTop: 2,
                     display: 'flex',
                     flexDirection: 'column',

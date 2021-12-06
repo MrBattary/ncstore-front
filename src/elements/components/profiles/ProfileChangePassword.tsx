@@ -19,7 +19,6 @@ const ProfileChangePassword: React.FC<profileProps> = ({ loading, onFinish, onFi
         <Container>
             <Paper elevation={10}>
                 <Box sx={{
-                    marginTop: 8,
                     paddingTop: 2,
                     display: 'flex',
                     flexDirection: 'column',

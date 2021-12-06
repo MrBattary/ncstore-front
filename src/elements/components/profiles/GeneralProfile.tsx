@@ -145,7 +145,6 @@ const Profile: React.FC<profileProps> = ({history, profile}) => {
         <Container>
             <Paper elevation={10}>
                 <Box sx={{
-                    marginTop: 8,
                     paddingTop: 2,
                     display: 'flex',
                     flexDirection: 'column',

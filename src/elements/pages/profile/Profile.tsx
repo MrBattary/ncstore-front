@@ -18,6 +18,7 @@ import PaymentModal from "../../components/payment/PaymentModal";
 import {getPaymentToken} from "../../../actions/users/Payment";
 import {Modal} from "antd";
 import {addBalance} from "../../../actions/users/BalanceAdd";
+import ProfileEmail from "../../components/profiles/ProfileEmail";
 
 type profileProps = {
     history: History;
@@ -138,8 +139,9 @@ const Profile: React.FC<profileProps> = ({history}) => {
 
     return loading || !profile ? null : (
         <Container>
-            <Stack>
+            <Stack spacing={8} sx={{marginTop:8, marginBottom:8}}>
                 <GeneralProfile history={history} profile={profile}/>
+                <ProfileEmail email={profile.email}/>
                 <UserProfileBalance balance={balance ? balance.balance : 0} balanceCurrency={balance ? balance.currency : "$"} loading={loading}
                                     onFinish={handleBalanceAdd} onFinishFailed={() => {
                 }}/>

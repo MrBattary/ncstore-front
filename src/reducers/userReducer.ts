@@ -21,11 +21,11 @@ interface UserStore {
     token: string | null;
     roles: UserRole[];
     profile: PersonProfile | CompanyProfile | null;
+    paymentToken: string | null;
+    balance: Balance | null;
     loading: boolean;
     success: boolean;
     errorMessage: string | null;
-    paymentToken: string | null;
-    balance: Balance | null;
 }
 
 export type UserReducerTypes =
@@ -34,11 +34,11 @@ export type UserReducerTypes =
     | SignOut
     | GetPersonProfile
     | GetCompanyProfile
-    | RestoreDefaultUserReducer
     | ChangePassword
     | GetPaymentToken
     | AddBalance
-    | GetBalance;
+    | GetBalance
+    | RestoreDefaultUserReducer;
 
 const initialState: UserStore = {
     userId: null,
@@ -46,11 +46,11 @@ const initialState: UserStore = {
     token: null,
     roles: [],
     profile: null,
+    paymentToken: null,
+    balance: null,
     loading: false,
     success: false,
     errorMessage: null,
-    paymentToken: null,
-    balance: null
 };
 
 export const userReducer = (state = initialState, action: UserReducerTypes): UserStore => {
