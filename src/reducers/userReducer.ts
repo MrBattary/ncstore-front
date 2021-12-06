@@ -9,6 +9,11 @@ import { GetPersonProfile } from '../actions/users/GetPersonProfile';
 import { GetCompanyProfile } from '../actions/users/GetCompanyProfile';
 import { PersonProfile } from '../types/PersonProfile';
 import { CompanyProfile } from '../types/CompanyProfile';
+import {ChangePassword} from "../actions/users/PasswordChange";
+import {GetPaymentToken} from "../actions/users/Payment";
+import {AddBalance} from "../actions/users/BalanceAdd";
+import {GetBalance} from "../actions/users/GetBalance";
+import {Balance} from "../types/Balance";
 
 interface UserStore {
     userId: string | null;
@@ -16,6 +21,8 @@ interface UserStore {
     token: string | null;
     roles: UserRole[];
     profile: PersonProfile | CompanyProfile | null;
+    paymentToken: string | null;
+    balance: Balance | null;
     loading: boolean;
     success: boolean;
     errorMessage: string | null;
@@ -27,6 +34,10 @@ export type UserReducerTypes =
     | SignOut
     | GetPersonProfile
     | GetCompanyProfile
+    | ChangePassword
+    | GetPaymentToken
+    | AddBalance
+    | GetBalance
     | RestoreDefaultUserReducer;
 
 const initialState: UserStore = {
@@ -35,6 +46,8 @@ const initialState: UserStore = {
     token: null,
     roles: [],
     profile: null,
+    paymentToken: null,
+    balance: null,
     loading: false,
     success: false,
     errorMessage: null,
@@ -102,7 +115,11 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.SIGN_IN_ERROR:
         case types.SIGN_UP_ERROR:
         case types.GET_PERSON_PROFILE_ERROR:
-        case types.GET_COMPANY_PROFILE_ERROR: {
+        case types.GET_COMPANY_PROFILE_ERROR:
+        case types.GET_PAYMENT_TOKEN_ERROR:
+        case types.ADD_BALANCE_ERROR:
+        case types.GET_BALANCE_ERROR:
+        case types.CHANGE_USER_PASSWORD_ERROR: {
             return {
                 ...state,
                 loading: false,
@@ -113,9 +130,53 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.RESTORE_DEFAULT_USER_REDUCER: {
             return {
                 ...state,
+                balance: null,
                 success: false,
                 errorMessage: null,
             };
+        }
+        case types.GET_PAYMENT_TOKEN_REQUEST:
+        case types.CHANGE_USER_PASSWORD_REQUEST:{
+            return {
+                ...state,
+                loading: true,
+                success: false,
+                errorMessage: null,
+            };
+        }
+        case types.CHANGE_USER_PASSWORD_RECEIVE:{
+            return {
+                ...state,
+                userType: null,
+                token: null,
+                roles: [],
+                loading: false,
+                success: true,
+            };
+        }
+        case types.GET_PAYMENT_TOKEN_RECEIVE:{
+            return {
+                ...state,
+                paymentToken: action.payload.paymentToken,
+                loading: false,
+                success: true,
+            };
+        }
+        case types.ADD_BALANCE_RECEIVE:{
+            return {
+                ...state,
+                balance: action.payload,
+                loading: false,
+                success: true,
+            }
+        }
+        case types.GET_BALANCE_RECEIVE:{
+            return {
+                ...state,
+                balance: action.payload,
+                loading: false,
+                success: true,
+            }
         }
         default:
             return state;

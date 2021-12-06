@@ -17,3 +17,10 @@ export const companyInfoSubUrl = '/company/info';
 /* Cart */
 export const cartSubUrl = '/cart';
 export const cartContinuingSubUrl = '/cart/';
+
+/* User */
+export const changePasswordSubUrl = '/user/password';
+export const balanceSubUrl = '/user/balance';
+
+/* Payment */
+export const paymentSubUrl = '/payment';
