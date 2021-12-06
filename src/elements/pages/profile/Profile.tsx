@@ -1,28 +1,61 @@
-import React, { useEffect } from 'react';
-import { History } from 'history';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {History} from 'history';
+import {useDispatch, useSelector} from 'react-redux';
 
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Avatar, Container, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack';
+import {Container, Stack} from '@mui/material';
+import {useSnackbar} from 'notistack';
 
-import { AppState } from '../../../reducers/rootReducer';
-import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
-import { getPersonProfile } from '../../../actions/users/GetPersonProfile';
-import { getCompanyProfile } from '../../../actions/users/GetCompanyProfile';
-import { UserType } from '../../../types/UserType';
-import { PersonProfile } from '../../../types/PersonProfile';
-import { CompanyProfile } from '../../../types/CompanyProfile';
-import { UserRole } from '../../../types/UserRole';
+import {AppState} from '../../../reducers/rootReducer';
+import {restoreDefaultUserReducer} from '../../../actions/users/RestoreDefaultUserReducer';
+import {getPersonProfile} from '../../../actions/users/GetPersonProfile';
+import {getCompanyProfile} from '../../../actions/users/GetCompanyProfile';
+import {UserType} from '../../../types/UserType';
+import GeneralProfile from "../../components/profiles/GeneralProfile";
+import UserProfileBalance from "../../components/profiles/UserProfileBalance";
+import ProfileChangePassword from "../../components/profiles/ProfileChangePassword";
+import {changePassword} from "../../../actions/users/PasswordChange";
+import PaymentModal from "../../components/payment/PaymentModal";
+import {getPaymentToken} from "../../../actions/users/Payment";
+import {Modal} from "antd";
+import {addBalance} from "../../../actions/users/BalanceAdd";
+import ProfileEmail from "../../components/profiles/ProfileEmail";
 
 type profileProps = {
     history: History;
 };
 
-const Profile: React.FC<profileProps> = ({ history }) => {
-    const { enqueueSnackbar } = useSnackbar();
+const Profile: React.FC<profileProps> = ({history}) => {
+    const {enqueueSnackbar} = useSnackbar();
     const dispatch = useDispatch();
-    const { token, userType, profile, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
+
+    const [isPaymentFormVisible, setIsPaymentFormVisible] = useState<boolean>(false);
+    const [isWaitingForPaymentToProceed, setIsWaitingForPaymentToProceed] = useState<boolean>(false);
+    const [paymentAmount, setPaymentAmount] = useState<number>(0);
+
+    const {
+        token,
+        paymentToken,
+        userType,
+        profile,
+        loading,
+        errorMessage,
+        balance,
+        success
+    } = useSelector((state: AppState) => state.userReducer);
+
+
+    const renderErrorModal = () => {
+        Modal.error({
+            title: 'Payment error',
+            content: 'We can not proceed a payment for you. Maybe you do not have enough money on your card or payment service is down. Try again later.',
+        });
+    }
+
+    const renderSuccessModal = () => {
+        Modal.success({
+            content: 'Your payment was successful!',
+        });
+    }
 
     useEffect(() => {
         if (errorMessage) {
@@ -32,6 +65,18 @@ const Profile: React.FC<profileProps> = ({ history }) => {
             dispatch(restoreDefaultUserReducer());
         }
     }, [enqueueSnackbar, errorMessage, dispatch]);
+
+    useEffect(() => {
+        if(isWaitingForPaymentToProceed && !loading){
+            setIsWaitingForPaymentToProceed(false)
+            if(success){
+                renderSuccessModal()
+            }
+            else{
+                renderErrorModal()
+            }
+        }
+    }, [isWaitingForPaymentToProceed, loading, success, dispatch]);
 
     useEffect(() => {
         if (token) {
@@ -54,85 +99,58 @@ const Profile: React.FC<profileProps> = ({ history }) => {
         }
     }, [token, history]);
 
-    const renderTypographyInProfile = (data: any) => (
-        <Typography component='h1' variant='h4'>
-            {data}
-        </Typography>
-    );
+    useEffect(() => {
+        dispatch(getPaymentToken(token ? token : ''));
+        // DO NOT REMOVE, Calls only once
+        // eslint-disable-next-line
+    }, []);
 
-    const renderPersonNickname = () => {
-        if ((profile as PersonProfile).nickName) {
-            return renderTypographyInProfile((profile as PersonProfile).nickName);
+    const handleBalanceAdd = (e: any) => {
+        if (paymentToken) {
+            setIsPaymentFormVisible(true);
+            const {amount} = e;
+            setPaymentAmount(amount);
+        } else {
+            renderErrorModal()
         }
-    };
+    }
 
-    const renderCompanyName = () => {
-        if ((profile as CompanyProfile).companyName) {
-            return renderTypographyInProfile((profile as CompanyProfile).companyName);
+    const handleBalancePayment = (e: any, nonce: string) => {
+        if (nonce && nonce.length !== 0) {
+            dispatch(addBalance({paymentAmount, nonce}, token ? token : ''));
+            setIsWaitingForPaymentToProceed(true);
+            dispatch(getPaymentToken(token ? token : ''));
+            setIsPaymentFormVisible(false);
         }
-    };
+    }
 
-    const renderCompanyDescription = () => {
-        if ((profile as CompanyProfile).description) {
-            return renderTypographyInProfile((profile as CompanyProfile).description);
-        }
-    };
-
-    const renderPersonNames = () => {
-        if ((profile as PersonProfile).firstName && (profile as PersonProfile).lastName) {
-            return renderTypographyInProfile(
-                (profile as PersonProfile).firstName.concat((profile as PersonProfile).lastName)
+    const handlePasswordChange = (e: any) => {
+        if (e.outOfDate !== false) {
+            const {oldPassword, newPassword} = e;
+            dispatch(changePassword({
+                    oldPassword,
+                    newPassword
+                }, token ? token : '')
             );
         }
-        if ((profile as PersonProfile).firstName) {
-            return renderTypographyInProfile((profile as PersonProfile).firstName);
-        }
-        if ((profile as PersonProfile).lastName) {
-            return renderTypographyInProfile((profile as PersonProfile).lastName);
-        }
-    };
+    }
 
-    const renderPersonBirthday = () => {
-        if ((profile as PersonProfile).birthday) {
-            return renderTypographyInProfile((profile as PersonProfile).birthday);
-        }
-    };
 
-    const renderCompanyFoundationDate = () => {
-        if ((profile as CompanyProfile).foundationDate) {
-            return renderTypographyInProfile((profile as CompanyProfile).foundationDate);
-        }
-    };
-
-    const renderRolesList = () => {
-        if (profile) {
-            return profile.roles
-                ? profile.roles.map((role: UserRole) => (
-                      <ListItem>
-                          <ListItemText
-                              primary={(role: UserRole) => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
-                          />
-                      </ListItem>
-                  ))
-                : null;
-        }
-    };
 
     return loading || !profile ? null : (
         <Container>
-            <Paper>
-                <Avatar sx={{ bgcolor: 'secondary.main', marginTop: 2 }}>
-                    <LockOutlinedIcon />
-                </Avatar>
-                {renderPersonNickname()}
-                {renderCompanyName()}
-                {renderTypographyInProfile(profile.balance ? profile.balance : null)}
-                {renderCompanyDescription()}
-                {renderPersonNames()}
-                {renderPersonBirthday()}
-                {renderCompanyFoundationDate()}
-                <List>{renderRolesList()}</List>
-            </Paper>
+            <Stack spacing={8} sx={{marginTop:8, marginBottom:8}}>
+                <GeneralProfile history={history} profile={profile}/>
+                <ProfileEmail email={profile.email}/>
+                <UserProfileBalance balance={balance ? balance.balance : 0} balanceCurrency={balance ? balance.currency : "$"} loading={loading}
+                                    onFinish={handleBalanceAdd} onFinishFailed={() => {
+                }}/>
+                <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {
+                }}/>
+                <PaymentModal isVisible={isPaymentFormVisible} handleOk={handleBalancePayment}
+                              handleCancel={() => setIsPaymentFormVisible(false)}
+                              paymentToken={paymentToken ? paymentToken : ''}/>
+            </Stack>
         </Container>
     );
 };

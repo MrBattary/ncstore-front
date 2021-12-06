@@ -24,13 +24,14 @@ import {restoreDefaultUserReducer} from '../../../actions/users/RestoreDefaultUs
 import {restoreDefaultProductsReducer} from '../../../actions/products/RestoreDefaultProductsReducer';
 import {UserRole} from '../../../types/UserRole';
 import {SortOrder, SortRule} from "../../../types/SortEnum";
+import {Typography} from "@mui/material";
 
 type navigationBarProps = {};
 
 const NavigationBar: React.FC<navigationBarProps> = () => {
     const history = useHistory();
     const dispatch = useDispatch();
-    const { token, roles } = useSelector((state: AppState) => state.userReducer);
+    const { token, roles, balance } = useSelector((state: AppState) => state.userReducer);
 
     const defaultPagination: Pagination = {
         page: 0,
@@ -112,8 +113,19 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         }
     };
 
+    const renderBalance = () => {
+        return(
+            <Box sx={{display:'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',}}>
+                <Typography align="center">Balance : {balance ? balance.balance : 0} {balance ? balance.currency : "$"}</Typography>
+            </Box>
+        )
+    };
+
     const renderAuthorisedUserMenu = (
         <Stack spacing={2} direction='row'>
+            {renderBalance()}
             {renderCustomerIcons()}
             {renderSupplierIcons()}
             <IconButton
