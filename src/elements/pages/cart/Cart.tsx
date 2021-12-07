@@ -147,6 +147,14 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         history.push(`/products/${productId}`);
     };
 
+    const onClickCheckout = () => {
+        if (totalPrice === 0) {
+            handleCheckoutFromBalance();
+        } else {
+            setCheckoutModalVisible(true);
+        }
+    };
+
     const renderCartItems = () =>
         cart.map((cartItem: CartProduct) => (
             <CartItem
@@ -195,7 +203,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                     className='checkout__checkout-button'
                     size='large'
                     variant='contained'
-                    onClick={() => setCheckoutModalVisible(true)}
+                    onClick={onClickCheckout}
                     startIcon={<ShoppingCart />}
                     sx={{ backgroundColor: '#39bd5c', marginTop: 5, '&:hover': { backgroundColor: '#50d96c' } }}
                 >
