@@ -1,25 +1,27 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { History } from 'history';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useCallback, useEffect, useState} from 'react';
+import {History} from 'history';
+import {useDispatch, useSelector} from 'react-redux';
 
-import { Button, Divider, Typography } from '@mui/material';
-import { AccountBalanceWallet, CreditCard, ShoppingCart } from '@mui/icons-material';
-import { Modal } from 'antd';
-import { useSnackbar } from 'notistack';
+import {Button, Divider, Typography} from '@mui/material';
+import {AccountBalanceWallet, CreditCard, ShoppingCart} from '@mui/icons-material';
+import {Modal} from 'antd';
+import {useSnackbar} from 'notistack';
 
-import { AppState } from '../../../reducers/rootReducer';
-import { UserRole } from '../../../types/UserRole';
-import { getCart } from '../../../actions/cart/GetCart';
-import { checkoutFromCart } from '../../../actions/orders/CheckoutFromCart';
-import { CartProduct } from '../../../types/CartProduct';
+import {AppState} from '../../../reducers/rootReducer';
+import {UserRole} from '../../../types/UserRole';
+import {getCart} from '../../../actions/cart/GetCart';
+import {checkoutFromCart} from '../../../actions/orders/CheckoutFromCart';
+import {CartProduct} from '../../../types/CartProduct';
 import CartItem from '../../components/cart_item/CartItem';
-import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
-import { deleteItemFromCart } from '../../../actions/cart/DeleteItemFromCart';
+import {updateItemInCart} from '../../../actions/cart/UpdateItemInCart';
+import {deleteItemFromCart} from '../../../actions/cart/DeleteItemFromCart';
 import OrderModal from '../../components/order_modal/OrderModal';
-import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+import useTask, {DEFAULT_TASK_ABSENT} from '../../../utils/TaskHook';
 
 import './style.css';
 import {getBalance} from "../../../actions/users/GetBalance";
+import PaymentModal from "../../components/payment/PaymentModal";
+import {getPaymentToken} from "../../../actions/users/Payment";
 
 type cartProps = {
     history: History;
@@ -32,17 +34,18 @@ const enum cartTasks {
 
 // TODO: Add sync of cart
 
-const Cart: React.FC<cartProps> = ({ history }) => {
+const Cart: React.FC<cartProps> = ({history}) => {
     const dispatch = useDispatch();
-    const { enqueueSnackbar } = useSnackbar();
-    const { cart, loading, success, errorMessage } = useSelector((state: AppState) => state.cartReducer);
-    const { roles, balance, token} = useSelector((state: AppState) => state.userReducer);
-    const { order, success: successOrder } = useSelector((state: AppState) => state.ordersReducer);
+    const {enqueueSnackbar} = useSnackbar();
+    const {cart, loading, success, errorMessage} = useSelector((state: AppState) => state.cartReducer);
+    const {roles, balance, token, paymentToken} = useSelector((state: AppState) => state.userReducer);
+    const {order, success: successOrder} = useSelector((state: AppState) => state.ordersReducer);
     const [totalPrice, setTotalPrice] = useState<number>(0);
     const [save, setSave] = useState<number>(0);
     const [afterBalance, setAfterBalance] = useState<number>(0);
     const [isCheckoutModalVisible, setCheckoutModalVisible] = useState<boolean>(false);
     const [isOrderModalVisible, setOrderModalVisible] = useState<boolean>(false);
+    const [isPaymentModalVisible, setPaymentModalVisible] = useState<boolean>(false);
     const [task, setNextTask] = useTask();
 
     useEffect(() => {
@@ -56,27 +59,27 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         const total =
             Math.round(
                 (cart.reduce(
-                    (total, cartItem) =>
-                        total +
-                        (cartItem.discountPrice ? cartItem.discountPrice : cartItem.normalPrice) *
+                        (total, cartItem) =>
+                            total +
+                            (cartItem.discountPrice !== null ? cartItem.discountPrice : cartItem.normalPrice) *
                             cartItem.productCount,
-                    0
-                ) +
+                        0
+                    ) +
                     Number.EPSILON) *
-                    100
+                100
             ) / 100;
         setTotalPrice(total);
         setSave(
             Math.round(
                 (cart.reduce(
-                    (total, cartItem) =>
-                        total +
-                        (cartItem.discountPrice !== null ? cartItem.normalPrice - cartItem.discountPrice : 0) *
+                        (total, cartItem) =>
+                            total +
+                            (cartItem.discountPrice !== null ? cartItem.normalPrice - cartItem.discountPrice : 0) *
                             cartItem.productCount,
-                    0
-                ) +
+                        0
+                    ) +
                     Number.EPSILON) *
-                    100
+                100
             ) / 100
         );
         const afterBalance = Math.round((((balance ? balance.balance : 0) - total) + Number.EPSILON) * 100) / 100;
@@ -89,7 +92,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
             setOrderModalVisible(true);
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [setNextTask, successOrder, task]);
+    }, [setNextTask, successOrder, task, token, dispatch]);
 
     useEffect(() => {
         if (errorMessage) {
@@ -108,8 +111,11 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     useEffect(() => {
         if (token) {
             dispatch(getCart(token));
-            if(!balance) {
+            if (!balance) {
                 dispatch(getBalance(token));
+            }
+            if (!paymentToken) {
+                dispatch(getPaymentToken(token));
             }
         }
 
@@ -119,7 +125,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
 
     const handleChangeProductNumber = useCallback(
         (productId: string, numberOfProducts: number) => {
-            dispatch(updateItemInCart({ productId: productId, productCount: numberOfProducts }, token ? token : ''));
+            dispatch(updateItemInCart({productId: productId, productCount: numberOfProducts}, token ? token : ''));
             setNextTask(cartTasks.WAIT_FOR_CHANGE_CART, 0);
         },
         [dispatch, setNextTask, token]
@@ -131,12 +137,22 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     };
 
     const handleCheckoutFromBalance = () => {
-        dispatch(checkoutFromCart(token ? token : ''));
+        dispatch(checkoutFromCart(
+            {useBalance: true, nonce: null},
+            token ? token : '')
+        );
         setNextTask(cartTasks.WAIT_FOR_CHECKOUT, 0);
     };
 
-    const handleCheckoutFromCard = () => {
-        console.log('Checkout from card');
+    const handleCheckoutFromCard = (e: any, nonce: string) => {
+        if (nonce && nonce.length !== 0) {
+            dispatch(checkoutFromCart(
+                {useBalance: false, nonce: nonce},
+                token ? token : ''))
+            dispatch(getPaymentToken(token ? token : ''));
+            setPaymentModalVisible(false);
+            setNextTask(cartTasks.WAIT_FOR_CHECKOUT, 0);
+        }
     };
 
     const goToProduct = (productId: string) => {
@@ -165,25 +181,25 @@ const Cart: React.FC<cartProps> = ({ history }) => {
 
     const renderNonemptyCartRightSide = () => (
         <div className='nonempty-cart__right-side'>
-            <Typography className='right-side__balance' style={{ marginBottom: 10 }} variant='h5'>
+            <Typography className='right-side__balance' style={{marginBottom: 10}} variant='h5'>
                 Balance: {balance ? balance.balance : 0}
                 {cart[0].priceCurrency}
             </Typography>
-            <Typography className='right-side__total' style={{ marginBottom: 10 }} variant='h5'>
+            <Typography className='right-side__total' style={{marginBottom: 10}} variant='h5'>
                 Total: {totalPrice}
                 {cart[0].priceCurrency}
             </Typography>
-            <Typography className='right-side__save' style={{ marginBottom: 10 }} variant='h5'>
+            <Typography className='right-side__save' style={{marginBottom: 10}} variant='h5'>
                 Save:{' '}
-                <span style={{ color: '#8cc44b' }}>
+                <span style={{color: '#8cc44b'}}>
                     {save}
                     {cart[0].priceCurrency}
                 </span>
             </Typography>
-            <Typography className='right-side__after' style={{ marginBottom: 10 }} variant='h5'>
+            <Typography className='right-side__after' style={{marginBottom: 10}} variant='h5'>
                 After:{' '}
                 {afterBalance < 0 ? (
-                    <span style={{ color: 'red' }}>
+                    <span style={{color: 'red'}}>
                         {afterBalance}
                         {cart[0].priceCurrency}
                     </span>
@@ -200,8 +216,8 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                     size='large'
                     variant='contained'
                     onClick={onClickCheckout}
-                    startIcon={<ShoppingCart />}
-                    sx={{ backgroundColor: '#39bd5c', marginTop: 5, '&:hover': { backgroundColor: '#50d96c' } }}
+                    startIcon={<ShoppingCart/>}
+                    sx={{backgroundColor: '#39bd5c', marginTop: 5, '&:hover': {backgroundColor: '#50d96c'}}}
                 >
                     Checkout
                 </Button>
@@ -213,10 +229,10 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         <div className='cart-content__nonempty-cart'>
             {renderNonemptyCartRightSide()}
             <div className='nonempty-cart__left-side'>
-                <Typography className='left-side__header' variant='h4' style={{ marginLeft: 10, marginBottom: 20 }}>
+                <Typography className='left-side__header' variant='h4' style={{marginLeft: 10, marginBottom: 20}}>
                     Your cart
                 </Typography>
-                <Divider />
+                <Divider/>
                 <div className='left-side__items'>{renderCartItems()}</div>
             </div>
             <Modal
@@ -228,9 +244,9 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                         key='balance'
                         variant='outlined'
                         color='inherit'
-                        onClick={handleCheckoutFromBalance}
+                        onClick={() => handleCheckoutFromBalance()}
                         disabled={afterBalance < 0}
-                        startIcon={<AccountBalanceWallet />}
+                        startIcon={<AccountBalanceWallet/>}
                     >
                         Balance
                     </Button>,
@@ -238,9 +254,12 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                         key='card'
                         variant='outlined'
                         color='inherit'
-                        onClick={handleCheckoutFromCard}
-                        startIcon={<CreditCard />}
-                        style={{ marginLeft: 10, marginRight: 10 }}
+                        onClick={() => {
+                            setCheckoutModalVisible(false);
+                            setPaymentModalVisible(true);
+                        }}
+                        startIcon={<CreditCard/>}
+                        style={{marginLeft: 10, marginRight: 10}}
                     >
                         Card
                     </Button>,
@@ -257,11 +276,19 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                 <Typography>You can choose to pay from the balance or pay by card.</Typography>
                 <Typography>If the balance is negative, payment from the balance is not possible.</Typography>
             </Modal>
+            <PaymentModal isVisible={isPaymentModalVisible} handleOk={handleCheckoutFromCard}
+                          handleCancel={() => setPaymentModalVisible(false)}
+                          paymentToken={paymentToken ? paymentToken : ''}/>
             <OrderModal
                 isModalVisible={isOrderModalVisible}
                 order={order}
                 onClick={goToProduct}
-                onClose={() => setOrderModalVisible(false)}
+                onClose={() => {
+                    dispatch(getCart(token ? token : ''));
+                    dispatch(getBalance(token ? token : ''));
+                    setOrderModalVisible(false);
+                    //TODO move this all away when fix modal render
+                }}
             />
         </div>
     );
@@ -272,7 +299,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
             <Typography className='empty-cart__label' variant='h4' display='inline-block'>
                 It seems you are not add anything yet
             </Typography>
-            <Button style={{ fontSize: 24 }} onClick={() => history.push('/')}>
+            <Button style={{fontSize: 24}} onClick={() => history.push('/')}>
                 Let's buy something!
             </Button>
         </div>

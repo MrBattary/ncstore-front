@@ -6,9 +6,14 @@ import { buildHeaderTokenAcceptJson, buildHeaderTokenContentJsonAcceptJson } fro
 import { CartProductIdAndCount } from '../types/CartProductIdAndCount';
 import { CartProduct } from '../types/CartProduct';
 import { Order } from '../types/Order';
+import {CartCheckout} from "../types/CartCheckout";
 
-const checkoutCart = (token: string) =>
-    postHTTP<Order>(combineUrls([coreUrl, cartSubUrl]), buildHeaderTokenAcceptJson(token), null);
+const checkoutCart = (cartCheckout: CartCheckout, token: string) =>
+    postHTTP<Order>(
+        combineUrls([coreUrl, cartSubUrl]),
+        buildHeaderTokenContentJsonAcceptJson(token),
+        cartCheckout
+    );
 
 const deleteItemFromCart = (productId: string, token: string) =>
     deleteHTTP<CartProduct | null>(

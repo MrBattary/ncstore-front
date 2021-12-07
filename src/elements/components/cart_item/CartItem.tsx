@@ -38,7 +38,7 @@ const CartItem: React.FC<cartItemProps> = ({ loading, product, onClick, onChange
     };
 
     const renderProductPrice = () => {
-        if (!product.discountPrice) {
+        if (product.discountPrice===null) {
             return (
                 <Stack direction='row'>
                     <Typography gutterBottom component='div'>
