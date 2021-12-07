@@ -11,10 +11,10 @@ type orderModalProps = {
     isModalVisible: boolean;
     order: Order | null;
     onClick: (productId: string) => void;
-    onClose: (event: React.MouseEvent) => void;
+    onHandleCancel: (event: React.MouseEvent) => void;
 };
 
-const OrderModal: React.FC<orderModalProps> = ({ isModalVisible, order, onClick, onClose }) => {
+const OrderModal: React.FC<orderModalProps> = ({ isModalVisible, order, onClick, onHandleCancel }) => {
     const [isVisibleCopiedTooltip, setVisibleCopiedTooltip] = useState<boolean>(false);
 
     const copyKeyToClipboard = () => {
@@ -71,10 +71,10 @@ const OrderModal: React.FC<orderModalProps> = ({ isModalVisible, order, onClick,
             className='order-modal'
             title={`Order ${order.orderId}`}
             visible={isModalVisible}
-            onOk={onClose}
-            onCancel={onClose}
+            onOk={onHandleCancel}
+            onCancel={onHandleCancel}
             footer={[
-                <Button key='close' onClick={onClose}>
+                <Button key='close' onClick={onHandleCancel}>
                     Close
                 </Button>,
             ]}
