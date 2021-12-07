@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
+
 import { DatePicker, Form, Input, InputNumber, Modal, Select, Table } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import countries from 'countries-list';
 import { NormalPrice } from '../../../types/NormalPrice';
 import Button from '@mui/material/Button';
 import { Delete } from '@mui/icons-material';
-
-import './style.css';
-import { DiscountPrice } from '../../../types/DiscountPrice';
 import { Moment } from 'moment';
 import moment from 'moment/moment';
+
+import { DiscountPrice } from '../../../types/DiscountPrice';
 import { ProductWithoutId } from '../../../types/ProductWithoutId';
 import { ProductWithSupplier } from '../../../types/ProductWithSupplier';
+
+import './style.css';
 
 type newProductFormProps = {
     isDiscountForm: boolean;

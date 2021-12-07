@@ -11,6 +11,8 @@ import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 
 import './style.css';
+import { UserRole } from '../../../types/UserRole';
+import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 
 type productProps = {
     history: History;
@@ -21,6 +23,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
 
     const { productForSale, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { roles, token } = useSelector((state: AppState) => state.userReducer);
 
     useEffect(() => {
         if (errorMessage) {
@@ -45,11 +48,30 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const handleBuy = () => {
-        console.log(`Buy product`);
+        // TODO: Lock from adding more
+        dispatch(
+            updateItemInCart(
+                {
+                    productId: productForSale ? productForSale.productId : '',
+                    productCount: 1,
+                },
+                token ? token : ''
+            )
+        );
+        history.push('/cart');
     };
 
     const handleAddToCart = () => {
-        console.log(`Product add to cart`);
+        // TODO: Lock from adding more
+        dispatch(
+            updateItemInCart(
+                {
+                    productId: productForSale ? productForSale.productId : '',
+                    productCount: 1,
+                },
+                token ? token : ''
+            )
+        );
     };
 
     const renderProductPrice = () => {
@@ -93,6 +115,21 @@ const Product: React.FC<productProps> = ({ history }) => {
             </Button>
         ));
 
+    const renderButtons = () => {
+        if (roles.includes(UserRole.CUSTOMER)) {
+            return (
+                <div className='fields__buttons'>
+                    <Button variant='contained' style={{ margin: 3 }} onClick={handleBuy}>
+                        Buy now
+                    </Button>
+                    <Button variant='outlined' style={{ margin: 3 }} onClick={handleAddToCart}>
+                        Add to cart
+                    </Button>
+                </div>
+            );
+        }
+    };
+
     const renderProductData = () => {
         return (
             <Container>
@@ -127,14 +164,7 @@ const Product: React.FC<productProps> = ({ history }) => {
                                     </Link>
                                 </div>
                                 {renderProductPrice()}
-                                <div className='fields__buttons'>
-                                    <Button variant='contained' style={{ margin: 3 }} onClick={handleBuy}>
-                                        Buy now
-                                    </Button>
-                                    <Button variant='outlined' style={{ margin: 3 }} onClick={handleAddToCart}>
-                                        Add to cart
-                                    </Button>
-                                </div>
+                                {renderButtons()}
                             </div>
                         </div>
                         <div className='content__product-details'>

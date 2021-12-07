@@ -1,0 +1,5 @@
+/* Checkout cart */
+
+export const CHECKOUT_FROM_CART_REQUEST = 'Request/CHECKOUT_FROM_CART';
+export const CHECKOUT_FROM_CART_RECEIVE = 'Receive/CHECKOUT_FROM_CART';
+export const CHECKOUT_FROM_CART_ERROR = 'CHECKOUT_FROM_CART_ERROR';

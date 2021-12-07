@@ -1,34 +1,34 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {History} from 'history';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useMemo, useState } from 'react';
+import { History } from 'history';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {useSnackbar} from 'notistack';
-import {Modal} from 'antd';
-import {CloseCircleOutlined} from '@ant-design/icons';
-import {Box, Button, Divider, Typography} from '@mui/material';
-import {Add} from '@mui/icons-material';
+import { useSnackbar } from 'notistack';
+import { Modal } from 'antd';
+import { CloseCircleOutlined } from '@ant-design/icons';
+import { Box, Button, Divider, Typography } from '@mui/material';
+import { Add } from '@mui/icons-material';
 
-import {AppState} from '../../../reducers/rootReducer';
-import {UserRole} from '../../../types/UserRole';
-import {ProductFromList} from '../../../types/ProductsList';
+import { AppState } from '../../../reducers/rootReducer';
+import { UserRole } from '../../../types/UserRole';
+import { ProductFromList } from '../../../types/ProductsList';
 import ProductInfoCard from '../../components/info_product_card/ProductInfoCard';
-import {getProducts} from '../../../actions/products/GetProducts';
-import {Pagination} from '../../../types/Pagination';
+import { getProducts } from '../../../actions/products/GetProducts';
+import { Pagination } from '../../../types/Pagination';
 import ProductForm from '../../components/product_form/ProductForm';
-import {ProductWithoutId} from '../../../types/ProductWithoutId';
-import {restoreDefaultProductsReducer} from '../../../actions/products/RestoreDefaultProductsReducer';
-import {newProduct} from '../../../actions/products/CreateProduct';
-import {converters} from '../../../utils/Converters';
-import {NormalPrice} from '../../../types/NormalPrice';
-import {deleteProduct} from '../../../actions/products/DeleteProduct';
+import { ProductWithoutId } from '../../../types/ProductWithoutId';
+import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
+import { newProduct } from '../../../actions/products/CreateProduct';
+import { converters } from '../../../utils/Converters';
+import { NormalPrice } from '../../../types/NormalPrice';
+import { deleteProduct } from '../../../actions/products/DeleteProduct';
+import { getDetailedProduct } from '../../../actions/products/GetDetailedProduct';
+import { DiscountPrice } from '../../../types/DiscountPrice';
+import { ProductWithSupplier } from '../../../types/ProductWithSupplier';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+import { updateProduct } from '../../../actions/products/UpdateProduct';
+import { SortOrder, SortRule } from '../../../types/SortEnum';
 
 import './style.css';
-import {getDetailedProduct} from '../../../actions/products/GetDetailedProduct';
-import {DiscountPrice} from '../../../types/DiscountPrice';
-import {ProductWithSupplier} from '../../../types/ProductWithSupplier';
-import useTask, {DEFAULT_TASK_ABSENT} from '../../../utils/TaskHook';
-import {updateProduct} from '../../../actions/products/UpdateProduct';
-import {SortOrder, SortRule} from "../../../types/SortEnum";
 
 type merchandiseProps = {
     history: History;
@@ -63,14 +63,14 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         []
     );
 
-    const defaultSortRule : SortRule = SortRule.DATE;
-    const defaultSortOrder : SortOrder = SortOrder.ASC;
+    const defaultSortRule: SortRule = SortRule.DATE;
+    const defaultSortOrder: SortOrder = SortOrder.ASC;
 
     // TODO: Replace this with normal request from the backend
     const categoriesList: string[] = useMemo(() => ['category1', 'category2', 'category3'], []);
 
     useEffect(() => {
-        if (task === merchandiseTasks.WAIT_FOR_ADDED_PRODUCT && product && !loading) {
+        if (task === merchandiseTasks.WAIT_FOR_ADDED_PRODUCT && product && success) {
             enqueueSnackbar(`Product ${product.productName} was successfully added!`, {
                 variant: 'success',
             });
@@ -79,10 +79,22 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, defaultSortRule, defaultSortOrder, userId, task, setNextTask]);
+    }, [
+        enqueueSnackbar,
+        success,
+        product,
+        loading,
+        dispatch,
+        defaultPagination,
+        defaultSortRule,
+        defaultSortOrder,
+        userId,
+        task,
+        setNextTask,
+    ]);
 
     useEffect(() => {
-        if (task === merchandiseTasks.WAIT_FOR_DELETED_PRODUCT && product && !loading) {
+        if (task === merchandiseTasks.WAIT_FOR_DELETED_PRODUCT && product && success) {
             enqueueSnackbar(`Product ${product.productName} was successfully deleted!`, {
                 variant: 'success',
             });
@@ -90,10 +102,22 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [enqueueSnackbar, success, product, loading, dispatch, defaultPagination, userId, defaultSortRule, defaultSortOrder, task, setNextTask]);
+    }, [
+        enqueueSnackbar,
+        success,
+        product,
+        loading,
+        dispatch,
+        defaultPagination,
+        userId,
+        defaultSortRule,
+        defaultSortOrder,
+        task,
+        setNextTask,
+    ]);
 
     useEffect(() => {
-        if (task === merchandiseTasks.WAIT_FOR_PRODUCT_FOR_UPDATE && !loading) {
+        if (task === merchandiseTasks.WAIT_FOR_PRODUCT_FOR_UPDATE && success) {
             let localDetailedProduct = detailedProduct;
             if (localDetailedProduct) {
                 localDetailedProduct.normalPrices = converters.convertLanguageTagsToCountryNamesFromPricesArray(
@@ -107,10 +131,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 setNextTask(DEFAULT_TASK_ABSENT, 0);
             }
         }
-    }, [detailedProduct, loading, setNextTask, task]);
+    }, [detailedProduct, setNextTask, success, task]);
 
     useEffect(() => {
-        if (task === merchandiseTasks.WAIT_FOR_UPDATED_PRODUCT && !loading && product) {
+        if (task === merchandiseTasks.WAIT_FOR_UPDATED_PRODUCT && product && success) {
             enqueueSnackbar(`Product ${product.productName} was successfully updated!`, {
                 variant: 'success',
             });
@@ -120,7 +144,19 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [task, loading, dispatch, defaultPagination, userId, defaultSortRule, defaultSortOrder, product, enqueueSnackbar, setNextTask]);
+    }, [
+        task,
+        loading,
+        dispatch,
+        defaultPagination,
+        userId,
+        defaultSortRule,
+        defaultSortOrder,
+        product,
+        enqueueSnackbar,
+        setNextTask,
+        success,
+    ]);
 
     useEffect(() => {
         if (errorMessage) {

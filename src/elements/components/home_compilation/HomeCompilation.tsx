@@ -1,52 +1,49 @@
 import React from 'react';
 
 import Typography from '@mui/material/Typography';
+import { Paper, Stack } from '@mui/material';
 
-import {ProductFromList, ProductsList} from "../../../types/ProductsList";
-import {Paper, Stack} from "@mui/material";
-import ProductCard from "../product_card/ProductCard";
-import {History} from "history";
+import { ProductFromList, ProductsList } from '../../../types/ProductsList';
+import ProductCard from '../product_card/ProductCard';
 
 type homeCompilationProps = {
-    history: History;
     compilationName: string;
+    isDisplayButtons: boolean;
     products: ProductsList | null;
+    onClick: (productId: string) => void;
+    onBuy: (productId: string) => void;
+    onAddToCart: (productId: string) => void;
 };
 
-const HomeCompilation: React.FC<homeCompilationProps> = ({history, compilationName, products}) => {
-
-    const goToProduct = (productId: string) => {
-        history.push(`/products/${productId}`);
-    };
-
-    const buyProduct = (productId: string) => {
-        // TODO: dispatch
-        console.log(`Buy product ${productId} right now`);
-    };
-
-    const addProductToCart = (productId: string) => {
-        // TODO: dispatch
-        console.log(`Add product ${productId} to the console`);
-    };
-
+const HomeCompilation: React.FC<homeCompilationProps> = ({
+    compilationName,
+    isDisplayButtons,
+    products,
+    onClick,
+    onBuy,
+    onAddToCart,
+}) => {
     const renderCompilationOk = () => {
         if (products) {
-            return (<Stack direction="row" spacing={2}>
-                {products.map((product: ProductFromList) => (
-                    <ProductCard
-                        key={product.productId}
-                        productName={product.productName}
-                        normalPrice={product.normalPrice}
-                        discountPrice={product.discountPrice}
-                        priceCurrency={product.priceCurrency}
-                        onClick={() => goToProduct(product.productId)}
-                        onBuy={() => buyProduct(product.productId)}
-                        onAddToCart={() => addProductToCart(product.productId)}
-                    />
-                ))}
-            </Stack>);
+            return (
+                <Stack direction='row' spacing={2}>
+                    {products.map((product: ProductFromList) => (
+                        <ProductCard
+                            key={product.productId}
+                            productName={product.productName}
+                            normalPrice={product.normalPrice}
+                            discountPrice={product.discountPrice}
+                            priceCurrency={product.priceCurrency}
+                            isDisplayButtons={isDisplayButtons}
+                            onClick={() => onClick(product.productId)}
+                            onBuy={() => onBuy(product.productId)}
+                            onAddToCart={() => onAddToCart(product.productId)}
+                        />
+                    ))}
+                </Stack>
+            );
         } else {
-            return (<></>);
+            return <></>;
         }
     };
 
@@ -64,12 +61,9 @@ const HomeCompilation: React.FC<homeCompilationProps> = ({history, compilationNa
         }
     };
 
-
     return (
-        <Paper elevation={5} sx={{padding: 3}}>
-            <Typography variant="h3">
-                {compilationName}
-            </Typography>
+        <Paper elevation={5} sx={{ padding: 3 }}>
+            <Typography variant='h3'>{compilationName}</Typography>
             {renderCompilation()}
         </Paper>
     );

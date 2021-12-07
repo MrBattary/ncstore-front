@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { History } from 'history';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
 import { Typography } from '@mui/material';
@@ -10,16 +10,19 @@ import { ProductFromList } from '../../../types/ProductsList';
 import ProductCard from '../../components/product_card/ProductCard';
 
 import './style.css';
+import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
+import { UserRole } from '../../../types/UserRole';
 
 type productsProps = {
     history: History;
 };
 
 const Products: React.FC<productsProps> = ({ history }) => {
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
     const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { roles, token } = useSelector((state: AppState) => state.userReducer);
 
     useEffect(() => {
         if (errorMessage) {
@@ -32,13 +35,14 @@ const Products: React.FC<productsProps> = ({ history }) => {
     };
 
     const buyProduct = (productId: string) => {
-        // TODO: dispatch
-        console.log(`Buy product ${productId} right now`);
+        // TODO: Lock from adding more
+        dispatch(updateItemInCart({ productId: productId, productCount: 1 }, token ? token : ''));
+        history.push('/cart');
     };
 
     const addProductToCart = (productId: string) => {
-        // TODO: dispatch
-        console.log(`Add product ${productId} to the console`);
+        // TODO: Lock from adding more
+        dispatch(updateItemInCart({ productId: productId, productCount: 1 }, token ? token : ''));
     };
 
     const renderProductsList = () => (
@@ -46,6 +50,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
             {products.map((product: ProductFromList) => (
                 <ProductCard
                     key={product.productId}
+                    isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
                     productName={product.productName}
                     normalPrice={product.normalPrice}
                     discountPrice={product.discountPrice}
