@@ -15,13 +15,11 @@ import { CartProduct } from '../../../types/CartProduct';
 import CartItem from '../../components/cart_item/CartItem';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { deleteItemFromCart } from '../../../actions/cart/DeleteItemFromCart';
-import { UserType } from '../../../types/UserType';
-import { getPersonProfile } from '../../../actions/users/GetPersonProfile';
-import { getCompanyProfile } from '../../../actions/users/GetCompanyProfile';
 import OrderModal from '../../components/order_modal/OrderModal';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 
 import './style.css';
+import {getBalance} from "../../../actions/users/GetBalance";
 
 type cartProps = {
     history: History;
@@ -38,7 +36,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
     const { cart, loading, success, errorMessage } = useSelector((state: AppState) => state.cartReducer);
-    const { roles, token, userType, profile } = useSelector((state: AppState) => state.userReducer);
+    const { roles, balance, token} = useSelector((state: AppState) => state.userReducer);
     const { order, success: successOrder } = useSelector((state: AppState) => state.ordersReducer);
     const [totalPrice, setTotalPrice] = useState<number>(0);
     const [save, setSave] = useState<number>(0);
@@ -81,8 +79,9 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                     100
             ) / 100
         );
-        setAfterBalance((profile ? profile.balance : 0) - total);
-    }, [cart, profile]);
+        const afterBalance = Math.round((((balance ? balance.balance : 0) - total) + Number.EPSILON) * 100) / 100;
+        setAfterBalance(afterBalance);
+    }, [cart, balance]);
 
     useEffect(() => {
         if (task === cartTasks.WAIT_FOR_CHECKOUT && successOrder) {
@@ -109,11 +108,8 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     useEffect(() => {
         if (token) {
             dispatch(getCart(token));
-            if (!profile && userType === UserType.PERSON) {
-                dispatch(getPersonProfile(token));
-            }
-            if (!profile && userType === UserType.COMPANY) {
-                dispatch(getCompanyProfile(token));
+            if(!balance) {
+                dispatch(getBalance(token));
             }
         }
 
@@ -162,7 +158,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     const renderNonemptyCartRightSide = () => (
         <div className='nonempty-cart__right-side'>
             <Typography className='right-side__balance' style={{ marginBottom: 10 }} variant='h5'>
-                Balance: {profile ? profile.balance : 0}
+                Balance: {balance ? balance.balance : 0}
                 {cart[0].priceCurrency}
             </Typography>
             <Typography className='right-side__total' style={{ marginBottom: 10 }} variant='h5'>
