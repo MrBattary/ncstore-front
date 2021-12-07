@@ -73,7 +73,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                 (cart.reduce(
                     (total, cartItem) =>
                         total +
-                        (cartItem.discountPrice ? cartItem.normalPrice - cartItem.discountPrice : 0) *
+                        (cartItem.discountPrice !== null ? cartItem.normalPrice - cartItem.discountPrice : 0) *
                             cartItem.productCount,
                     0
                 ) +
