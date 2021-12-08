@@ -1,5 +1,5 @@
 import { History } from 'history';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -10,11 +10,11 @@ import { Table } from 'antd';
 
 import { AppState } from '../../../reducers/rootReducer';
 import { UserRole } from '../../../types/UserRole';
-import { Pagination } from '../../../types/Pagination';
 import { getMinimalisticOrders } from '../../../actions/orders/GetMinimalisticOrders';
 import OrderModal from '../../components/order_modal/OrderModal';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 import { getOrder } from '../../../actions/orders/GetOrder';
+import { OrderMinimal } from '../../../types/OrderMinimal';
 
 import './style.css';
 
@@ -30,18 +30,14 @@ const Orders: React.FC<ordersProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { minimalisticOrders, order, success, errorMessage } = useSelector((state: AppState) => state.ordersReducer);
+    const { minimalisticOrders, order, errorMessage } = useSelector((state: AppState) => state.ordersReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const [isOrderModalVisible, setOrderModalVisible] = useState<boolean>(false);
     const [task, setNextTask] = useTask();
 
-    const defaultPagination: Pagination = useMemo(
-        () => ({
-            page: 0,
-            size: 20,
-        }),
-        []
-    );
+    const [tableMaxPageNumber, setTableMaxPageNumber] = useState<number>(0);
+    const [minimalisticOrdersArray, setMinimalisticOrdersArray] = useState<OrderMinimal[]>([]);
+    const defaultPageSize: number = 10;
 
     const minimalisticOrdersTableColumns = [
         { title: 'Order ID', key: 'rowKey', dataIndex: 'orderId' },
@@ -71,15 +67,24 @@ const Orders: React.FC<ordersProps> = ({ history }) => {
     ];
 
     useEffect(() => {
-        if (task === ordersTasks.WAIT_FOR_ORDER && success) {
+        if (minimalisticOrders.length) {
+            setMinimalisticOrdersArray([...minimalisticOrdersArray, ...minimalisticOrders]);
+            const newMaxPage = tableMaxPageNumber + 1;
+            setTableMaxPageNumber(newMaxPage);
+            dispatch(getMinimalisticOrders({ page: newMaxPage, size: defaultPageSize }, token ? token : ''));
+        }
+    }, [dispatch, minimalisticOrders, minimalisticOrdersArray, tableMaxPageNumber, token]);
+
+    useEffect(() => {
+        if (task === ordersTasks.WAIT_FOR_ORDER && order) {
             setOrderModalVisible(true);
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [setNextTask, success, task]);
+    }, [order, setNextTask, task]);
 
     useEffect(() => {
         if (token) {
-            dispatch(getMinimalisticOrders(defaultPagination, token));
+            dispatch(getMinimalisticOrders({ page: tableMaxPageNumber, size: defaultPageSize }, token));
         }
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
@@ -117,7 +122,7 @@ const Orders: React.FC<ordersProps> = ({ history }) => {
             <Divider />
             <Table
                 className='orders-content__table'
-                dataSource={minimalisticOrders}
+                dataSource={[...minimalisticOrdersArray]}
                 columns={minimalisticOrdersTableColumns}
             />
             <OrderModal
@@ -142,7 +147,7 @@ const Orders: React.FC<ordersProps> = ({ history }) => {
     );
 
     const renderOrdersContent = () => {
-        if (minimalisticOrders.length) {
+        if (minimalisticOrdersArray.length) {
             return renderNonemptyOrders();
         } else {
             return renderEmptyOrders();
