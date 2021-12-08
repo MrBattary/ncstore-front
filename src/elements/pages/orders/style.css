@@ -1,3 +1,7 @@
+.content__orders {
+    margin: 5vh 5% 0;
+}
+
 .orders__orders-content-empty {
     display: flex;
     flex-direction: column;
