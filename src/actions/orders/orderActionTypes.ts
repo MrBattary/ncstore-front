@@ -1,5 +1,14 @@
 /* Checkout cart */
-
 export const CHECKOUT_FROM_CART_REQUEST = 'Request/CHECKOUT_FROM_CART';
 export const CHECKOUT_FROM_CART_RECEIVE = 'Receive/CHECKOUT_FROM_CART';
 export const CHECKOUT_FROM_CART_ERROR = 'CHECKOUT_FROM_CART_ERROR';
+
+/* Get minimalistic orders */
+export const GET_MINIMALISTIC_ORDERS_REQUEST = 'Request/GET_MINIMALISTIC_ORDERS';
+export const GET_MINIMALISTIC_ORDERS_RECEIVE = 'Receive/GET_MINIMALISTIC_ORDERS';
+export const GET_MINIMALISTIC_ORDERS_ERROR = 'GET_MINIMALISTIC_ORDERS_ERROR';
+
+/* Get order */
+export const GET_ORDER_REQUEST = 'Request/GET_ORDER';
+export const GET_ORDER_RECEIVE = 'Receive/GET_ORDER';
+export const GET_ORDER_ERROR = 'GET_ORDER_ERROR';
