@@ -164,6 +164,11 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         }
     };
 
+    const onClickCard = () => {
+        setCheckoutModalVisible(false);
+        setPaymentModalVisible(true);
+    };
+
     const renderCartItems = () =>
         cart.map((cartItem: CartProduct) => (
             <CartItem
@@ -267,7 +272,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                         key='balance'
                         variant='outlined'
                         color='inherit'
-                        onClick={() => handleCheckoutFromBalance()}
+                        onClick={handleCheckoutFromBalance}
                         disabled={afterBalance < 0}
                         startIcon={<AccountBalanceWallet />}
                     >
@@ -277,10 +282,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                         key='card'
                         variant='outlined'
                         color='inherit'
-                        onClick={() => {
-                            setCheckoutModalVisible(false);
-                            setPaymentModalVisible(true)
-                        }}
+                        onClick={onClickCard}
                         startIcon={<CreditCard />}
                         style={{ marginLeft: 10, marginRight: 10 }}
                     >
