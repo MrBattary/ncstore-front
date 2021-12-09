@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -26,23 +26,39 @@ import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefault
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
 import { SortOrder, SortRule } from '../../../types/SortEnum';
+import { CartProduct } from '../../../types/CartProduct';
 
 type navigationBarProps = {};
 
 const NavigationBar: React.FC<navigationBarProps> = () => {
     const history = useHistory();
     const dispatch = useDispatch();
+
+    const { cart } = useSelector((state: AppState) => state.cartReducer);
     const { token, roles, balance } = useSelector((state: AppState) => state.userReducer);
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [cartSize, setCartSize] = useState<number>(0);
 
     const defaultPagination: Pagination = {
         page: 0,
         size: 20,
     };
 
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    useEffect(() => {
+        console.log('Cart badge try update');
+        if (cart.length > 0) {
+            console.log('Cart badge update');
+            setCartSize(cart.reduce((total: number, cartItem: CartProduct) => total + cartItem.productCount, 0));
+        } else {
+            setCartSize(0);
+        }
+    }, [cart]);
+
     const handleUserMenuOpen = (event: { currentTarget: React.SetStateAction<null | HTMLElement> }) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleUserMenuClose = () => {
         setAnchorEl(null);
     };
@@ -88,7 +104,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
                         <Assignment />
                     </IconButton>
                     <IconButton size='large' aria-label='shopping cart' color='inherit' onClick={handleOpenCart}>
-                        <Badge>
+                        <Badge badgeContent={cartSize} max={99} invisible={cartSize <= 0} color='success'>
                             <ShoppingCart />
                         </Badge>
                     </IconButton>

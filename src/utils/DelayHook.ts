@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const useDelay = <T>(defaultValue: T, func: (value: T) => void, delay: number): [(value: T) => void] => {
+const useDelay = <T>(defaultValue: T, func: (value: T) => void, delayAsMs: number): [(value: T) => void] => {
     const [prevValue, setPrevValue] = useState<T>(defaultValue);
     const [value, setValue] = useState<T>(defaultValue);
 
@@ -10,12 +10,13 @@ const useDelay = <T>(defaultValue: T, func: (value: T) => void, delay: number): 
                 setPrevValue(value);
                 func(value);
             }
-        }, 1000);
+        }, delayAsMs);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [func, prevValue, value]);
+    }, [delayAsMs, func, prevValue, value]);
 
     const setDelayedValue = useCallback((newValue: T) => {
+        console.log(newValue);
         setValue(newValue);
     }, []);
 

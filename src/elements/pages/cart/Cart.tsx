@@ -37,9 +37,11 @@ const enum cartTasks {
 const Cart: React.FC<cartProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
+
     const { cart, loading, success, errorMessage } = useSelector((state: AppState) => state.cartReducer);
     const { roles, balance, token, paymentToken } = useSelector((state: AppState) => state.userReducer);
     const { order, success: successOrder } = useSelector((state: AppState) => state.ordersReducer);
+
     const [totalPrice, setTotalPrice] = useState<number>(0);
     const [save, setSave] = useState<number>(0);
     const [afterBalance, setAfterBalance] = useState<number>(0);

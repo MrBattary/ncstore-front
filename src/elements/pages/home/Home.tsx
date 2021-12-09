@@ -16,6 +16,8 @@ import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { UserRole } from '../../../types/UserRole';
 
 import './style.css';
+import { CartProduct } from '../../../types/CartProduct';
+import { getCart } from '../../../actions/cart/GetCart';
 
 type homeProps = {
     history: History;
@@ -32,6 +34,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
     const dispatch = useDispatch();
     const [task, setNextTask] = useTask();
 
+    const { cart } = useSelector((state: AppState) => state.cartReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const { products, success } = useSelector((state: AppState) => state.productsReducer);
 
@@ -102,21 +105,24 @@ const Home: React.FC<homeProps> = ({ history }) => {
         history.push(`/products/${productId}`);
     };
 
-    const handleBuy = (productId: string) => {
-        handleAddToCart(productId);
+    const handleBuy = (productId: string, productCount: number) => {
+        handleAddToCart(productId, productCount);
         history.push('/cart');
     };
 
-    const handleAddToCart = (productId: string) => {
-        dispatch(
-            updateItemInCart(
-                {
-                    productId: productId,
-                    productCount: 1,
-                },
-                token ? token : ''
-            )
-        );
+    const handleAddToCart = (productId: string, productCount: number) => {
+        const indexOfItemFromCart = cart.map((cartItem: CartProduct) => cartItem.productId).indexOf(productId);
+        if (indexOfItemFromCart >= 0) {
+            dispatch(
+                updateItemInCart(
+                    { productId: productId, productCount: cart[indexOfItemFromCart].productCount + productCount },
+                    token ? token : ''
+                )
+            );
+        } else {
+            dispatch(updateItemInCart({ productId: productId, productCount: productCount }, token ? token : ''));
+        }
+        dispatch(getCart(token ? token : ''));
     };
 
     const renderBestDiscount = () => {
