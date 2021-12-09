@@ -61,10 +61,10 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     }, [cart]);
 
     useEffect(() => {
-        dispatch(getCart(token ? token : ''));
-        // DO NOT REMOVE, Calls only once
-        // eslint-disable-next-line
-    }, []);
+        if (token) {
+            dispatch(getCart(token));
+        }
+    }, [dispatch, token]);
 
     const handleUserMenuOpen = (event: { currentTarget: React.SetStateAction<null | HTMLElement> }) => {
         setAnchorEl(event.currentTarget);
