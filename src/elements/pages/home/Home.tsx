@@ -188,7 +188,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
     return (
         <Box
             sx={{
-                marginTop: 15,
+                paddingTop: 5,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
