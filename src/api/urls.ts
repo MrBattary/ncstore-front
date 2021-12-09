@@ -24,3 +24,7 @@ export const balanceSubUrl = '/user/balance';
 
 /* Payment */
 export const paymentSubUrl = '/payment';
+
+/* Order */
+export const ordersSubUrl = '/orders';
+export const orderSubUrl = '/orders/';

@@ -145,8 +145,8 @@ const Cart: React.FC<cartProps> = ({ history }) => {
 
     const handleCheckoutFromCard = (e: any, nonce: string) => {
         if (nonce && nonce.length !== 0) {
-            dispatch(checkoutFromCart({ useBalance: false, nonce: nonce }, token ? token : ''));
             dispatch(getPaymentToken(token ? token : ''));
+            dispatch(checkoutFromCart({ useBalance: false, nonce: nonce }, token ? token : ''));
             setPaymentModalVisible(false);
             setNextTask(cartTasks.WAIT_FOR_CHECKOUT, 0);
         }
@@ -162,6 +162,11 @@ const Cart: React.FC<cartProps> = ({ history }) => {
         } else {
             setCheckoutModalVisible(true);
         }
+    };
+
+    const onClickCard = () => {
+        setCheckoutModalVisible(false);
+        setPaymentModalVisible(true);
     };
 
     const renderCartItems = () =>
@@ -267,7 +272,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                         key='balance'
                         variant='outlined'
                         color='inherit'
-                        onClick={() => handleCheckoutFromBalance()}
+                        onClick={handleCheckoutFromBalance}
                         disabled={afterBalance < 0}
                         startIcon={<AccountBalanceWallet />}
                     >
@@ -277,7 +282,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
                         key='card'
                         variant='outlined'
                         color='inherit'
-                        onClick={() => setPaymentModalVisible(true)}
+                        onClick={onClickCard}
                         startIcon={<CreditCard />}
                         style={{ marginLeft: 10, marginRight: 10 }}
                     >
