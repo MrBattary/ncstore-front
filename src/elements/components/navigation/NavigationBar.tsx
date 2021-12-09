@@ -16,7 +16,7 @@ import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Assignment, ShoppingCart, Storefront } from '@mui/icons-material';
-import { Typography } from '@mui/material';
+import { Slide, Typography, useScrollTrigger } from '@mui/material';
 
 import { Pagination } from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
@@ -28,9 +28,11 @@ import { UserRole } from '../../../types/UserRole';
 import { SortOrder, SortRule } from '../../../types/SortEnum';
 import { CartProduct } from '../../../types/CartProduct';
 
-type navigationBarProps = {};
+type navigationBarProps = {
+    window?: () => Window;
+};
 
-const NavigationBar: React.FC<navigationBarProps> = () => {
+const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     const history = useHistory();
     const dispatch = useDispatch();
 
@@ -40,15 +42,17 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [cartSize, setCartSize] = useState<number>(0);
 
+    const scrollTrigger = useScrollTrigger({
+        target: window ? window() : undefined,
+    });
+
     const defaultPagination: Pagination = {
         page: 0,
         size: 20,
     };
 
     useEffect(() => {
-        console.log('Cart badge try update');
         if (cart.length > 0) {
-            console.log('Cart badge update');
             setCartSize(cart.reduce((total: number, cartItem: CartProduct) => total + cartItem.productCount, 0));
         } else {
             setCartSize(0);
@@ -199,24 +203,26 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position='static'>
-                <Toolbar>
-                    <Stack spacing={2} direction='row' alignItems='center' flexGrow={1}>
-                        <Link
-                            variant='h5'
-                            color='inherit'
-                            component='div'
-                            underline='none'
-                            onClick={goToHome}
-                            sx={{ cursor: 'pointer' }}
-                        >
-                            NCStore
-                        </Link>
-                        <SearchField onSearch={handleSearch} placeholder='Search...' />
-                    </Stack>
-                    {renderMenu()}
-                </Toolbar>
-            </AppBar>
+            <Slide appear={false} direction='down' in={!scrollTrigger}>
+                <AppBar>
+                    <Toolbar>
+                        <Stack spacing={2} direction='row' alignItems='center' flexGrow={1}>
+                            <Link
+                                variant='h5'
+                                color='inherit'
+                                component='div'
+                                underline='none'
+                                onClick={goToHome}
+                                sx={{ cursor: 'pointer' }}
+                            >
+                                NCStore
+                            </Link>
+                            <SearchField onSearch={handleSearch} placeholder='Search...' />
+                        </Stack>
+                        {renderMenu()}
+                    </Toolbar>
+                </AppBar>
+            </Slide>
         </Box>
     );
 };
