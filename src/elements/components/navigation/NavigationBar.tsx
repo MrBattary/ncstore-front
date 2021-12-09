@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import Badge from '@mui/material/Badge';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Assignment, ShoppingCart, Storefront } from '@mui/icons-material';
 import { Typography } from '@mui/material';
@@ -87,7 +88,9 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
                         <Assignment />
                     </IconButton>
                     <IconButton size='large' aria-label='shopping cart' color='inherit' onClick={handleOpenCart}>
-                        <ShoppingCart />
+                        <Badge>
+                            <ShoppingCart />
+                        </Badge>
                     </IconButton>
                 </>
             );

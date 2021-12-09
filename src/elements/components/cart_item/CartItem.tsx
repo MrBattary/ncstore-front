@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { CartProduct } from '../../../types/CartProduct';
+import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import Box from '@mui/material/Box';
@@ -10,6 +9,9 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { InputNumber } from 'antd';
 
+import { CartProduct } from '../../../types/CartProduct';
+import useDelay from '../../../utils/DelayHook';
+
 type cartItemProps = {
     loading: boolean;
     product: CartProduct;
@@ -19,26 +21,20 @@ type cartItemProps = {
 };
 
 const CartItem: React.FC<cartItemProps> = ({ loading, product, onClick, onChange, onRemove }) => {
-    const [prevValue, setPrevValue] = useState<number>(product.productCount);
+    const [setDelayedValue] = useDelay<number>(
+        product.productCount,
+        (delayedValue: number) => onChange(product.productId, delayedValue),
+        500
+    );
     const [value, setValue] = useState<number>(product.productCount);
 
-    useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            if (prevValue !== value) {
-                setPrevValue(value);
-                onChange(product.productId, value);
-            }
-        }, 1000);
-
-        return () => clearTimeout(delayDebounceFn);
-    }, [onChange, prevValue, product.productId, value]);
-
     const changeNumberOfProduct = (newNumber: number) => {
+        setDelayedValue(newNumber);
         setValue(newNumber);
     };
 
     const renderProductPrice = () => {
-        if (product.discountPrice===null) {
+        if (product.discountPrice === null) {
             return (
                 <Stack direction='row'>
                     <Typography gutterBottom component='div'>
