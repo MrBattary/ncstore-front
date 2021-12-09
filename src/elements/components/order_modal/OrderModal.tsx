@@ -47,7 +47,7 @@ const OrderModal: React.FC<orderModalProps> = ({ isModalVisible, order, onClick,
             dataIndex: 'status',
         },
         {
-            title: 'Key',
+            title: 'License key',
             dataIndex: 'licenseKey',
             render: (text: any) => (
                 <CopyToClipboard text={text} onCopy={copyKeyToClipboard}>
