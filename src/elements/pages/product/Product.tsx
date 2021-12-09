@@ -13,7 +13,7 @@ import { getProductForSale } from '../../../actions/products/GetProduct';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
-import useDelay from '../../../utils/DelayHook';
+import useDelaySet from '../../../utils/DelayHook';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 
@@ -31,7 +31,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     const { productForSale, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
 
-    const [setAddToCartDelayedValue] = useDelay<number>(0, value => handleAddToCart(value), 300);
+    const [setAddToCartDelayedValue] = useDelaySet<number>(0, value => handleAddToCart(value), 300);
     const [addToCartClicks, setAddToCartClicks] = useState<number>(0);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 

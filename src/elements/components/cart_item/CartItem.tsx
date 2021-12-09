@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import { InputNumber } from 'antd';
 
 import { CartProduct } from '../../../types/CartProduct';
-import useDelay from '../../../utils/DelayHook';
+import useDelaySet from '../../../utils/DelayHook';
 
 type cartItemProps = {
     loading: boolean;
@@ -21,7 +21,7 @@ type cartItemProps = {
 };
 
 const CartItem: React.FC<cartItemProps> = ({ loading, product, onClick, onChange, onRemove }) => {
-    const [setDelayedValue] = useDelay<number>(
+    const [setDelayedValue] = useDelaySet<number>(
         product.productCount,
         (delayedValue: number) => onChange(product.productId, delayedValue),
         300

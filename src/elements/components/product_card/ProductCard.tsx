@@ -8,7 +8,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
-import useDelay from '../../../utils/DelayHook';
+import useDelaySet from '../../../utils/DelayHook';
 
 import './style.css';
 
@@ -33,7 +33,7 @@ const ProductCard: React.FC<productCardProps> = ({
     onBuy,
     onAddToCart,
 }) => {
-    const [setAddToCartClicksDelayedValue] = useDelay<number>(0, value => onAddToCart(value), 300);
+    const [setAddToCartClicksDelayedValue] = useDelaySet<number>(0, value => onAddToCart(value), 300);
     const [addToCartClicks, setAddToCartClicks] = useState<number>(0);
 
     const goToProduct = (e: React.MouseEvent) => {
