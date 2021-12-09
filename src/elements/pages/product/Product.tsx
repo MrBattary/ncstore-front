@@ -27,18 +27,30 @@ const Product: React.FC<productProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { cart } = useSelector((state: AppState) => state.cartReducer);
+    const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { productForSale, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
 
     const [setAddToCartDelayedValue] = useDelay<number>(0, value => handleAddToCart(value), 300);
     const [addToCartClicks, setAddToCartClicks] = useState<number>(0);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     useEffect(() => {
         if (errorMessage) {
-            enqueueSnackbar(errorMessage);
+            enqueueSnackbar(errorMessage, {
+                variant: 'error',
+            });
         }
     }, [enqueueSnackbar, errorMessage]);
+
+    useEffect(() => {
+        if (successMessage && successCart) {
+            enqueueSnackbar(successMessage, {
+                variant: 'success',
+            });
+            setSuccessMessage(null);
+        }
+    }, [enqueueSnackbar, successCart, successMessage]);
 
     useEffect(() => {
         // /products/[fcfc45e7-47a2-45d5-86b7-cfcdf24a8016] - retrieves uuid
@@ -84,11 +96,15 @@ const Product: React.FC<productProps> = ({ history }) => {
             );
         }
         dispatch(getCart(token ? token : ''));
+        setSuccessMessage(
+            `Added ${productCount} ${productCount === 1 ? 'copy' : 'copies'} of ${
+                productForSale?.productName
+            } to your cart`
+        );
     };
 
     const handleAddToCartClick = () => {
         const newAddToCartClicks = addToCartClicks + 1;
-        console.log(newAddToCartClicks);
         setAddToCartClicks(newAddToCartClicks);
         setAddToCartDelayedValue(newAddToCartClicks);
     };
@@ -151,7 +167,7 @@ const Product: React.FC<productProps> = ({ history }) => {
 
     const renderProductData = () => {
         return (
-            <Container>
+            <Container style={{ paddingTop: '1px' }}>
                 <Paper>
                     <Box
                         sx={{

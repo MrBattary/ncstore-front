@@ -27,6 +27,7 @@ import { restoreDefaultProductsReducer } from '../../../actions/products/Restore
 import { UserRole } from '../../../types/UserRole';
 import { SortOrder, SortRule } from '../../../types/SortEnum';
 import { CartProduct } from '../../../types/CartProduct';
+import { getCart } from '../../../actions/cart/GetCart';
 
 type navigationBarProps = {
     window?: () => Window;
@@ -58,6 +59,12 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
             setCartSize(0);
         }
     }, [cart]);
+
+    useEffect(() => {
+        dispatch(getCart(token ? token : ''));
+        // DO NOT REMOVE, Calls only once
+        // eslint-disable-next-line
+    }, []);
 
     const handleUserMenuOpen = (event: { currentTarget: React.SetStateAction<null | HTMLElement> }) => {
         setAnchorEl(event.currentTarget);

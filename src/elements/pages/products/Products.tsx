@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
@@ -10,10 +10,10 @@ import { ProductFromList } from '../../../types/ProductsList';
 import ProductCard from '../../components/product_card/ProductCard';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { UserRole } from '../../../types/UserRole';
-
-import './style.css';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
+
+import './style.css';
 
 type productsProps = {
     history: History;
@@ -23,13 +23,26 @@ const Products: React.FC<productsProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
-    const { cart } = useSelector((state: AppState) => state.cartReducer);
+    const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
 
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (successMessage && successCart) {
+            enqueueSnackbar(successMessage, {
+                variant: 'success',
+            });
+            setSuccessMessage(null);
+        }
+    }, [enqueueSnackbar, successCart, successMessage]);
+
     useEffect(() => {
         if (errorMessage) {
-            enqueueSnackbar(errorMessage);
+            enqueueSnackbar(errorMessage, {
+                variant: 'error',
+            });
         }
     }, [enqueueSnackbar, errorMessage]);
 
@@ -69,7 +82,12 @@ const Products: React.FC<productsProps> = ({ history }) => {
                     priceCurrency={product.priceCurrency}
                     onClick={() => goToProduct(product.productId)}
                     onBuy={(clicks: number) => buyProduct(product.productId, clicks)}
-                    onAddToCart={(clicks: number) => addProductToCart(product.productId, clicks)}
+                    onAddToCart={(clicks: number) => {
+                        addProductToCart(product.productId, clicks);
+                        setSuccessMessage(
+                            `Added ${clicks} ${clicks === 1 ? 'copy' : 'copies'} of ${product.productName} to your cart`
+                        );
+                    }}
                 />
             ))}
         </div>
