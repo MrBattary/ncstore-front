@@ -2,20 +2,22 @@ import { History } from 'history';
 import React, { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../reducers/rootReducer';
-import { getProductForSale } from '../../../actions/products/GetProduct';
-import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
+
 import { Box, ButtonGroup, Container, Paper, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 
-import './style.css';
+import { AppState } from '../../../reducers/rootReducer';
+import { getProductForSale } from '../../../actions/products/GetProduct';
+import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import useDelay from '../../../utils/DelayHook';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
+
+import './style.css';
 
 type productProps = {
     history: History;

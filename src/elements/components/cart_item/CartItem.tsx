@@ -24,7 +24,7 @@ const CartItem: React.FC<cartItemProps> = ({ loading, product, onClick, onChange
     const [setDelayedValue] = useDelay<number>(
         product.productCount,
         (delayedValue: number) => onChange(product.productId, delayedValue),
-        500
+        300
     );
     const [value, setValue] = useState<number>(product.productCount);
 
