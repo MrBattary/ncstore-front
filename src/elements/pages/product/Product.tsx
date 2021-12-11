@@ -1,18 +1,23 @@
 import { History } from 'history';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../reducers/rootReducer';
-import { getProductForSale } from '../../../actions/products/GetProduct';
-import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
+
 import { Box, ButtonGroup, Container, Paper, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 
-import './style.css';
+import { AppState } from '../../../reducers/rootReducer';
+import { getProductForSale } from '../../../actions/products/GetProduct';
+import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
+import useDelaySet from '../../../utils/DelayHook';
+import { CartProduct } from '../../../types/CartProduct';
+import { getCart } from '../../../actions/cart/GetCart';
+
+import './style.css';
 
 type productProps = {
     history: History;
@@ -22,14 +27,30 @@ const Product: React.FC<productProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
+    const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { productForSale, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
 
+    const [setAddToCartDelayedValue] = useDelaySet<number>(0, value => handleAddToCart(value), 300);
+    const [addToCartClicks, setAddToCartClicks] = useState<number>(0);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
     useEffect(() => {
         if (errorMessage) {
-            enqueueSnackbar(errorMessage);
+            enqueueSnackbar(errorMessage, {
+                variant: 'error',
+            });
         }
     }, [enqueueSnackbar, errorMessage]);
+
+    useEffect(() => {
+        if (successMessage && successCart) {
+            enqueueSnackbar(successMessage, {
+                variant: 'success',
+            });
+            setSuccessMessage(null);
+        }
+    }, [enqueueSnackbar, successCart, successMessage]);
 
     useEffect(() => {
         // /products/[fcfc45e7-47a2-45d5-86b7-cfcdf24a8016] - retrieves uuid
@@ -48,30 +69,44 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const handleBuy = () => {
-        // TODO: Lock from adding more
-        dispatch(
-            updateItemInCart(
-                {
-                    productId: productForSale ? productForSale.productId : '',
-                    productCount: 1,
-                },
-                token ? token : ''
-            )
-        );
+        handleAddToCart(1);
         history.push('/cart');
     };
 
-    const handleAddToCart = () => {
-        // TODO: Lock from adding more
-        dispatch(
-            updateItemInCart(
-                {
-                    productId: productForSale ? productForSale.productId : '',
-                    productCount: 1,
-                },
-                token ? token : ''
-            )
+    const handleAddToCart = (productCount: number) => {
+        const indexOfItemFromCart = cart
+            .map((cartItem: CartProduct) => cartItem.productId)
+            .indexOf(productForSale ? productForSale.productId : '');
+        if (indexOfItemFromCart >= 0) {
+            dispatch(
+                updateItemInCart(
+                    {
+                        productId: productForSale ? productForSale.productId : '',
+                        productCount: cart[indexOfItemFromCart].productCount + productCount,
+                    },
+                    token ? token : ''
+                )
+            );
+        } else {
+            dispatch(
+                updateItemInCart(
+                    { productId: productForSale ? productForSale.productId : '', productCount: productCount },
+                    token ? token : ''
+                )
+            );
+        }
+        dispatch(getCart(token ? token : ''));
+        setSuccessMessage(
+            `Added ${productCount} ${productCount === 1 ? 'copy' : 'copies'} of ${
+                productForSale?.productName
+            } to your cart`
         );
+    };
+
+    const handleAddToCartClick = () => {
+        const newAddToCartClicks = addToCartClicks + 1;
+        setAddToCartClicks(newAddToCartClicks);
+        setAddToCartDelayedValue(newAddToCartClicks);
     };
 
     const renderProductPrice = () => {
@@ -122,7 +157,7 @@ const Product: React.FC<productProps> = ({ history }) => {
                     <Button variant='contained' style={{ margin: 3 }} onClick={handleBuy}>
                         Buy now
                     </Button>
-                    <Button variant='outlined' style={{ margin: 3 }} onClick={handleAddToCart}>
+                    <Button variant='outlined' style={{ margin: 3 }} onClick={handleAddToCartClick}>
                         Add to cart
                     </Button>
                 </div>
@@ -132,7 +167,7 @@ const Product: React.FC<productProps> = ({ history }) => {
 
     const renderProductData = () => {
         return (
-            <Container>
+            <Container style={{ paddingTop: '1px' }}>
                 <Paper>
                     <Box
                         sx={{

@@ -16,6 +16,9 @@ import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { UserRole } from '../../../types/UserRole';
 
 import './style.css';
+import { CartProduct } from '../../../types/CartProduct';
+import { getCart } from '../../../actions/cart/GetCart';
+import { useSnackbar } from 'notistack';
 
 type homeProps = {
     history: History;
@@ -30,15 +33,18 @@ const enum homeTasks {
 
 const Home: React.FC<homeProps> = ({ history }) => {
     const dispatch = useDispatch();
+    const { enqueueSnackbar } = useSnackbar();
     const [task, setNextTask] = useTask();
 
+    const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
-    const { products, success } = useSelector((state: AppState) => state.productsReducer);
+    const { products, success, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
     const [discountProducts, setDiscountProducts] = useState<ProductsList>([]);
     const [newProducts, setNewProducts] = useState<ProductsList>([]);
     const [freeProducts, setFreeProducts] = useState<ProductsList>([]);
     const [forYouProducts, setForYouProducts] = useState<ProductsList>([]);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const defaultPagination: Pagination = useMemo(
         () => ({
@@ -47,6 +53,23 @@ const Home: React.FC<homeProps> = ({ history }) => {
         }),
         []
     );
+
+    useEffect(() => {
+        if (errorMessage) {
+            enqueueSnackbar(errorMessage, {
+                variant: 'error',
+            });
+        }
+    }, [enqueueSnackbar, errorMessage]);
+
+    useEffect(() => {
+        if (successMessage && successCart) {
+            enqueueSnackbar(successMessage, {
+                variant: 'success',
+            });
+            setSuccessMessage(null);
+        }
+    }, [enqueueSnackbar, successCart, successMessage]);
 
     useEffect(() => {
         if (task === homeTasks.WAIT_FOR_YOU_PRODUCTS_TO_LOAD && success) {
@@ -102,20 +125,26 @@ const Home: React.FC<homeProps> = ({ history }) => {
         history.push(`/products/${productId}`);
     };
 
-    const handleBuy = (productId: string) => {
-        handleAddToCart(productId);
+    const handleBuy = (productId: string, productName: string, productCount: number) => {
+        handleAddToCart(productId, productName, productCount);
         history.push('/cart');
     };
 
-    const handleAddToCart = (productId: string) => {
-        dispatch(
-            updateItemInCart(
-                {
-                    productId: productId,
-                    productCount: 1,
-                },
-                token ? token : ''
-            )
+    const handleAddToCart = (productId: string, productName: string, productCount: number) => {
+        const indexOfItemFromCart = cart.map((cartItem: CartProduct) => cartItem.productId).indexOf(productId);
+        if (indexOfItemFromCart >= 0) {
+            dispatch(
+                updateItemInCart(
+                    { productId: productId, productCount: cart[indexOfItemFromCart].productCount + productCount },
+                    token ? token : ''
+                )
+            );
+        } else {
+            dispatch(updateItemInCart({ productId: productId, productCount: productCount }, token ? token : ''));
+        }
+        dispatch(getCart(token ? token : ''));
+        setSuccessMessage(
+            `Added ${productCount} ${productCount === 1 ? 'copy' : 'copies'} of ${productName} to your cart`
         );
     };
 
@@ -182,7 +211,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
     return (
         <Box
             sx={{
-                marginTop: 15,
+                paddingTop: 5,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',

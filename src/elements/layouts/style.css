@@ -9,4 +9,5 @@ body {
 
 .layout__content {
     height: 100vh;
+    margin-top: 64px;
 }

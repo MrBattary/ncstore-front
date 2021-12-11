@@ -1,61 +1,54 @@
-import React, {useEffect, useState} from 'react';
-import {History} from 'history';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { History } from 'history';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {Container, Stack} from '@mui/material';
-import {useSnackbar} from 'notistack';
+import { Container, Stack } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
-import {AppState} from '../../../reducers/rootReducer';
-import {restoreDefaultUserReducer} from '../../../actions/users/RestoreDefaultUserReducer';
-import {getPersonProfile} from '../../../actions/users/GetPersonProfile';
-import {getCompanyProfile} from '../../../actions/users/GetCompanyProfile';
-import {UserType} from '../../../types/UserType';
-import GeneralProfile from "../../components/profiles/GeneralProfile";
-import UserProfileBalance from "../../components/profiles/UserProfileBalance";
-import ProfileChangePassword from "../../components/profiles/ProfileChangePassword";
-import {changePassword} from "../../../actions/users/PasswordChange";
-import PaymentModal from "../../components/payment/PaymentModal";
-import {getPaymentToken} from "../../../actions/users/Payment";
-import {Modal} from "antd";
-import {addBalance} from "../../../actions/users/BalanceAdd";
-import ProfileEmail from "../../components/profiles/ProfileEmail";
+import { AppState } from '../../../reducers/rootReducer';
+import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
+import { getPersonProfile } from '../../../actions/users/GetPersonProfile';
+import { getCompanyProfile } from '../../../actions/users/GetCompanyProfile';
+import { UserType } from '../../../types/UserType';
+import GeneralProfile from '../../components/profiles/GeneralProfile';
+import UserProfileBalance from '../../components/profiles/UserProfileBalance';
+import ProfileChangePassword from '../../components/profiles/ProfileChangePassword';
+import { changePassword } from '../../../actions/users/PasswordChange';
+import PaymentModal from '../../components/payment/PaymentModal';
+import { getPaymentToken } from '../../../actions/users/Payment';
+import { Modal } from 'antd';
+import { addBalance } from '../../../actions/users/BalanceAdd';
+import ProfileEmail from '../../components/profiles/ProfileEmail';
 
 type profileProps = {
     history: History;
 };
 
-const Profile: React.FC<profileProps> = ({history}) => {
-    const {enqueueSnackbar} = useSnackbar();
+const Profile: React.FC<profileProps> = ({ history }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
 
     const [isPaymentFormVisible, setIsPaymentFormVisible] = useState<boolean>(false);
     const [isWaitingForPaymentToProceed, setIsWaitingForPaymentToProceed] = useState<boolean>(false);
     const [paymentAmount, setPaymentAmount] = useState<number>(0);
 
-    const {
-        token,
-        paymentToken,
-        userType,
-        profile,
-        loading,
-        errorMessage,
-        balance,
-        success
-    } = useSelector((state: AppState) => state.userReducer);
-
+    const { token, paymentToken, userType, profile, loading, errorMessage, balance, success } = useSelector(
+        (state: AppState) => state.userReducer
+    );
 
     const renderErrorModal = () => {
         Modal.error({
             title: 'Payment error',
-            content: 'We can not proceed a payment for you. Maybe you do not have enough money on your card or payment service is down. Try again later.',
+            content:
+                'We can not proceed a payment for you. Maybe you do not have enough money on your card or payment service is down. Try again later.',
         });
-    }
+    };
 
     const renderSuccessModal = () => {
         Modal.success({
             content: 'Your payment was successful!',
         });
-    }
+    };
 
     useEffect(() => {
         if (errorMessage) {
@@ -67,13 +60,12 @@ const Profile: React.FC<profileProps> = ({history}) => {
     }, [enqueueSnackbar, errorMessage, dispatch]);
 
     useEffect(() => {
-        if(isWaitingForPaymentToProceed && !loading){
-            setIsWaitingForPaymentToProceed(false)
-            if(success){
-                renderSuccessModal()
-            }
-            else{
-                renderErrorModal()
+        if (isWaitingForPaymentToProceed && !loading) {
+            setIsWaitingForPaymentToProceed(false);
+            if (success) {
+                renderSuccessModal();
+            } else {
+                renderErrorModal();
             }
         }
     }, [isWaitingForPaymentToProceed, loading, success, dispatch]);
@@ -108,48 +100,56 @@ const Profile: React.FC<profileProps> = ({history}) => {
     const handleBalanceAdd = (e: any) => {
         if (paymentToken) {
             setIsPaymentFormVisible(true);
-            const {amount} = e;
+            const { amount } = e;
             setPaymentAmount(amount);
         } else {
-            renderErrorModal()
+            renderErrorModal();
         }
-    }
+    };
 
     const handleBalancePayment = (e: any, nonce: string) => {
         if (nonce && nonce.length !== 0) {
-            dispatch(addBalance({paymentAmount, nonce}, token ? token : ''));
+            dispatch(addBalance({ paymentAmount, nonce }, token ? token : ''));
             setIsWaitingForPaymentToProceed(true);
             dispatch(getPaymentToken(token ? token : ''));
             setIsPaymentFormVisible(false);
         }
-    }
+    };
 
     const handlePasswordChange = (e: any) => {
         if (e.outOfDate !== false) {
-            const {oldPassword, newPassword} = e;
-            dispatch(changePassword({
-                    oldPassword,
-                    newPassword
-                }, token ? token : '')
+            const { oldPassword, newPassword } = e;
+            dispatch(
+                changePassword(
+                    {
+                        oldPassword,
+                        newPassword,
+                    },
+                    token ? token : ''
+                )
             );
         }
-    }
-
-
+    };
 
     return loading || !profile ? null : (
         <Container>
-            <Stack spacing={8} sx={{marginTop:8, marginBottom:8}}>
-                <GeneralProfile history={history} profile={profile}/>
-                <ProfileEmail email={profile.email}/>
-                <UserProfileBalance balance={balance ? balance.balance : 0} balanceCurrency={balance ? balance.currency : "$"} loading={loading}
-                                    onFinish={handleBalanceAdd} onFinishFailed={() => {
-                }}/>
-                <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {
-                }}/>
-                <PaymentModal isVisible={isPaymentFormVisible} handleOk={handleBalancePayment}
-                              handleCancel={() => setIsPaymentFormVisible(false)}
-                              paymentToken={paymentToken ? paymentToken : ''}/>
+            <Stack spacing={8} sx={{ paddingTop: 8, marginBottom: 8 }}>
+                <GeneralProfile history={history} profile={profile} />
+                <ProfileEmail email={profile.email} />
+                <UserProfileBalance
+                    balance={balance ? balance.balance : 0}
+                    balanceCurrency={balance ? balance.currency : '$'}
+                    loading={loading}
+                    onFinish={handleBalanceAdd}
+                    onFinishFailed={() => {}}
+                />
+                <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {}} />
+                <PaymentModal
+                    isVisible={isPaymentFormVisible}
+                    handleOk={handleBalancePayment}
+                    handleCancel={() => setIsPaymentFormVisible(false)}
+                    paymentToken={paymentToken ? paymentToken : ''}
+                />
             </Stack>
         </Container>
     );
