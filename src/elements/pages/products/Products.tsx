@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import { useSnackbar } from 'notistack';
-import { Typography } from '@mui/material';
+import { FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 
 import { AppState } from '../../../reducers/rootReducer';
 import { ProductFromList } from '../../../types/ProductsList';
@@ -16,6 +16,8 @@ import { getCart } from '../../../actions/cart/GetCart';
 import { getProductsFromSearch } from '../../../actions/products/GetProducts';
 
 import './style.css';
+import { SortOrder, SortRule } from '../../../types/SortEnum';
+import { Sort } from '@mui/icons-material';
 
 type productsProps = {
     history: History;
@@ -24,16 +26,21 @@ type productsProps = {
 const Products: React.FC<productsProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
+    const location = useLocation();
 
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
-    const { roles, token } = useSelector((state: AppState) => state.userReducer);
 
+    const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const location = useLocation();
+    const [sortRule, setSortRule] = useState<SortRule>(SortRule.DEFAULT);
+    const [sortOrder, setSortOrder] = useState<SortOrder.ASC | SortOrder.DESC>(SortOrder.ASC);
+    const [sortOrderButtonStyle, setSortOrderButtonStyle] = useState({ transform: 'scale(1)', color: 'primary' });
 
     useEffect(() => {
         // /products/[?...] - retrieves search query
+        const params = Object.fromEntries(new URLSearchParams(location.search).entries());
+        console.log(params);
         dispatch(getProductsFromSearch(location.search));
     }, [dispatch, location.search]);
 
@@ -101,11 +108,51 @@ const Products: React.FC<productsProps> = ({ history }) => {
         </div>
     );
 
+    const handleChangeSortRule = (e: SelectChangeEvent) => {
+        setSortRule(SortRule[e.target.value as SortRule]);
+    };
+
+    const handleChangeSortOrder = () => {
+        if (sortOrder === SortOrder.ASC) {
+            setSortOrder(SortOrder.DESC);
+            setSortOrderButtonStyle({ transform: 'scale(1, -1)', color: 'secondary' });
+        } else {
+            setSortOrder(SortOrder.ASC);
+            setSortOrderButtonStyle({ transform: 'scale(1)', color: 'primary' });
+        }
+    };
+
+    const renderSortButtons = () => (
+        <div className='products__sort-selectors'>
+            <FormControl fullWidth>
+                <InputLabel id='sort-selectors__label'>Sort</InputLabel>
+                <Select
+                    labelId='sort-selectors__select-label'
+                    id='sort-selectors__select-label'
+                    value={sortRule}
+                    label='Age'
+                    onChange={handleChangeSortRule}
+                >
+                    <MenuItem value={SortRule.DEFAULT}>None</MenuItem>
+                    <MenuItem value={SortRule.RATING}>Rating</MenuItem>
+                    <MenuItem value={SortRule.POPULAR}>Popularity</MenuItem>
+                    <MenuItem value={SortRule.DATE}>Date</MenuItem>
+                    <MenuItem value={SortRule.PRICE}>Price</MenuItem>
+                    <MenuItem value={SortRule.DISCOUNT}>Discount</MenuItem>
+                </Select>
+            </FormControl>
+            <IconButton onClick={handleChangeSortOrder} color={sortOrderButtonStyle.color as 'primary' | 'secondary'}>
+                <Sort style={{ transform: sortOrderButtonStyle.transform }} />
+            </IconButton>
+        </div>
+    );
+
     const renderProductsPage = () => (
         <div className='products-content__products'>
             <Typography className='products__label' variant='h5'>
                 Here is what we found
             </Typography>
+            {renderSortButtons()}
             {renderProductsList()}
         </div>
     );
