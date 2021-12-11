@@ -9,14 +9,10 @@ import { SetNewSortOrderAction } from '../actions/search/SetNewSortOrder';
 import { SetNewSortRuleAction } from '../actions/search/SetNewSortRule';
 import { RestoreDefaultSearchReducerAction } from '../actions/search/RestoreDefaultSearchReducer';
 import { buildQueryFromObject, combineUrls } from '../api/utilities';
+import { SearchQuery } from '../types/SearchQuery';
 
 interface SearchStore {
-    categoryNames: Array<string>;
-    searchText: string;
-    supplierId: string;
-    pagination: Pagination;
-    sort: SortRule;
-    sortOrder: SortOrder;
+    searchQuery: SearchQuery;
     searchUrl: string;
 }
 
@@ -39,7 +35,7 @@ const buildSearchUrl = (
 ) =>
     combineUrls([
         '?',
-        buildQueryFromObject({ categoryNames: categoryNames }),
+        buildQueryFromObject({ categoryNames: categoryNames.join('|') }),
         '&',
         buildQueryFromObject({ searchText: searchText }),
         '&',
@@ -53,12 +49,14 @@ const buildSearchUrl = (
     ]);
 
 const initialState: SearchStore = {
-    categoryNames: [],
-    searchText: '',
-    supplierId: '',
-    pagination: { page: 0, size: 10 },
-    sort: SortRule.DEFAULT,
-    sortOrder: SortOrder.ASC,
+    searchQuery: {
+        categoryNames: [],
+        searchText: '',
+        supplierId: '',
+        pagination: { page: 0, size: 10 },
+        sortRule: SortRule.DEFAULT,
+        sortOrder: SortOrder.ASC,
+    },
     searchUrl: buildSearchUrl([], '', '', { page: 0, size: 10 }, SortRule.DEFAULT, SortOrder.ASC),
 };
 
@@ -67,83 +65,83 @@ export const searchReducer = (state = initialState, action: SearchReducerTypes):
         case types.SET_NEW_CATEGORY_NAMES: {
             return {
                 ...state,
-                categoryNames: action.payload,
+                searchQuery: { ...state.searchQuery, categoryNames: action.payload },
                 searchUrl: buildSearchUrl(
                     action.payload,
-                    state.searchText,
-                    state.supplierId,
-                    state.pagination,
-                    state.sort,
-                    state.sortOrder
+                    state.searchQuery.searchText,
+                    state.searchQuery.supplierId,
+                    state.searchQuery.pagination,
+                    state.searchQuery.sortRule,
+                    state.searchQuery.sortOrder
                 ),
             };
         }
         case types.SET_NEW_SEARCH_TEXT: {
             return {
                 ...state,
-                searchText: action.payload,
+                searchQuery: { ...state.searchQuery, searchText: action.payload },
                 searchUrl: buildSearchUrl(
-                    state.categoryNames,
+                    state.searchQuery.categoryNames,
                     action.payload,
-                    state.supplierId,
-                    state.pagination,
-                    state.sort,
-                    state.sortOrder
+                    state.searchQuery.supplierId,
+                    state.searchQuery.pagination,
+                    state.searchQuery.sortRule,
+                    state.searchQuery.sortOrder
                 ),
             };
         }
         case types.SET_NEW_SUPPLIER_ID: {
             return {
                 ...state,
-                supplierId: action.payload,
+                searchQuery: { ...state.searchQuery, supplierId: action.payload },
                 searchUrl: buildSearchUrl(
-                    state.categoryNames,
-                    state.searchText,
+                    state.searchQuery.categoryNames,
+                    state.searchQuery.searchText,
                     action.payload,
-                    state.pagination,
-                    state.sort,
-                    state.sortOrder
+                    state.searchQuery.pagination,
+                    state.searchQuery.sortRule,
+                    state.searchQuery.sortOrder
                 ),
             };
         }
         case types.SET_NEW_PAGINATION: {
             return {
                 ...state,
-                pagination: action.payload,
+                searchQuery: { ...state.searchQuery, pagination: action.payload },
                 searchUrl: buildSearchUrl(
-                    state.categoryNames,
-                    state.searchText,
-                    state.supplierId,
+                    state.searchQuery.categoryNames,
+                    state.searchQuery.searchText,
+                    state.searchQuery.supplierId,
                     action.payload,
-                    state.sort,
-                    state.sortOrder
+                    state.searchQuery.sortRule,
+                    state.searchQuery.sortOrder
                 ),
             };
         }
         case types.SET_NEW_SORT_RULE: {
             return {
                 ...state,
-                sort: action.payload,
+                searchQuery: { ...state.searchQuery, sortRule: action.payload },
                 searchUrl: buildSearchUrl(
-                    state.categoryNames,
-                    state.searchText,
-                    state.supplierId,
-                    state.pagination,
+                    state.searchQuery.categoryNames,
+                    state.searchQuery.searchText,
+                    state.searchQuery.supplierId,
+                    state.searchQuery.pagination,
                     action.payload,
-                    state.sortOrder
+                    state.searchQuery.sortOrder
                 ),
             };
         }
         case types.SET_NEW_SORT_ORDER: {
             return {
                 ...state,
-                sortOrder: action.payload,
+                searchQuery: { ...state.searchQuery, sortOrder: action.payload },
                 searchUrl: buildSearchUrl(
-                    state.categoryNames,
-                    state.searchText,
-                    state.supplierId,
-                    state.pagination,
-                    state.sort,
+                    state.searchQuery.categoryNames,
+                    state.searchQuery.searchText,
+                    state.searchQuery.supplierId,
+                    state.searchQuery.pagination,
+                    state.searchQuery.sortRule,
                     action.payload
                 ),
             };
@@ -151,12 +149,14 @@ export const searchReducer = (state = initialState, action: SearchReducerTypes):
         case types.RESTORE_DEFAULT_SEARCH_REDUCER: {
             return {
                 ...state,
-                categoryNames: [],
-                searchText: '',
-                supplierId: '',
-                pagination: { page: 0, size: 10 },
-                sort: SortRule.DEFAULT,
-                sortOrder: SortOrder.ASC,
+                searchQuery: {
+                    categoryNames: [],
+                    searchText: '',
+                    supplierId: '',
+                    pagination: { page: 0, size: 10 },
+                    sortRule: SortRule.DEFAULT,
+                    sortOrder: SortOrder.ASC,
+                },
                 searchUrl: buildSearchUrl([], '', '', { page: 0, size: 10 }, SortRule.DEFAULT, SortOrder.ASC),
             };
         }

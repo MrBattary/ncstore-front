@@ -18,6 +18,9 @@ import { getProductsFromSearch } from '../../../actions/products/GetProducts';
 import './style.css';
 import { SortOrder, SortRule } from '../../../types/SortEnum';
 import { Sort } from '@mui/icons-material';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import { setNewSortRule } from '../../../actions/search/SetNewSortRule';
+import { setNewSortOrder } from '../../../actions/search/SetNewSortOrder';
 
 type productsProps = {
     history: History;
@@ -28,6 +31,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const location = useLocation();
 
+    const { searchUrl } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
@@ -39,10 +43,19 @@ const Products: React.FC<productsProps> = ({ history }) => {
 
     useEffect(() => {
         // /products/[?...] - retrieves search query
-        const params = Object.fromEntries(new URLSearchParams(location.search).entries());
-        console.log(params);
         dispatch(getProductsFromSearch(location.search));
     }, [dispatch, location.search]);
+
+    useEffect(() => {
+        history.push(searchUrl);
+    }, [history, searchUrl]);
+
+    useEffect(
+        () => () => {
+            dispatch(restoreDefaultSearchReducer());
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         if (successMessage && successCart) {
@@ -110,14 +123,17 @@ const Products: React.FC<productsProps> = ({ history }) => {
 
     const handleChangeSortRule = (e: SelectChangeEvent) => {
         setSortRule(SortRule[e.target.value as SortRule]);
+        dispatch(setNewSortRule(SortRule[e.target.value as SortRule]));
     };
 
     const handleChangeSortOrder = () => {
         if (sortOrder === SortOrder.ASC) {
             setSortOrder(SortOrder.DESC);
+            dispatch(setNewSortOrder(SortOrder.DESC));
             setSortOrderButtonStyle({ transform: 'scale(1, -1)', color: 'secondary' });
         } else {
             setSortOrder(SortOrder.ASC);
+            dispatch(setNewSortOrder(SortOrder.ASC));
             setSortOrderButtonStyle({ transform: 'scale(1)', color: 'primary' });
         }
     };

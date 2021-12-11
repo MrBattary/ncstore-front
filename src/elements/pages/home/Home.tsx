@@ -19,6 +19,9 @@ import './style.css';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 import { useSnackbar } from 'notistack';
+import { setNewSortOrder } from '../../../actions/search/SetNewSortOrder';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import { setNewSortRule } from '../../../actions/search/SetNewSortRule';
 
 type homeProps = {
     history: History;
@@ -36,6 +39,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [task, setNextTask] = useTask();
 
+    const { searchQuery } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const { products, success, errorMessage } = useSelector((state: AppState) => state.productsReducer);
@@ -88,38 +92,54 @@ const Home: React.FC<homeProps> = ({ history }) => {
                         .filter((product: ProductFromList) => product.normalPrice === 0 || product.discountPrice === 0)
                         .slice()
                 );
-                dispatch(getProducts(defaultPagination, '', null, SortRule.DEFAULT, SortOrder.RAND));
+                dispatch(restoreDefaultSearchReducer());
+                dispatch(setNewSortOrder(SortOrder.RAND));
+                dispatch(getProducts(searchQuery));
                 setNextTask(homeTasks.WAIT_FOR_YOU_PRODUCTS_TO_LOAD, 0);
             }
         }
-    }, [products, success, setNextTask, task, defaultPagination, dispatch]);
+    }, [products, success, setNextTask, task, defaultPagination, dispatch, searchQuery]);
 
     useEffect(() => {
         if (task === homeTasks.WAIT_FOR_NEW_PRODUCTS_TO_LOAD && success) {
             if (products) {
                 setNewProducts(products.slice());
-                dispatch(getProducts(defaultPagination, '', null, SortRule.PRICE, SortOrder.ASC));
+                dispatch(restoreDefaultSearchReducer());
+                dispatch(setNewSortRule(SortRule.PRICE));
+                dispatch(getProducts(searchQuery));
                 setNextTask(homeTasks.WAIT_FOR_FREE_PRODUCTS_TO_LOAD, 0);
             }
         }
-    }, [products, success, setNextTask, task, defaultPagination, dispatch]);
+    }, [products, success, setNextTask, task, defaultPagination, dispatch, searchQuery]);
 
     useEffect(() => {
         if (task === homeTasks.WAIT_FOR_DISCOUNT_PRODUCTS_TO_LOAD && success) {
             if (products) {
                 setDiscountProducts(products.slice());
-                dispatch(getProducts(defaultPagination, '', null, SortRule.DATE, SortOrder.ASC));
+                dispatch(restoreDefaultSearchReducer());
+                dispatch(setNewSortRule(SortRule.DATE));
+                dispatch(getProducts(searchQuery));
                 setNextTask(homeTasks.WAIT_FOR_NEW_PRODUCTS_TO_LOAD, 0);
             }
         }
-    }, [products, success, setNextTask, task, defaultPagination, dispatch]);
+    }, [products, success, setNextTask, task, defaultPagination, dispatch, searchQuery]);
 
     useEffect(() => {
-        dispatch(getProducts(defaultPagination, '', null, SortRule.DISCOUNT, SortOrder.DESC));
+        dispatch(restoreDefaultSearchReducer());
+        dispatch(setNewSortRule(SortRule.DISCOUNT));
+        dispatch(setNewSortOrder(SortOrder.DESC));
+        dispatch(getProducts(searchQuery));
         setNextTask(homeTasks.WAIT_FOR_DISCOUNT_PRODUCTS_TO_LOAD, 0);
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);
+
+    useEffect(
+        () => () => {
+            dispatch(restoreDefaultSearchReducer());
+        },
+        [dispatch]
+    );
 
     const goToProduct = (productId: string) => {
         history.push(`/products/${productId}`);
