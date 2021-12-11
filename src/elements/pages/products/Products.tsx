@@ -12,8 +12,10 @@ import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { UserRole } from '../../../types/UserRole';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
+import { getProductsFromSearch } from '../../../actions/products/GetProducts';
 
 import './style.css';
+import { useLocation } from 'react-router-dom';
 
 type productsProps = {
     history: History;
@@ -28,6 +30,12 @@ const Products: React.FC<productsProps> = ({ history }) => {
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
 
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const location = useLocation();
+
+    useEffect(() => {
+        // /products/[?...] - retrieves search query
+        dispatch(getProductsFromSearch(location.search));
+    }, [dispatch, location.search]);
 
     useEffect(() => {
         if (successMessage && successCart) {

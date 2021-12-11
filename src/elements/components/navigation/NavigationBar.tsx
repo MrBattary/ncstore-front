@@ -21,13 +21,13 @@ import { Slide, Typography, useScrollTrigger } from '@mui/material';
 import { Pagination } from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
 import { signOut } from '../../../actions/users/SignOut';
-import { getProducts } from '../../../actions/products/GetProducts';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
 import { SortOrder, SortRule } from '../../../types/SortEnum';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
+import { buildQueryFromObject, combineUrls } from '../../../api/utilities';
 
 type navigationBarProps = {
     window?: () => Window;
@@ -98,8 +98,24 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     };
 
     const handleSearch = (searchText: string) => {
-        dispatch(getProducts(defaultPagination, searchText, null, SortRule.DEFAULT, SortOrder.ASC));
-        history.push('/products');
+        history.push(
+            `/products`.concat(
+                combineUrls([
+                    '?',
+                    buildQueryFromObject({ categoryNames: null }),
+                    '&',
+                    buildQueryFromObject({ searchText }),
+                    '&',
+                    buildQueryFromObject({ supplierId: null }),
+                    '&',
+                    buildQueryFromObject(defaultPagination),
+                    '&',
+                    buildQueryFromObject({ sort: SortRule.DEFAULT }),
+                    '&',
+                    buildQueryFromObject({ sortOrder: SortOrder.ASC }),
+                ])
+            )
+        );
     };
 
     const handleOpenMerchandise = () => {

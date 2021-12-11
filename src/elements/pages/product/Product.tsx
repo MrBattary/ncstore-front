@@ -1,5 +1,5 @@
 import { History } from 'history';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -18,6 +18,9 @@ import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 
 import './style.css';
+import { buildQueryFromObject, combineUrls } from '../../../api/utilities';
+import { SortOrder, SortRule } from '../../../types/SortEnum';
+import { Pagination } from '../../../types/Pagination';
 
 type productProps = {
     history: History;
@@ -34,6 +37,14 @@ const Product: React.FC<productProps> = ({ history }) => {
     const [setAddToCartDelayedValue] = useDelaySet<number>(0, value => handleAddToCart(value), 300);
     const [addToCartClicks, setAddToCartClicks] = useState<number>(0);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    const defaultPagination: Pagination = useMemo(
+        () => ({
+            page: 0,
+            size: 20,
+        }),
+        []
+    );
 
     useEffect(() => {
         if (errorMessage) {
@@ -53,8 +64,8 @@ const Product: React.FC<productProps> = ({ history }) => {
     }, [enqueueSnackbar, successCart, successMessage]);
 
     useEffect(() => {
-        // /products/[fcfc45e7-47a2-45d5-86b7-cfcdf24a8016] - retrieves uuid
         dispatch(restoreDefaultProductsReducer());
+        // /products/[fcfc45e7-47a2-45d5-86b7-cfcdf24a8016] - retrieves uuid
         dispatch(getProductForSale(window.location.pathname.substr(10)));
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
@@ -65,7 +76,24 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const goToCategory = (categoryName: string) => {
-        console.log(`Go to category with name: ${categoryName}`);
+        history.push(
+            `/products`.concat(
+                combineUrls([
+                    '?',
+                    buildQueryFromObject({ categoryNames: categoryName }),
+                    '&',
+                    buildQueryFromObject({ searchText: null }),
+                    '&',
+                    buildQueryFromObject({ supplierId: null }),
+                    '&',
+                    buildQueryFromObject(defaultPagination),
+                    '&',
+                    buildQueryFromObject({ sort: SortRule.DEFAULT }),
+                    '&',
+                    buildQueryFromObject({ sortOrder: SortOrder.ASC }),
+                ])
+            )
+        );
     };
 
     const handleBuy = () => {
