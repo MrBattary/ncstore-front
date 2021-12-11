@@ -141,7 +141,9 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         () => () => {
             dispatch(restoreDefaultSearchReducer());
         },
-        [dispatch]
+        // DO NOT REMOVE, Destructor calls only once
+        // eslint-disable-next-line
+        []
     );
 
     const addNewProduct = () => {
