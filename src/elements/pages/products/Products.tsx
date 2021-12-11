@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+
 import { useSnackbar } from 'notistack';
 
 import { Typography } from '@mui/material';
-
 import { AppState } from '../../../reducers/rootReducer';
 import { ProductFromList } from '../../../types/ProductsList';
 import ProductCard from '../../components/product_card/ProductCard';
@@ -15,7 +16,6 @@ import { getCart } from '../../../actions/cart/GetCart';
 import { getProductsFromSearch } from '../../../actions/products/GetProducts';
 
 import './style.css';
-import { useLocation } from 'react-router-dom';
 
 type productsProps = {
     history: History;

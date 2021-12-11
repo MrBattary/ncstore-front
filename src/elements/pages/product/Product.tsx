@@ -16,11 +16,11 @@ import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import useDelaySet from '../../../utils/DelayHook';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
-
-import './style.css';
 import { buildQueryFromObject, combineUrls } from '../../../api/utilities';
 import { SortOrder, SortRule } from '../../../types/SortEnum';
 import { Pagination } from '../../../types/Pagination';
+
+import './style.css';
 
 type productProps = {
     history: History;
