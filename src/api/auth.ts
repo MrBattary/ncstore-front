@@ -1,6 +1,6 @@
 import { postHTTP } from '../fetcher/fetcher';
 import { combineUrls } from './utilities';
-import { coreUrl, signInSubUrl, signUpCompanySubUrl, signUpPersonSubUrl } from './urls';
+import { coreUrl, signInSubUrl, signOutSubUrl, signUpCompanySubUrl, signUpPersonSubUrl } from './urls';
 import { CompanySignUpDetails, PersonSignUpDetails } from '../types/SignUpDetails';
 import { EmptyType } from '../types/EmptyType';
 import { SignInDetails, SignInResponse } from '../types/SignInDetails';
@@ -27,10 +27,14 @@ const signIn = (signInDetails: SignInDetails) =>
         signInDetails
     );
 
+const signOut = (token: string) =>
+    postHTTP<EmptyType>(combineUrls([coreUrl, signOutSubUrl]), headers.buildHeaderToken(token), null);
+
 const authApi = {
     signUpCompany,
     signUpPerson,
     signIn,
+    signOut,
 };
 
 export default authApi;

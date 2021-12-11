@@ -9,6 +9,7 @@ export const productDetailedSubUrl = '/detailed';
 export const signUpCompanySubUrl = '/signup/company';
 export const signUpPersonSubUrl = '/signup/person';
 export const signInSubUrl = '/signin';
+export const signOutSubUrl = '/signout';
 
 /* Person or Company */
 export const personInfoSubUrl = '/person/info';
