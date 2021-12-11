@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import { useSnackbar } from 'notistack';
-
 import { Typography } from '@mui/material';
+
 import { AppState } from '../../../reducers/rootReducer';
 import { ProductFromList } from '../../../types/ProductsList';
 import ProductCard from '../../components/product_card/ProductCard';
