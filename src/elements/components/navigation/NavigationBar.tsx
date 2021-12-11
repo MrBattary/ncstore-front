@@ -79,14 +79,14 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
         handleUserMenuClose();
     };
 
-    const signOutLocally = () => {
-        dispatch(signOut());
-        dispatch(restoreDefaultUserReducer());
-        handleUserMenuClose();
-    };
-
     const goToHome = () => {
         history.push('/');
+    };
+
+    const handleSignOut = () => {
+        dispatch(signOut(token ? token : ''));
+        dispatch(restoreDefaultUserReducer());
+        handleUserMenuClose();
     };
 
     const handleOpenCart = () => {
@@ -177,7 +177,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
                 onClose={handleUserMenuClose}
             >
                 <MenuItem onClick={goToTheProfile}>Profile</MenuItem>
-                <MenuItem onClick={signOutLocally}>Sign out</MenuItem>
+                <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
             </Menu>
         </Stack>
     );
