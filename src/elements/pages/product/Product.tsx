@@ -10,7 +10,6 @@ import Button from '@mui/material/Button';
 
 import { AppState } from '../../../reducers/rootReducer';
 import { getProductForSale } from '../../../actions/products/GetProduct';
-import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import useDelaySet from '../../../utils/DelayHook';
@@ -68,7 +67,6 @@ const Product: React.FC<productProps> = ({ history }) => {
     }, [enqueueSnackbar, successCart, successMessage]);
 
     useEffect(() => {
-        dispatch(restoreDefaultProductsReducer());
         // /products/[fcfc45e7-47a2-45d5-86b7-cfcdf24a8016] - retrieves uuid
         dispatch(getProductForSale(window.location.pathname.substr(10)));
         // DO NOT REMOVE, Calls only once
@@ -256,6 +254,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     if (loading) {
         return null;
     }
+
     return (
         <div className='product'>
             <div className='product__content'>{renderProductContent()}</div>
