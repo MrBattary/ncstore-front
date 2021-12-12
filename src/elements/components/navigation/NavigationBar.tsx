@@ -18,39 +18,40 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Assignment, ShoppingCart, Storefront } from '@mui/icons-material';
 import { Slide, Typography, useScrollTrigger } from '@mui/material';
 
-import { Pagination } from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
 import { signOut } from '../../../actions/users/SignOut';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
-import { SortOrder, SortRule } from '../../../types/SortEnum';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
-import { buildQueryFromObject, combineUrls } from '../../../api/utilities';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import { setNewSearchText } from '../../../actions/search/SetNewSearchText';
+import useTask from '../../../utils/TaskHook';
 
 type navigationBarProps = {
     window?: () => Window;
 };
 
+enum navigationBarTasks {
+    DO_SEARCH = 'DO_SEARCH',
+}
+
 const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     const history = useHistory();
     const dispatch = useDispatch();
 
+    const { searchUrl } = useSelector((state: AppState) => state.searchReducer);
     const { cart } = useSelector((state: AppState) => state.cartReducer);
     const { token, roles, balance } = useSelector((state: AppState) => state.userReducer);
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [cartSize, setCartSize] = useState<number>(0);
+    const [task, setTask] = useTask();
 
     const scrollTrigger = useScrollTrigger({
         target: window ? window() : undefined,
     });
-
-    const defaultPagination: Pagination = {
-        page: 0,
-        size: 20,
-    };
 
     useEffect(() => {
         if (cart.length > 0) {
@@ -65,6 +66,12 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
             dispatch(getCart(token));
         }
     }, [dispatch, token]);
+
+    useEffect(() => {
+        if (task === navigationBarTasks.DO_SEARCH) {
+            history.push('/products'.concat(searchUrl));
+        }
+    }, [history, searchUrl, task]);
 
     const handleUserMenuOpen = (event: { currentTarget: React.SetStateAction<null | HTMLElement> }) => {
         setAnchorEl(event.currentTarget);
@@ -98,24 +105,9 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     };
 
     const handleSearch = (searchText: string) => {
-        history.push(
-            `/products`.concat(
-                combineUrls([
-                    '?',
-                    buildQueryFromObject({ categoryNames: null }),
-                    '&',
-                    buildQueryFromObject({ searchText }),
-                    '&',
-                    buildQueryFromObject({ supplierId: null }),
-                    '&',
-                    buildQueryFromObject(defaultPagination),
-                    '&',
-                    buildQueryFromObject({ sort: SortRule.DEFAULT }),
-                    '&',
-                    buildQueryFromObject({ sortOrder: SortOrder.ASC }),
-                ])
-            )
-        );
+        dispatch(restoreDefaultSearchReducer());
+        dispatch(setNewSearchText(searchText));
+        setTask(navigationBarTasks.DO_SEARCH, 0);
     };
 
     const handleOpenMerchandise = () => {

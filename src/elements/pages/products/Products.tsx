@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import { useSnackbar } from 'notistack';
-import { FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { AppState } from '../../../reducers/rootReducer';
 import { ProductFromList } from '../../../types/ProductsList';
@@ -14,13 +14,12 @@ import { UserRole } from '../../../types/UserRole';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 import { getProductsFromSearch } from '../../../actions/products/GetProducts';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
 
 import './style.css';
-import { SortOrder, SortRule } from '../../../types/SortEnum';
-import { Sort } from '@mui/icons-material';
-import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
-import { setNewSortRule } from '../../../actions/search/SetNewSortRule';
-import { setNewSortOrder } from '../../../actions/search/SetNewSortOrder';
+import SortRuleSelector from '../../components/sort_rule_selector/SortRuleSelector';
+import SortOrderButton from '../../components/sort_order_button/SortOrderButton';
+import { SortOrder } from '../../../types/SortEnum';
 
 type productsProps = {
     history: History;
@@ -31,15 +30,12 @@ const Products: React.FC<productsProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const location = useLocation();
 
-    const { searchUrl } = useSelector((state: AppState) => state.searchReducer);
+    const { searchQuery, searchUrl } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const [sortRule, setSortRule] = useState<SortRule>(SortRule.DEFAULT);
-    const [sortOrder, setSortOrder] = useState<SortOrder.ASC | SortOrder.DESC>(SortOrder.ASC);
-    const [sortOrderButtonStyle, setSortOrderButtonStyle] = useState({ transform: 'scale(1)', color: 'primary' });
 
     useEffect(() => {
         // /products/[?...] - retrieves search query
@@ -123,45 +119,10 @@ const Products: React.FC<productsProps> = ({ history }) => {
         </div>
     );
 
-    const handleChangeSortRule = (e: SelectChangeEvent) => {
-        setSortRule(SortRule[e.target.value as SortRule]);
-        dispatch(setNewSortRule(SortRule[e.target.value as SortRule]));
-    };
-
-    const handleChangeSortOrder = () => {
-        if (sortOrder === SortOrder.ASC) {
-            setSortOrder(SortOrder.DESC);
-            dispatch(setNewSortOrder(SortOrder.DESC));
-            setSortOrderButtonStyle({ transform: 'scale(1, -1)', color: 'secondary' });
-        } else {
-            setSortOrder(SortOrder.ASC);
-            dispatch(setNewSortOrder(SortOrder.ASC));
-            setSortOrderButtonStyle({ transform: 'scale(1)', color: 'primary' });
-        }
-    };
-
     const renderSortButtons = () => (
         <div className='products__sort-selectors'>
-            <FormControl fullWidth>
-                <InputLabel id='sort-selectors__label'>Sort</InputLabel>
-                <Select
-                    labelId='sort-selectors__select-label'
-                    id='sort-selectors__select-label'
-                    value={sortRule}
-                    label='Age'
-                    onChange={handleChangeSortRule}
-                >
-                    <MenuItem value={SortRule.DEFAULT}>None</MenuItem>
-                    <MenuItem value={SortRule.RATING}>Rating</MenuItem>
-                    <MenuItem value={SortRule.POPULAR}>Popularity</MenuItem>
-                    <MenuItem value={SortRule.DATE}>Date</MenuItem>
-                    <MenuItem value={SortRule.PRICE}>Price</MenuItem>
-                    <MenuItem value={SortRule.DISCOUNT}>Discount</MenuItem>
-                </Select>
-            </FormControl>
-            <IconButton onClick={handleChangeSortOrder} color={sortOrderButtonStyle.color as 'primary' | 'secondary'}>
-                <Sort style={{ transform: sortOrderButtonStyle.transform }} />
-            </IconButton>
+            <SortRuleSelector defaultValue={searchQuery.sortRule} />
+            <SortOrderButton defaultValue={searchQuery.sortOrder as SortOrder.ASC | SortOrder.DESC} />
         </div>
     );
 

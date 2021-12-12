@@ -75,6 +75,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
         if (task === homeTasks.WAIT_FOR_YOU_PRODUCTS_TO_LOAD && success) {
             if (products) {
                 setForYouProducts(products.slice());
+                dispatch(restoreDefaultSearchReducer());
                 setNextTask(DEFAULT_TASK_ABSENT, 0);
             }
         }
@@ -154,15 +155,6 @@ const Home: React.FC<homeProps> = ({ history }) => {
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);
-
-    useEffect(
-        () => () => {
-            dispatch(restoreDefaultSearchReducer());
-        },
-        // DO NOT REMOVE, Destructor calls only once
-        // eslint-disable-next-line
-        []
-    );
 
     const goToProduct = (productId: string) => {
         history.push(`/products/${productId}`);
