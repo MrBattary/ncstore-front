@@ -25,10 +25,13 @@ const SortOrderButton: React.FC<sortOrderButtonProps> = ({ defaultValue, disable
         if (searchQuery.sortOrder !== defaultValue) {
             dispatch(setNewSortOrder(defaultValue ? defaultValue : SortOrder.ASC));
         }
-        setButtonStyle(defaultValue ? defaultValue : SortOrder.ASC);
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        setButtonStyle(searchQuery.sortOrder ? searchQuery.sortOrder : SortOrder.ASC);
+    }, [searchQuery.sortOrder]);
 
     const setButtonStyle = (sortOrder: SortOrder) => {
         if (sortOrder === SortOrder.ASC) {
@@ -41,10 +44,8 @@ const SortOrderButton: React.FC<sortOrderButtonProps> = ({ defaultValue, disable
     const handleChangeSortOrder = () => {
         if (searchQuery.sortOrder === SortOrder.ASC) {
             dispatch(setNewSortOrder(SortOrder.DESC));
-            setButtonStyle(SortOrder.DESC);
         } else {
             dispatch(setNewSortOrder(SortOrder.ASC));
-            setButtonStyle(SortOrder.ASC);
         }
     };
 
