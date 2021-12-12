@@ -10,10 +10,12 @@ import { SetNewSortRuleAction } from '../actions/search/SetNewSortRule';
 import { RestoreDefaultSearchReducerAction } from '../actions/search/RestoreDefaultSearchReducer';
 import { buildQueryFromObject, combineUrls } from '../api/utilities';
 import { SearchQuery } from '../types/SearchQuery';
+import { InitDefaultSearchReducerAction } from '../actions/search/InitDefaultSearchReducer';
 
 interface SearchStore {
     searchQuery: SearchQuery;
     searchUrl: string;
+    initialized: boolean;
 }
 
 export type SearchReducerTypes =
@@ -23,7 +25,8 @@ export type SearchReducerTypes =
     | SetNewSearchTextAction
     | SetNewSortOrderAction
     | SetNewSortRuleAction
-    | RestoreDefaultSearchReducerAction;
+    | RestoreDefaultSearchReducerAction
+    | InitDefaultSearchReducerAction;
 
 const buildSearchUrl = (
     categoryNames: Array<string>,
@@ -58,6 +61,7 @@ const initialState: SearchStore = {
         sortOrder: SortOrder.ASC,
     },
     searchUrl: buildSearchUrl([], '', '', { page: 0, size: 10 }, SortRule.DEFAULT, SortOrder.ASC),
+    initialized: false,
 };
 
 export const searchReducer = (state = initialState, action: SearchReducerTypes): SearchStore => {
@@ -144,6 +148,21 @@ export const searchReducer = (state = initialState, action: SearchReducerTypes):
                     state.searchQuery.sortRule,
                     action.payload
                 ),
+            };
+        }
+        case types.INIT_DEFAULT_SEARCH_REDUCER: {
+            return {
+                ...state,
+                searchQuery: action.payload,
+                searchUrl: buildSearchUrl(
+                    action.payload.categoryNames,
+                    action.payload.searchText,
+                    action.payload.supplierId,
+                    action.payload.pagination,
+                    action.payload.sortRule,
+                    action.payload.sortOrder
+                ),
+                initialized: true,
             };
         }
         case types.RESTORE_DEFAULT_SEARCH_REDUCER: {

@@ -15,11 +15,12 @@ import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 import { getProductsFromSearch } from '../../../actions/products/GetProducts';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
-
-import './style.css';
 import SortRuleSelector from '../../components/sort_rule_selector/SortRuleSelector';
 import SortOrderButton from '../../components/sort_order_button/SortOrderButton';
 import { SortOrder } from '../../../types/SortEnum';
+import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSearchReducer';
+
+import './style.css';
 
 type productsProps = {
     history: History;
@@ -30,12 +31,20 @@ const Products: React.FC<productsProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const location = useLocation();
 
-    const { searchQuery, searchUrl } = useSelector((state: AppState) => state.searchReducer);
+    const { searchQuery, searchUrl, initialized } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
-    const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { products, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!initialized) {
+            dispatch(initDefaultSearchReducer(location.search));
+        }
+        // DO NOT REMOVE, Constructor calls only once
+        // eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
         // /products/[?...] - retrieves search query
@@ -43,8 +52,10 @@ const Products: React.FC<productsProps> = ({ history }) => {
     }, [dispatch, location.search]);
 
     useEffect(() => {
-        history.push(searchUrl);
-    }, [history, searchUrl]);
+        if (initialized) {
+            history.push(searchUrl);
+        }
+    }, [history, initialized, searchUrl]);
 
     useEffect(
         () => () => {
@@ -119,19 +130,22 @@ const Products: React.FC<productsProps> = ({ history }) => {
         </div>
     );
 
-    const renderSortButtons = () => (
-        <div className='products__sort-selectors'>
-            <SortRuleSelector defaultValue={searchQuery.sortRule} />
-            <SortOrderButton defaultValue={searchQuery.sortOrder as SortOrder.ASC | SortOrder.DESC} />
+    const renderSortButtons = (isHidden: boolean) => (
+        <div className='products__sort-selectors' style={{ visibility: isHidden ? 'hidden' : 'visible' }}>
+            <SortRuleSelector defaultValue={searchQuery.sortRule} disabled={false} style={{ marginRight: '10px' }} />
+            <SortOrderButton defaultValue={searchQuery.sortOrder as SortOrder.ASC | SortOrder.DESC} disabled={false} />
         </div>
     );
 
     const renderProductsPage = () => (
         <div className='products-content__products'>
-            <Typography className='products__label' variant='h5'>
-                Here is what we found
-            </Typography>
-            {renderSortButtons()}
+            <div className='products__products-header'>
+                {renderSortButtons(true)}
+                <Typography className='products-header__label' variant='h5'>
+                    Here is what we found
+                </Typography>
+                {renderSortButtons(false)}
+            </div>
             {renderProductsList()}
         </div>
     );
@@ -153,7 +167,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
         }
     };
 
-    return loading ? null : (
+    return (
         <>
             <main className='products-content'>{renderProductsContent()}</main>
         </>

@@ -29,6 +29,9 @@ import { updateProduct } from '../../../actions/products/UpdateProduct';
 import './style.css';
 import { setNewSupplierId } from '../../../actions/search/SetNewSupplierId';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import SortRuleSelector from '../../components/sort_rule_selector/SortRuleSelector';
+import SortOrderButton from '../../components/sort_order_button/SortOrderButton';
+import { SortOrder } from '../../../types/SortEnum';
 
 type merchandiseProps = {
     history: History;
@@ -125,6 +128,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             history.push('/signin');
         }
     }, [history, token]);
+
+    useEffect(() => {
+        dispatch(getProducts(searchQuery));
+    }, [dispatch, searchQuery]);
 
     useEffect(() => {
         if (!roles.includes(UserRole.SUPPLIER)) {
@@ -265,12 +272,25 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     return (
         <main className='merchandise-content'>
-            <Box margin={2} display={'flex'} justifyContent={'space-between'}>
-                <Typography className='merchandise-content__header' variant='h4'>
-                    Your products
-                </Typography>
+            <Box margin={2} display='flex' justifyContent='space-between' alignItems='center'>
+                <div className='merchandise-content__merchandise-header'>
+                    <Typography className='merchandise-header__label' variant='h4'>
+                        Your products
+                    </Typography>
+                    <div className='merchandise-header__sort'>
+                        <SortRuleSelector
+                            defaultValue={searchQuery.sortRule}
+                            disabled={false}
+                            style={{ marginRight: '10px' }}
+                        />
+                        <SortOrderButton
+                            defaultValue={searchQuery.sortOrder as SortOrder.ASC | SortOrder.DESC}
+                            disabled={false}
+                        />
+                    </div>
+                </div>
                 <Button
-                    className='merchandise-content__add-button'
+                    className='merchandise-controls__add-button'
                     size='large'
                     variant='contained'
                     onClick={addNewProduct}

@@ -10,10 +10,12 @@ import { AppState } from '../../../reducers/rootReducer';
 
 type sortOrderButtonProps = {
     // SortOrder.RAND is not recommended for use
-    defaultValue: SortOrder.ASC | SortOrder.DESC | null;
+    defaultValue?: SortOrder.ASC | SortOrder.DESC | null;
+    disabled: boolean;
+    style?: React.CSSProperties;
 };
 
-const SortOrderButton: React.FC<sortOrderButtonProps> = ({ defaultValue }) => {
+const SortOrderButton: React.FC<sortOrderButtonProps> = ({ defaultValue, disabled, style }) => {
     const dispatch = useDispatch();
     const { searchQuery } = useSelector((state: AppState) => state.searchReducer);
 
@@ -39,14 +41,20 @@ const SortOrderButton: React.FC<sortOrderButtonProps> = ({ defaultValue }) => {
     const handleChangeSortOrder = () => {
         if (searchQuery.sortOrder === SortOrder.ASC) {
             dispatch(setNewSortOrder(SortOrder.DESC));
+            setButtonStyle(SortOrder.DESC);
         } else {
             dispatch(setNewSortOrder(SortOrder.ASC));
+            setButtonStyle(SortOrder.ASC);
         }
-        setButtonStyle(searchQuery.sortOrder);
     };
 
     return (
-        <IconButton onClick={handleChangeSortOrder} color={sortOrderButtonStyle.color as 'primary' | 'secondary'}>
+        <IconButton
+            onClick={handleChangeSortOrder}
+            color={sortOrderButtonStyle.color as 'primary' | 'secondary'}
+            disabled={disabled}
+            style={style}
+        >
             <Sort style={{ transform: sortOrderButtonStyle.transform }} />
         </IconButton>
     );

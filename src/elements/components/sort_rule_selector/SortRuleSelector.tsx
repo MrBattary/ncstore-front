@@ -8,10 +8,12 @@ import { setNewSortRule } from '../../../actions/search/SetNewSortRule';
 import { AppState } from '../../../reducers/rootReducer';
 
 type sortRuleSelectorProps = {
-    defaultValue: SortRule | null;
+    defaultValue?: SortRule | null;
+    disabled: boolean;
+    style?: React.CSSProperties;
 };
 
-const SortRuleSelector: React.FC<sortRuleSelectorProps> = ({ defaultValue }) => {
+const SortRuleSelector: React.FC<sortRuleSelectorProps> = ({ defaultValue, disabled, style }) => {
     const dispatch = useDispatch();
     const { searchQuery } = useSelector((state: AppState) => state.searchReducer);
 
@@ -28,16 +30,16 @@ const SortRuleSelector: React.FC<sortRuleSelectorProps> = ({ defaultValue }) => 
     };
 
     return (
-        <FormControl fullWidth size='small'>
-            <InputLabel id='sort-selectors__label'>Order by</InputLabel>
+        <FormControl size='small' disabled={disabled} style={{ ...style, width: '120px' }}>
+            <InputLabel id='sort-selectors__label'>Sort</InputLabel>
             <Select
-                labelId='sort-selectors__select-label'
+                labelId='sort-selectors__label'
                 id='sort-selectors__select-label'
                 value={searchQuery.sortRule}
                 label='Age'
                 onChange={handleChangeSortRule}
             >
-                <MenuItem value={SortRule.DEFAULT}>None</MenuItem>
+                <MenuItem value={SortRule.DEFAULT}>Default</MenuItem>
                 <MenuItem value={SortRule.RATING}>Rating</MenuItem>
                 <MenuItem value={SortRule.POPULAR}>Popularity</MenuItem>
                 <MenuItem value={SortRule.DATE}>Date</MenuItem>

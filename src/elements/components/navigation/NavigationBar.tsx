@@ -27,7 +27,7 @@ import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
 import { setNewSearchText } from '../../../actions/search/SetNewSearchText';
-import useTask from '../../../utils/TaskHook';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 
 type navigationBarProps = {
     window?: () => Window;
@@ -70,8 +70,9 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     useEffect(() => {
         if (task === navigationBarTasks.DO_SEARCH) {
             history.push('/products'.concat(searchUrl));
+            setTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [history, searchUrl, task]);
+    }, [history, searchUrl, setTask, task]);
 
     const handleUserMenuOpen = (event: { currentTarget: React.SetStateAction<null | HTMLElement> }) => {
         setAnchorEl(event.currentTarget);
