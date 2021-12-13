@@ -16,6 +16,7 @@ import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { UserRole } from '../../../types/UserRole';
 
 import './style.css';
+import {getCategories} from "../../../actions/category/GetCategories";
 
 type homeProps = {
     history: History;
@@ -93,6 +94,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
 
     useEffect(() => {
         dispatch(getProducts(defaultPagination, '', null, SortRule.DISCOUNT, SortOrder.DESC));
+        dispatch(getCategories());
         setNextTask(homeTasks.WAIT_FOR_DISCOUNT_PRODUCTS_TO_LOAD, 0);
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line

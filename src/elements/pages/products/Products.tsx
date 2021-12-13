@@ -3,7 +3,7 @@ import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 
-import { Typography } from '@mui/material';
+import {Box, Container, Grid, Typography} from '@mui/material';
 
 import { AppState } from '../../../reducers/rootReducer';
 import { ProductFromList } from '../../../types/ProductsList';
@@ -12,6 +12,10 @@ import ProductCard from '../../components/product_card/ProductCard';
 import './style.css';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { UserRole } from '../../../types/UserRole';
+import AdvancedSearch from "../../components/advanced_search/AdvancedSearch";
+import {getProducts} from "../../../actions/products/GetProducts";
+import {defaultPagination} from "../../../types/Pagination";
+import {SortOrder, SortRule} from "../../../types/SortEnum";
 
 type productsProps = {
     history: History;
@@ -23,6 +27,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
 
     const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
+    const { categories } = useSelector((state:AppState) => state.categoryReducer)
 
     useEffect(() => {
         if (errorMessage) {
@@ -63,13 +68,38 @@ const Products: React.FC<productsProps> = ({ history }) => {
         </div>
     );
 
+    const handleAdvancedSearchApply = (e:any) => {
+        //const { categoriesNames } = e;
+        dispatch(getProducts(
+            defaultPagination,
+            "",
+            null,
+            SortRule.PRICE,
+            SortOrder.ASC
+        ))
+    }
+
     const renderProductsPage = () => (
-        <div className='products-content__products'>
-            <Typography className='products__label' variant='h5'>
-                Here is what we found
-            </Typography>
-            {renderProductsList()}
-        </div>
+        <Container className='products-content__products'>
+            <Grid container spacing={2}>
+                <Grid item xs={2}>
+                    <AdvancedSearch categories={categories} onFinish={handleAdvancedSearchApply} onFinishFailed={()=>{}} loading={loading}/>
+                </Grid>
+                <Grid item xs={10}>
+                    <Box sx={{
+                        paddingTop: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                    }}>
+                        <Typography className='products__label' variant='h5'>
+                            Here is what we found
+                        </Typography>
+                        {renderProductsList()}
+                    </Box>
+                </Grid>
+            </Grid>
+        </Container>
     );
 
     const renderProductsNotFound = () => (
