@@ -28,3 +28,6 @@ export const paymentSubUrl = '/payment';
 /* Order */
 export const ordersSubUrl = '/orders';
 export const orderSubUrl = '/orders/';
+
+/* Category */
+export const categorySubUrl = '/category'
