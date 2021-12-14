@@ -15,12 +15,10 @@ import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 import { getProductsFromSearch } from '../../../actions/products/GetProducts';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
-import SortRuleSelector from '../../components/sort_rule_selector/SortRuleSelector';
-import SortOrderButton from '../../components/sort_order_button/SortOrderButton';
-import { SortOrder } from '../../../types/SortEnum';
 import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSearchReducer';
 
 import './style.css';
+import ProductsSort from '../../components/products_sort/ProductsSort';
 
 type productsProps = {
     history: History;
@@ -132,8 +130,11 @@ const Products: React.FC<productsProps> = ({ history }) => {
 
     const renderSortButtons = (isHidden: boolean) => (
         <div className='products__sort-selectors' style={{ visibility: isHidden ? 'hidden' : 'visible' }}>
-            <SortRuleSelector defaultValue={searchQuery.sortRule} disabled={false} style={{ marginRight: '10px' }} />
-            <SortOrderButton defaultValue={searchQuery.sortOrder as SortOrder.ASC | SortOrder.DESC} disabled={false} />
+            <ProductsSort
+                defaultSortRule={searchQuery.sortRule}
+                defaultSortOrder={searchQuery.sortOrder}
+                disabled={false}
+            />
         </div>
     );
 

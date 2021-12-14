@@ -36,7 +36,7 @@ const SortRuleSelector: React.FC<sortRuleSelectorProps> = ({ defaultValue, disab
                 labelId='sort-selectors__label'
                 id='sort-selectors__select-label'
                 value={searchQuery.sortRule}
-                label='Age'
+                label='Sort'
                 onChange={handleChangeSortRule}
             >
                 <MenuItem value={SortRule.DEFAULT}>Default</MenuItem>

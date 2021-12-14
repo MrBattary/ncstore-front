@@ -130,7 +130,9 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     }, [history, token]);
 
     useEffect(() => {
-        dispatch(getProducts(searchQuery));
+        if (searchQuery.supplierId.length) {
+            dispatch(getProducts(searchQuery));
+        }
     }, [dispatch, searchQuery]);
 
     useEffect(() => {
@@ -139,7 +141,6 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         }
         dispatch(restoreDefaultSearchReducer());
         dispatch(setNewSupplierId(userId ? userId : ''));
-        dispatch(getProducts(searchQuery));
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);
