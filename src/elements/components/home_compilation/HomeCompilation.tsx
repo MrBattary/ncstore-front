@@ -1,9 +1,9 @@
 import React from 'react';
 
 import Typography from '@mui/material/Typography';
-import { Paper, Stack } from '@mui/material';
+import {Box, Paper} from '@mui/material';
 
-import { ProductFromList, ProductsList } from '../../../types/ProductsList';
+import {ProductFromList, ProductsList} from '../../../types/ProductsList';
 import ProductCard from '../product_card/ProductCard';
 
 type homeCompilationProps = {
@@ -16,17 +16,23 @@ type homeCompilationProps = {
 };
 
 const HomeCompilation: React.FC<homeCompilationProps> = ({
-    compilationName,
-    isDisplayButtons,
-    products,
-    onClick,
-    onBuy,
-    onAddToCart,
-}) => {
+                                                             compilationName,
+                                                             isDisplayButtons,
+                                                             products,
+                                                             onClick,
+                                                             onBuy,
+                                                             onAddToCart,
+                                                         }) => {
     const renderCompilationOk = () => {
         if (products) {
             return (
-                <Stack direction='row' spacing={2}>
+                <Box sx={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'stretch',
+                    justifyContent: 'center',
+                }}
+                >
                     {products.map((product: ProductFromList) => (
                         <ProductCard
                             key={product.productId}
@@ -40,7 +46,7 @@ const HomeCompilation: React.FC<homeCompilationProps> = ({
                             onAddToCart={() => onAddToCart(product.productId)}
                         />
                     ))}
-                </Stack>
+                </Box>
             );
         } else {
             return <></>;
@@ -62,8 +68,14 @@ const HomeCompilation: React.FC<homeCompilationProps> = ({
     };
 
     return (
-        <Paper elevation={5} sx={{ padding: 3 }}>
-            <Typography variant='h3'>{compilationName}</Typography>
+        <Paper elevation={5} sx={{
+            padding: 3,
+            marginTop: 15,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+        }}>
+            <Typography variant='h3' sx={{marginBottom:1}}>{compilationName}</Typography>
             {renderCompilation()}
         </Paper>
     );

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { History } from 'history';
 
 import CardMedia from '@mui/material/CardMedia';
-import { Box, Stack } from '@mui/material';
+import {Box, Stack} from '@mui/material';
 
 import HomeCompilation from '../../components/home_compilation/HomeCompilation';
 import { getProducts } from '../../../actions/products/GetProducts';
@@ -17,6 +17,7 @@ import { UserRole } from '../../../types/UserRole';
 
 import './style.css';
 import {getCategories} from "../../../actions/category/GetCategories";
+import HomeCategoryPick from "../../components/home_compilation/HomeCategoryPick";
 
 type homeProps = {
     history: History;
@@ -35,6 +36,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
 
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const { products, success } = useSelector((state: AppState) => state.productsReducer);
+    const { categories } = useSelector((state: AppState) => state.categoryReducer);
 
     const [discountProducts, setDiscountProducts] = useState<ProductsList>([]);
     const [newProducts, setNewProducts] = useState<ProductsList>([]);
@@ -181,6 +183,11 @@ const Home: React.FC<homeProps> = ({ history }) => {
         );
     };
 
+    const handleCategoryClick = (categoryName: string) => {
+        console.log(categoryName)
+        //TODO
+    }
+
     return (
         <Box
             sx={{
@@ -192,6 +199,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
         >
             <CardMedia component='img' height='300' image='Home-Banner.jpg' alt={`NCStore`} />
             <Stack spacing={10} sx={{ marginTop: 15 }}>
+                <HomeCategoryPick categories={categories} onClick={handleCategoryClick}/>
                 {!discountProducts.length ? null : renderBestDiscount()}
                 {!newProducts.length ? null : renderNewest()}
                 {!freeProducts.length ? null : renderFree()}
