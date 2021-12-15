@@ -17,6 +17,7 @@ import Merchandise from './elements/pages/merchandise/Merchandise';
 import Product from './elements/pages/product/Product';
 import Cart from './elements/pages/cart/Cart';
 import Orders from './elements/pages/orders/Orders';
+import NotFound from './elements/pages/notfound/NotFound';
 
 import 'antd/dist/antd.css';
 import './index.css';
@@ -25,8 +26,8 @@ ReactDOM.render(
     <Provider store={store}>
         <SnackbarProvider maxSnack={3}>
             <BrowserRouter>
-                <Switch>
-                    <MainLayout>
+                <MainLayout>
+                    <Switch>
                         <Route exact path='/' component={Home} />
                         <Route exact path='/signup' component={SignUp} />
                         <Route exact path='/signin' component={SignIn} />
@@ -36,8 +37,9 @@ ReactDOM.render(
                         <Route exact path='/cart' component={Cart} />
                         <Route exact path='/orders' component={Orders} />
                         <Route exact path='/products/*' component={Product} />
-                    </MainLayout>
-                </Switch>
+                        <Route exact path='*' component={NotFound} />
+                    </Switch>
+                </MainLayout>
             </BrowserRouter>
         </SnackbarProvider>
     </Provider>,

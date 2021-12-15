@@ -32,8 +32,6 @@ const enum cartTasks {
     WAIT_FOR_CHECKOUT = 'WAIT_FOR_CHECKOUT',
 }
 
-// TODO: Add sync of cart
-
 const Cart: React.FC<cartProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
@@ -263,7 +261,7 @@ const Cart: React.FC<cartProps> = ({ history }) => {
 
     const renderEmptyCart = () => (
         <div className='cart-content__empty-cart'>
-            {/* TODO: Add some picture here */}
+            <img src='./no-content.jpg' alt='No content' />
             <Typography className='empty-cart__label' variant='h4' display='inline-block'>
                 It seems you are not add anything yet
             </Typography>

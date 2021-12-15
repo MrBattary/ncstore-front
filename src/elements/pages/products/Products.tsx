@@ -14,12 +14,11 @@ import { UserRole } from '../../../types/UserRole';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 import { getProductsFromSearch } from '../../../actions/products/GetProducts';
-import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
 import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSearchReducer';
-
-import './style.css';
 import ProductsSort from '../../components/products_sort/ProductsSort';
 import { setNewPagination } from '../../../actions/search/SetNewPagination';
+
+import './style.css';
 
 type productsProps = {
     history: History;
@@ -55,15 +54,6 @@ const Products: React.FC<productsProps> = ({ history }) => {
             history.push(searchUrl);
         }
     }, [history, initialized, searchUrl]);
-
-    useEffect(
-        () => () => {
-            dispatch(restoreDefaultSearchReducer());
-        },
-        // DO NOT REMOVE, Destructor calls only once
-        // eslint-disable-next-line
-        []
-    );
 
     useEffect(() => {
         if (successMessage && successCart) {
@@ -176,7 +166,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
 
     const renderProductsNotFound = () => (
         <div className='products-content__products-not-found'>
-            {/* TODO: Add some picture here */}
+            <img src='./not-found.jpg' alt='Not found' />
             <Typography className='products-not-found__label' variant='h4' display='inline-block'>
                 Oops, we cant find anything...
             </Typography>

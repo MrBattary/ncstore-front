@@ -147,15 +147,6 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         // eslint-disable-next-line
     }, []);
 
-    useEffect(
-        () => () => {
-            dispatch(restoreDefaultSearchReducer());
-        },
-        // DO NOT REMOVE, Destructor calls only once
-        // eslint-disable-next-line
-        []
-    );
-
     const addNewProduct = () => {
         setIsCreateProductFormVisible(true);
     };
@@ -270,7 +261,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     const renderProductsNotFound = () => (
         <div className='merchandise__merchandise-not-found'>
-            {/* TODO: Add some picture here */}
+            <img src='./no-content.jpg' alt='No content' />
             <Typography className='merchandise-not-found__label' variant='h4' display='inline-block'>
                 It seems you are not selling anything yet...
             </Typography>
@@ -287,12 +278,12 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                     <div className='merchandise-header__sort'>
                         <SortRuleSelector
                             defaultValue={searchQuery.sortRule}
-                            disabled={false}
+                            disabled={loading || products.length <= 1}
                             style={{ marginRight: '10px' }}
                         />
                         <SortOrderButton
                             defaultValue={searchQuery.sortOrder as SortOrder.ASC | SortOrder.DESC}
-                            disabled={false}
+                            disabled={loading || products.length <= 1}
                         />
                     </div>
                 </div>
