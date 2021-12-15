@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -8,6 +8,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
+import useDelaySet from '../../../utils/DelayHook';
 
 import './style.css';
 
@@ -18,8 +19,8 @@ type productCardProps = {
     discountPrice: number | null;
     priceCurrency: string;
     onClick: (event: React.MouseEvent) => void;
-    onBuy: (event: React.MouseEvent) => void;
-    onAddToCart: (event: React.MouseEvent) => void;
+    onBuy: (clicks: number) => void;
+    onAddToCart: (clicks: number) => void;
 };
 
 const ProductCard: React.FC<productCardProps> = ({
@@ -32,8 +33,21 @@ const ProductCard: React.FC<productCardProps> = ({
     onBuy,
     onAddToCart,
 }) => {
+    const [setAddToCartClicksDelayedValue] = useDelaySet<number>(0, value => onAddToCart(value), 300);
+    const [addToCartClicks, setAddToCartClicks] = useState<number>(0);
+
     const goToProduct = (e: React.MouseEvent) => {
         onClick(e);
+    };
+
+    const handleBuy = (e: React.MouseEvent) => {
+        onBuy(1);
+    };
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        const newNumberOfAddToCartClicks = addToCartClicks + 1;
+        setAddToCartClicks(newNumberOfAddToCartClicks);
+        setAddToCartClicksDelayedValue(newNumberOfAddToCartClicks);
     };
 
     const renderPrice = () => {
@@ -79,10 +93,10 @@ const ProductCard: React.FC<productCardProps> = ({
         if (isDisplayButtons) {
             return (
                 <CardActions>
-                    <Button size='small' onClick={onBuy}>
+                    <Button size='small' onClick={handleBuy}>
                         Buy now
                     </Button>
-                    <Button size='small' onClick={onAddToCart}>
+                    <Button size='small' onClick={handleAddToCart}>
                         Add to cart
                     </Button>
                 </CardActions>

@@ -60,21 +60,22 @@ const SearchField: React.FC<searchFieldProps> = ({ placeholder, onSearch }) => {
 
     const handleClear = () => {
         setSearchText('');
+        doSearch('');
     };
 
     const tryToDoSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            doSearch();
+            doSearch(searchText);
         }
     };
 
-    const doSearch = () => {
-        onSearch(searchText);
+    const doSearch = (searchTextValue: string) => {
+        onSearch(searchTextValue);
     };
 
     return (
         <Search className='search'>
-            <IconWrapper className='search__icon' onClick={doSearch}>
+            <IconWrapper className='search__icon' onClick={() => doSearch(searchText)}>
                 <SearchIcon />
             </IconWrapper>
             <StyledInputBase

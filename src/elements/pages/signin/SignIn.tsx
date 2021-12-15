@@ -9,7 +9,7 @@ import { AppState } from '../../../reducers/rootReducer';
 import { signIn } from '../../../actions/users/SignIn';
 import SignInForm from '../../components/signin_form/SignInForm';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
-import {getBalance} from "../../../actions/users/GetBalance";
+import { getBalance } from '../../../actions/users/GetBalance';
 
 type signInProps = {
     history: History;
@@ -32,7 +32,7 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
     useEffect(() => {
         if (token) {
             dispatch(restoreDefaultUserReducer());
-            dispatch(getBalance(token))
+            dispatch(getBalance(token));
             history.push('/');
         }
     }, [token, history, dispatch]);
@@ -51,11 +51,10 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
     };
 
     return (
-        <Container style={{ minHeight: '100vh' }}>
+        <Container style={{ height: '100%', paddingTop: '8vh' }}>
             <Paper>
                 <Box
                     sx={{
-                        marginTop: 8,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
