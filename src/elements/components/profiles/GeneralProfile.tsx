@@ -154,14 +154,14 @@ const Profile: React.FC<profileProps> = ({ history, profile }) => {
                         alignItems: 'center',
                     }}
                 >
-                    <Stack spacing={5}>
+                    <Stack spacing={1} marginBottom={2}>
                         {renderPersonNickname()}
                         {renderCompanyName()}
-                        {renderCompanyDescription()}
+                        <List style={{ margin: 0, padding: 0 }}>{renderRolesList()}</List>
                         {renderPersonNames()}
+                        {renderCompanyDescription()}
                         {renderPersonBirthday()}
                         {renderCompanyFoundationDate()}
-                        <List>{renderRolesList()}</List>
                     </Stack>
                 </Box>
             </Paper>
