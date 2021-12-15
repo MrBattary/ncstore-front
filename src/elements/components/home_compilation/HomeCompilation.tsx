@@ -11,8 +11,8 @@ type homeCompilationProps = {
     isDisplayButtons: boolean;
     products: ProductsList | null;
     onClick: (productId: string) => void;
-    onBuy: (productId: string) => void;
-    onAddToCart: (productId: string) => void;
+    onBuy: (productId: string, productName: string, productCount: number) => void;
+    onAddToCart: (productId: string, productName: string, productCount: number) => void;
 };
 
 const HomeCompilation: React.FC<homeCompilationProps> = ({
@@ -42,8 +42,8 @@ const HomeCompilation: React.FC<homeCompilationProps> = ({
                             priceCurrency={product.priceCurrency}
                             isDisplayButtons={isDisplayButtons}
                             onClick={() => onClick(product.productId)}
-                            onBuy={() => onBuy(product.productId)}
-                            onAddToCart={() => onAddToCart(product.productId)}
+                            onBuy={clicks => onBuy(product.productId, product.productName, clicks)}
+                            onAddToCart={clicks => onAddToCart(product.productId, product.productName, clicks)}
                         />
                     ))}
                 </Box>

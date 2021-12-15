@@ -43,7 +43,7 @@ const Orders: React.FC<ordersProps> = ({ history }) => {
         { title: 'Order ID', key: 'rowKey', dataIndex: 'orderId' },
         { title: 'Status', key: 'status', dataIndex: 'status' },
         {
-            title: 'Time',
+            title: 'Date & Time',
             key: 'timeStampUtc',
             dataIndex: 'timeStampUtc',
             render: (text: string) => <span>{moment(text).format('YYYY-MM-DD HH:mm:ss')}</span>,
@@ -117,7 +117,7 @@ const Orders: React.FC<ordersProps> = ({ history }) => {
     const renderNonemptyOrders = () => (
         <div className='orders__orders-content'>
             <Typography className='orders-content__header' variant='h4' style={{ marginLeft: 10, marginBottom: 20 }}>
-                Your cart
+                Your orders
             </Typography>
             <Divider />
             <Table

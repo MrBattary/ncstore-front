@@ -1,33 +1,37 @@
-import { Pagination } from '../types/Pagination';
+import { coreUrl, productDetailedSubUrl, productsSubUrl, productSubUrl } from './urls';
 import { deleteHTTP, getHTTP, postHTTP, putHTTP } from '../fetcher/fetcher';
 import { buildQueryFromObject, combineUrls } from './utilities';
-import { coreUrl, productDetailedSubUrl, productsSubUrl, productSubUrl } from './urls';
 import { ProductsList } from '../types/ProductsList';
 import headers from '../fetcher/headers';
 import { ProductWithoutId } from '../types/ProductWithoutId';
 import { ProductWithSupplier } from '../types/ProductWithSupplier';
 import { Product } from '../types/Product';
-import {SortOrder, SortRule} from "../types/SortEnum";
 import { ProductForSale } from '../types/ProductForSale';
+import { SearchQuery } from '../types/SearchQuery';
 
-const getProducts = (pagination: Pagination, searchText: string | null, supplierId: string | null, sort:SortRule | null, sortOrder: SortOrder | null) =>
+const getProducts = (searchQuery: SearchQuery) =>
     getHTTP<ProductsList>(
         combineUrls([
             coreUrl,
             productsSubUrl,
             '?',
-            buildQueryFromObject({ searchText }),
+            buildQueryFromObject({ categoryNames: searchQuery.categoryNames.join('|') }),
             '&',
-            buildQueryFromObject({ supplierId }),
+            buildQueryFromObject({ searchText: searchQuery.searchText }),
             '&',
-            buildQueryFromObject(pagination),
+            buildQueryFromObject({ supplierId: searchQuery.supplierId }),
             '&',
-            buildQueryFromObject({sort}),
+            buildQueryFromObject(searchQuery.pagination),
             '&',
-            buildQueryFromObject({sortOrder})
+            buildQueryFromObject({ sort: searchQuery.sortRule }),
+            '&',
+            buildQueryFromObject({ sortOrder: searchQuery.sortOrder }),
         ]),
         headers.buildHeaderAcceptJson()
     );
+
+const getProductsFromSearch = (search: string) =>
+    getHTTP<ProductsList>(combineUrls([coreUrl, productsSubUrl, search]), headers.buildHeaderAcceptJson());
 
 const newProduct = (product: ProductWithoutId, token: string) =>
     postHTTP<Product>(
@@ -57,6 +61,7 @@ const deleteProduct = (productId: string, token: string) =>
 
 const productsApi = {
     getProducts,
+    getProductsFromSearch,
     newProduct,
     getProductForSale,
     getDetailedProduct,

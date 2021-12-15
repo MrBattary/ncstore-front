@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+
 import { useSnackbar } from 'notistack';
 
 import {Box, Container, Grid, Typography} from '@mui/material';
@@ -8,14 +10,17 @@ import {Box, Container, Grid, Typography} from '@mui/material';
 import { AppState } from '../../../reducers/rootReducer';
 import { ProductFromList } from '../../../types/ProductsList';
 import ProductCard from '../../components/product_card/ProductCard';
-
-import './style.css';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { UserRole } from '../../../types/UserRole';
 import AdvancedSearch from "../../components/advanced_search/AdvancedSearch";
-import {getProducts} from "../../../actions/products/GetProducts";
-import {defaultPagination} from "../../../types/Pagination";
-import {SortOrder, SortRule} from "../../../types/SortEnum";
+import { CartProduct } from '../../../types/CartProduct';
+import { getCart } from '../../../actions/cart/GetCart';
+import { getProductsFromSearch } from '../../../actions/products/GetProducts';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSearchReducer';
+
+import './style.css';
+import ProductsSort from '../../components/products_sort/ProductsSort';
 
 type productsProps = {
     history: History;
@@ -24,14 +29,58 @@ type productsProps = {
 const Products: React.FC<productsProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
+    const location = useLocation();
 
-    const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { searchQuery, searchUrl, initialized } = useSelector((state: AppState) => state.searchReducer);
+    const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
+    const { products, errorMessage, loading } = useSelector((state: AppState) => state.productsReducer);
+
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const { categories } = useSelector((state:AppState) => state.categoryReducer)
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!initialized) {
+            dispatch(initDefaultSearchReducer(location.search));
+        }
+        // DO NOT REMOVE, Constructor calls only once
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        // /products/[?...] - retrieves search query
+        dispatch(getProductsFromSearch(location.search));
+    }, [dispatch, location.search]);
+
+    useEffect(() => {
+        if (initialized) {
+            history.push(searchUrl);
+        }
+    }, [history, initialized, searchUrl]);
+
+    useEffect(
+        () => () => {
+            dispatch(restoreDefaultSearchReducer());
+        },
+        // DO NOT REMOVE, Destructor calls only once
+        // eslint-disable-next-line
+        []
+    );
+
+    useEffect(() => {
+        if (successMessage && successCart) {
+            enqueueSnackbar(successMessage, {
+                variant: 'success',
+            });
+            setSuccessMessage(null);
+        }
+    }, [enqueueSnackbar, successCart, successMessage]);
 
     useEffect(() => {
         if (errorMessage) {
-            enqueueSnackbar(errorMessage);
+            enqueueSnackbar(errorMessage, {
+                variant: 'error',
+            });
         }
     }, [enqueueSnackbar, errorMessage]);
 
@@ -39,15 +88,24 @@ const Products: React.FC<productsProps> = ({ history }) => {
         history.push(`/products/${productId}`);
     };
 
-    const buyProduct = (productId: string) => {
-        // TODO: Lock from adding more
-        dispatch(updateItemInCart({ productId: productId, productCount: 1 }, token ? token : ''));
+    const buyProduct = (productId: string, productCount: number) => {
+        addProductToCart(productId, productCount);
         history.push('/cart');
     };
 
-    const addProductToCart = (productId: string) => {
-        // TODO: Lock from adding more
-        dispatch(updateItemInCart({ productId: productId, productCount: 1 }, token ? token : ''));
+    const addProductToCart = (productId: string, productCount: number) => {
+        const indexOfItemFromCart = cart.map((cartItem: CartProduct) => cartItem.productId).indexOf(productId);
+        if (indexOfItemFromCart >= 0) {
+            dispatch(
+                updateItemInCart(
+                    { productId: productId, productCount: cart[indexOfItemFromCart].productCount + productCount },
+                    token ? token : ''
+                )
+            );
+        } else {
+            dispatch(updateItemInCart({ productId: productId, productCount: productCount }, token ? token : ''));
+        }
+        dispatch(getCart(token ? token : ''));
     };
 
     const renderProductsList = () => (
@@ -61,22 +119,31 @@ const Products: React.FC<productsProps> = ({ history }) => {
                     discountPrice={product.discountPrice}
                     priceCurrency={product.priceCurrency}
                     onClick={() => goToProduct(product.productId)}
-                    onBuy={() => buyProduct(product.productId)}
-                    onAddToCart={() => addProductToCart(product.productId)}
+                    onBuy={(clicks: number) => buyProduct(product.productId, clicks)}
+                    onAddToCart={(clicks: number) => {
+                        addProductToCart(product.productId, clicks);
+                        setSuccessMessage(
+                            `Added ${clicks} ${clicks === 1 ? 'copy' : 'copies'} of ${product.productName} to your cart`
+                        );
+                    }}
                 />
             ))}
         </div>
     );
 
+    const renderSortButtons = (isHidden: boolean) => (
+        <div className='products__sort-selectors' style={{ visibility: isHidden ? 'hidden' : 'visible' }}>
+            <ProductsSort
+                defaultSortRule={searchQuery.sortRule}
+                defaultSortOrder={searchQuery.sortOrder}
+                disabled={false}
+            />
+        </div>
+    );
+
     const handleAdvancedSearchApply = (e:any) => {
         //const { categoriesNames } = e;
-        dispatch(getProducts(
-            defaultPagination,
-            "",
-            null,
-            SortRule.PRICE,
-            SortOrder.ASC
-        ))
+
     }
 
     const renderProductsPage = () => (
@@ -92,9 +159,13 @@ const Products: React.FC<productsProps> = ({ history }) => {
                         flexDirection: 'column',
                         alignItems: 'center',
                     }}>
-                        <Typography className='products__label' variant='h5'>
-                            Here is what we found
-                        </Typography>
+                        <div className='products__products-header'>
+                            {renderSortButtons(true)}
+                            <Typography className='products-header__label' variant='h5'>
+                                Here is what we found
+                            </Typography>
+                            {renderSortButtons(false)}
+                        </div>
                         {renderProductsList()}
                     </Box>
                 </Grid>
@@ -119,7 +190,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
         }
     };
 
-    return loading ? null : (
+    return (
         <>
             <main className='products-content'>{renderProductsContent()}</main>
         </>
