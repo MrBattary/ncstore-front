@@ -183,37 +183,56 @@ const Cart: React.FC<cartProps> = ({ history }) => {
             />
         ));
 
+    const numberWithCommas = (num: number) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
     const renderNonemptyCartRightSide = () => (
         <div className='nonempty-cart__right-side'>
-            <Typography className='right-side__balance' style={{ marginBottom: 10 }} variant='h5'>
-                Balance: {balance ? balance.balance : 0}
-                {cart[0].priceCurrency}
-            </Typography>
-            <Typography className='right-side__total' style={{ marginBottom: 10 }} variant='h5'>
-                Total: {totalPrice}
-                {cart[0].priceCurrency}
-            </Typography>
-            <Typography className='right-side__save' style={{ marginBottom: 10 }} variant='h5'>
-                Save:{' '}
-                <span style={{ color: '#8cc44b' }}>
-                    {save}
-                    {cart[0].priceCurrency}
-                </span>
-            </Typography>
-            <Typography className='right-side__after' style={{ marginBottom: 10 }} variant='h5'>
-                After:{' '}
-                {afterBalance < 0 ? (
-                    <span style={{ color: 'red' }}>
-                        {afterBalance}
+            <div className='right-side__monetary-values'>
+                <div className='monetary-values__namings'>
+                    <Typography className='namings__balance' style={{ marginBottom: 10 }} variant='h5'>
+                        Balance
+                    </Typography>
+                    <Typography className='namings__total' style={{ marginBottom: 10 }} variant='h5'>
+                        Total
+                    </Typography>
+                    <Typography className='namings__save' style={{ marginBottom: 10 }} variant='h5'>
+                        Save
+                    </Typography>
+                    <Typography className='namings__after' style={{ marginBottom: 10 }} variant='h5'>
+                        After
+                    </Typography>
+                </div>
+                <Divider orientation='vertical' flexItem />
+                <div className='monetary-values__numbers'>
+                    <Typography className='numbers__balance' style={{ marginBottom: 10 }} variant='h5'>
+                        {numberWithCommas(balance ? balance.balance : 0)}
                         {cart[0].priceCurrency}
-                    </span>
-                ) : (
-                    <span>
-                        {afterBalance}
+                    </Typography>
+                    <Typography className='numbers__total' style={{ marginBottom: 10 }} variant='h5'>
+                        {numberWithCommas(totalPrice)}
                         {cart[0].priceCurrency}
-                    </span>
-                )}
-            </Typography>
+                    </Typography>
+                    <Typography className='numbers__save' style={{ marginBottom: 10 }} variant='h5'>
+                        <span style={{ color: '#8cc44b' }}>
+                            {numberWithCommas(save)}
+                            {cart[0].priceCurrency}
+                        </span>
+                    </Typography>
+                    <Typography className='numbers__after' style={{ marginBottom: 10 }} variant='h5'>
+                        {afterBalance < 0 ? (
+                            <span style={{ color: 'red' }}>
+                                {numberWithCommas(afterBalance)}
+                                {cart[0].priceCurrency}
+                            </span>
+                        ) : (
+                            <span>
+                                {numberWithCommas(afterBalance)}
+                                {cart[0].priceCurrency}
+                            </span>
+                        )}
+                    </Typography>
+                </div>
+            </div>
             <div className='right-side__checkout'>
                 <Button
                     className='checkout__checkout-button'

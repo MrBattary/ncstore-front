@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import { useSnackbar } from 'notistack';
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 
 import { AppState } from '../../../reducers/rootReducer';
 import { ProductFromList } from '../../../types/ProductsList';
@@ -19,6 +19,7 @@ import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSea
 
 import './style.css';
 import ProductsSort from '../../components/products_sort/ProductsSort';
+import { setNewPagination } from '../../../actions/search/SetNewPagination';
 
 type productsProps = {
     history: History;
@@ -31,7 +32,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
 
     const { searchQuery, searchUrl, initialized } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
-    const { products, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -105,6 +106,14 @@ const Products: React.FC<productsProps> = ({ history }) => {
         dispatch(getCart(token ? token : ''));
     };
 
+    const onGoBack = () => {
+        dispatch(setNewPagination({ page: searchQuery.pagination.page - 1, size: searchQuery.pagination.size }));
+    };
+
+    const onGoForward = () => {
+        dispatch(setNewPagination({ page: searchQuery.pagination.page + 1, size: searchQuery.pagination.size }));
+    };
+
     const renderProductsList = () => (
         <div className='products__products-list'>
             {products.map((product: ProductFromList) => (
@@ -133,7 +142,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
             <ProductsSort
                 defaultSortRule={searchQuery.sortRule}
                 defaultSortOrder={searchQuery.sortOrder}
-                disabled={false}
+                disabled={loading || products.length <= 1}
             />
         </div>
     );
@@ -147,7 +156,21 @@ const Products: React.FC<productsProps> = ({ history }) => {
                 </Typography>
                 {renderSortButtons(false)}
             </div>
-            {renderProductsList()}
+            <div className='products__products-and-controls'>
+                <div className='products-and-controls__wrapper'>{renderProductsList()}</div>
+                <div className='products-and-controls__control-buttons'>
+                    <Button variant='outlined' onClick={onGoBack} disabled={!searchQuery.pagination.page || loading}>
+                        {'<'}
+                    </Button>
+                    <Button
+                        variant='outlined'
+                        onClick={onGoForward}
+                        disabled={searchQuery.pagination.size > products.length || loading}
+                    >
+                        {'>'}
+                    </Button>
+                </div>
+            </div>
         </div>
     );
 

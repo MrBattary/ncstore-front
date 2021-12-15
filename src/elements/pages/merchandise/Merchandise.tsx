@@ -30,6 +30,7 @@ import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefa
 import SortRuleSelector from '../../components/sort_rule_selector/SortRuleSelector';
 import SortOrderButton from '../../components/sort_order_button/SortOrderButton';
 import { SortOrder } from '../../../types/SortEnum';
+import { setNewPagination } from '../../../actions/search/SetNewPagination';
 
 import './style.css';
 
@@ -59,6 +60,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const [isCreateProductFormVisible, setIsCreateProductFormVisible] = useState<boolean>(false);
     const [task, setNextTask] = useTask();
 
+    const loadMoreSize = 10;
     // TODO: Replace this with normal request from the backend
     const categoriesList: string[] = useMemo(() => ['category1', 'category2', 'category3'], []);
 
@@ -232,6 +234,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         setDetailedProductForUpdateForm(null);
     };
 
+    const onLoadMore = () => {
+        dispatch(setNewPagination({ page: 0, size: searchQuery.pagination.size + loadMoreSize }));
+    };
+
     const showRemoveConfirm = (productId: string) => {
         Modal.confirm({
             title: 'ATTENTION',
@@ -301,9 +307,20 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                     Add new product
                 </Button>
             </Box>
-            <div className='merchandise-content__merchandise'>
-                <Divider />
-                {products.length ? renderProductsInfoCardList() : renderProductsNotFound()}
+            <div className='merchandise-content__merchandise-and-controls'>
+                <div className='merchandise-and-controls__merchandise'>
+                    <Divider />
+                    {products.length ? renderProductsInfoCardList() : renderProductsNotFound()}
+                </div>
+                <Button
+                    variant='outlined'
+                    size={'large'}
+                    onClick={onLoadMore}
+                    disabled={searchQuery.pagination.size > products.length || loading}
+                    style={{ marginTop: 30 }}
+                >
+                    Load more
+                </Button>
             </div>
             <ProductForm
                 isDiscountForm={true}
