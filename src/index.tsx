@@ -36,11 +36,7 @@ ReactDOM.render(
                         <Route exact path='/merchandise' component={Merchandise} />
                         <Route exact path='/cart' component={Cart} />
                         <Route exact path='/orders' component={Orders} />
-                        <Route
-                            exact
-                            path='/products/:id([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})'
-                            component={Product}
-                        />
+                        <Route exact path='/products/*' component={Product} />
                         <Route
                             exact
                             path='/users/:id([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})'

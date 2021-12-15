@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -13,35 +13,71 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import Badge from '@mui/material/Badge';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Assignment, ShoppingCart, Storefront } from '@mui/icons-material';
-import { Typography } from '@mui/material';
+import { Slide, Typography, useScrollTrigger } from '@mui/material';
 
-import { Pagination } from '../../../types/Pagination';
 import SearchField from '../search_field/SearchField';
 import { signOut } from '../../../actions/users/SignOut';
-import { getProducts } from '../../../actions/products/GetProducts';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
-import { SortOrder, SortRule } from '../../../types/SortEnum';
+import { CartProduct } from '../../../types/CartProduct';
+import { getCart } from '../../../actions/cart/GetCart';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import { setNewSearchText } from '../../../actions/search/SetNewSearchText';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 
-type navigationBarProps = {};
+type navigationBarProps = {
+    window?: () => Window;
+};
 
-const NavigationBar: React.FC<navigationBarProps> = () => {
+enum navigationBarTasks {
+    DO_SEARCH = 'DO_SEARCH',
+}
+
+const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     const history = useHistory();
     const dispatch = useDispatch();
+
+    const { searchUrl } = useSelector((state: AppState) => state.searchReducer);
+    const { cart } = useSelector((state: AppState) => state.cartReducer);
     const { token, roles, balance } = useSelector((state: AppState) => state.userReducer);
 
-    const defaultPagination: Pagination = {
-        page: 0,
-        size: 20,
-    };
-
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [cartSize, setCartSize] = useState<number>(0);
+    const [task, setTask] = useTask();
+
+    const scrollTrigger = useScrollTrigger({
+        target: window ? window() : undefined,
+    });
+
+    useEffect(() => {
+        if (cart.length > 0) {
+            setCartSize(cart.reduce((total: number, cartItem: CartProduct) => total + cartItem.productCount, 0));
+        } else {
+            setCartSize(0);
+        }
+    }, [cart]);
+
+    useEffect(() => {
+        if (token) {
+            dispatch(getCart(token));
+        }
+    }, [dispatch, token]);
+
+    useEffect(() => {
+        if (task === navigationBarTasks.DO_SEARCH) {
+            history.push('/products'.concat(searchUrl));
+            setTask(DEFAULT_TASK_ABSENT, 0);
+        }
+    }, [history, searchUrl, setTask, task]);
+
     const handleUserMenuOpen = (event: { currentTarget: React.SetStateAction<null | HTMLElement> }) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleUserMenuClose = () => {
         setAnchorEl(null);
     };
@@ -51,14 +87,14 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
         handleUserMenuClose();
     };
 
-    const signOutLocally = () => {
-        dispatch(signOut());
-        dispatch(restoreDefaultUserReducer());
-        handleUserMenuClose();
-    };
-
     const goToHome = () => {
         history.push('/');
+    };
+
+    const handleSignOut = () => {
+        dispatch(signOut(token ? token : ''));
+        dispatch(restoreDefaultUserReducer());
+        handleUserMenuClose();
     };
 
     const handleOpenCart = () => {
@@ -70,8 +106,9 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
     };
 
     const handleSearch = (searchText: string) => {
-        dispatch(getProducts(defaultPagination, searchText, null, SortRule.DEFAULT, SortOrder.ASC));
-        history.push('/products');
+        dispatch(restoreDefaultSearchReducer());
+        dispatch(setNewSearchText(searchText));
+        setTask(navigationBarTasks.DO_SEARCH, 0);
     };
 
     const handleOpenMerchandise = () => {
@@ -87,7 +124,9 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
                         <Assignment />
                     </IconButton>
                     <IconButton size='large' aria-label='shopping cart' color='inherit' onClick={handleOpenCart}>
-                        <ShoppingCart />
+                        <Badge badgeContent={cartSize} max={99} invisible={cartSize <= 0} color='success'>
+                            <ShoppingCart />
+                        </Badge>
                     </IconButton>
                 </>
             );
@@ -147,7 +186,7 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
                 onClose={handleUserMenuClose}
             >
                 <MenuItem onClick={goToTheProfile}>Profile</MenuItem>
-                <MenuItem onClick={signOutLocally}>Sign out</MenuItem>
+                <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
             </Menu>
         </Stack>
     );
@@ -180,24 +219,26 @@ const NavigationBar: React.FC<navigationBarProps> = () => {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position='static'>
-                <Toolbar>
-                    <Stack spacing={2} direction='row' alignItems='center' flexGrow={1}>
-                        <Link
-                            variant='h5'
-                            color='inherit'
-                            component='div'
-                            underline='none'
-                            onClick={goToHome}
-                            sx={{ cursor: 'pointer' }}
-                        >
-                            NCStore
-                        </Link>
-                        <SearchField onSearch={handleSearch} placeholder='Search...' />
-                    </Stack>
-                    {renderMenu()}
-                </Toolbar>
-            </AppBar>
+            <Slide appear={false} direction='down' in={!scrollTrigger}>
+                <AppBar>
+                    <Toolbar>
+                        <Stack spacing={2} direction='row' alignItems='center' flexGrow={1}>
+                            <Link
+                                variant='h5'
+                                color='inherit'
+                                component='div'
+                                underline='none'
+                                onClick={goToHome}
+                                sx={{ cursor: 'pointer' }}
+                            >
+                                NCStore
+                            </Link>
+                            <SearchField onSearch={handleSearch} placeholder='Search...' />
+                        </Stack>
+                        {renderMenu()}
+                    </Toolbar>
+                </AppBar>
+            </Slide>
         </Box>
     );
 };

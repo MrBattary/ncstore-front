@@ -1,7 +1,7 @@
 import * as types from '../actions/products/productActionTypes';
 import { ProductsList } from '../types/ProductsList';
 import { GetProducts } from '../actions/products/GetProducts';
-import { RestoreDefaultProductsReducer } from '../actions/products/RestoreDefaultProductsReducer';
+import { RestoreDefaultProductsReducerAction } from '../actions/products/RestoreDefaultProductsReducer';
 import { NewProduct } from '../actions/products/CreateProduct';
 import { GetProduct } from '../actions/products/GetProduct';
 import { ProductWithSupplier } from '../types/ProductWithSupplier';
@@ -28,7 +28,7 @@ export type ProductsReducerTypes =
     | GetDetailedProduct
     | UpdateProduct
     | DeleteProduct
-    | RestoreDefaultProductsReducer;
+    | RestoreDefaultProductsReducerAction;
 
 const initialState: ProductsStore = {
     detailedProduct: null,

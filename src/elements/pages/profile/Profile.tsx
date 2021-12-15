@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {History} from 'history';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { History } from 'history';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {Container, Stack} from '@mui/material';
-import {useSnackbar} from 'notistack';
+import { Container, Stack } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
 import {AppState} from '../../../reducers/rootReducer';
 import {restoreDefaultUserReducer} from '../../../actions/users/RestoreDefaultUserReducer';
@@ -26,38 +26,31 @@ type profileProps = {
     history: History;
 };
 
-const Profile: React.FC<profileProps> = ({history}) => {
-    const {enqueueSnackbar} = useSnackbar();
+const Profile: React.FC<profileProps> = ({ history }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
 
     const [isPaymentFormVisible, setIsPaymentFormVisible] = useState<boolean>(false);
     const [isWaitingForPaymentToProceed, setIsWaitingForPaymentToProceed] = useState<boolean>(false);
     const [paymentAmount, setPaymentAmount] = useState<number>(0);
 
-    const {
-        token,
-        paymentToken,
-        userType,
-        profile,
-        loading,
-        errorMessage,
-        balance,
-        success
-    } = useSelector((state: AppState) => state.userReducer);
-
+    const { token, paymentToken, userType, profile, loading, errorMessage, balance, success } = useSelector(
+        (state: AppState) => state.userReducer
+    );
 
     const renderErrorModal = () => {
         Modal.error({
             title: 'Payment error',
-            content: 'We can not proceed a payment for you. Maybe you do not have enough money on your card or payment service is down. Try again later.',
+            content:
+                'We can not proceed a payment for you. Maybe you do not have enough money on your card or payment service is down. Try again later.',
         });
-    }
+    };
 
     const renderSuccessModal = () => {
         Modal.success({
             content: 'Your payment was successful!',
         });
-    }
+    };
 
     useEffect(() => {
         if (errorMessage) {
@@ -70,11 +63,11 @@ const Profile: React.FC<profileProps> = ({history}) => {
 
     useEffect(() => {
         if (isWaitingForPaymentToProceed && !loading) {
-            setIsWaitingForPaymentToProceed(false)
+            setIsWaitingForPaymentToProceed(false);
             if (success) {
-                renderSuccessModal()
+                renderSuccessModal();
             } else {
-                renderErrorModal()
+                renderErrorModal();
             }
         }
     }, [isWaitingForPaymentToProceed, loading, success, dispatch]);
@@ -109,32 +102,36 @@ const Profile: React.FC<profileProps> = ({history}) => {
     const handleBalanceAdd = (e: any) => {
         if (paymentToken) {
             setIsPaymentFormVisible(true);
-            const {amount} = e;
+            const { amount } = e;
             setPaymentAmount(amount);
         } else {
-            renderErrorModal()
+            renderErrorModal();
         }
-    }
+    };
 
     const handleBalancePayment = (e: any, nonce: string) => {
         if (nonce && nonce.length !== 0) {
-            dispatch(addBalance({paymentAmount, nonce}, token ? token : ''));
+            dispatch(addBalance({ paymentAmount, nonce }, token ? token : ''));
             setIsWaitingForPaymentToProceed(true);
             dispatch(getPaymentToken(token ? token : ''));
             setIsPaymentFormVisible(false);
         }
-    }
+    };
 
     const handlePasswordChange = (e: any) => {
         if (e.outOfDate !== false) {
-            const {oldPassword, newPassword} = e;
-            dispatch(changePassword({
-                    oldPassword,
-                    newPassword
-                }, token ? token : '')
+            const { oldPassword, newPassword } = e;
+            dispatch(
+                changePassword(
+                    {
+                        oldPassword,
+                        newPassword,
+                    },
+                    token ? token : ''
+                )
             );
         }
-    }
+    };
 
 
     const renderBecomeSupplier = () => {

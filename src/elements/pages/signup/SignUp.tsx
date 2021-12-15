@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { History } from 'history';
+
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Avatar, Box, Button, ButtonGroup, Container, Paper, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
+
 import { AppState } from '../../../reducers/rootReducer';
 import { UserType } from '../../../types/UserType';
 import SignUpCompanyForm from '../../components/signup_forms/SignUpCompanyForm';
@@ -112,11 +113,10 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
     };
 
     return (
-        <Container style={{ minHeight: '100vh' }}>
+        <Container style={{ minHeight: '100vh', paddingTop: '2vh' }}>
             <Paper>
                 <Box
                     sx={{
-                        marginTop: 2,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
