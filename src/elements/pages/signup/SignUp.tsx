@@ -12,10 +12,15 @@ import SignUpCompanyForm from '../../components/signup_forms/SignUpCompanyForm';
 import SignUpPersonForm from '../../components/signup_forms/SignUpPersonForm';
 import { signUpCompany, signUpPerson } from '../../../actions/users/SignUp';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 
 type signUpProps = {
     history: History;
 };
+
+enum signUpTasks {
+    WAIT_FOR_SIGN_UP = 'WAIT_FOR_SIGN_UP',
+}
 
 const SignUp: React.FC<signUpProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
@@ -23,6 +28,7 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
     const { token, success, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
 
     const [tab, setTab] = useState(UserType.PERSON);
+    const [task, setTask] = useTask();
 
     useEffect(() => {
         if (errorMessage) {
@@ -41,14 +47,15 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
     }, [token, history, dispatch]);
 
     useEffect(() => {
-        if (success) {
+        if (task === signUpTasks.WAIT_FOR_SIGN_UP && success) {
             dispatch(restoreDefaultUserReducer());
+            setTask(DEFAULT_TASK_ABSENT, 0);
             history.push('/signin');
             enqueueSnackbar('Successfully registered!', {
                 variant: 'success',
             });
         }
-    }, [success, dispatch, history, enqueueSnackbar]);
+    }, [success, dispatch, history, enqueueSnackbar, task, setTask]);
 
     const pushToSignIn = () => {
         if (!loading) {
@@ -70,6 +77,7 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
                     roles,
                 })
             );
+            setTask(signUpTasks.WAIT_FOR_SIGN_UP, 0);
         }
     };
 
@@ -85,6 +93,7 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
                     roles,
                 })
             );
+            setTask(signUpTasks.WAIT_FOR_SIGN_UP, 0);
         }
     };
 
