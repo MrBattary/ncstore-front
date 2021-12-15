@@ -19,6 +19,7 @@ import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 import { setNewCategoriesNames } from '../../../actions/search/SetNewCategoryNames';
 
 import './style.css';
+import {restoreDefaultSearchReducer} from "../../../actions/search/RestoreDefaultSearchReducer";
 
 type productProps = {
     history: History;
@@ -78,6 +79,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const goToCategory = (categoryName: string) => {
+        dispatch(restoreDefaultSearchReducer())
         dispatch(setNewCategoriesNames([categoryName]));
         setTask(productTasks.GO_TO_CATEGORY, 0);
     };

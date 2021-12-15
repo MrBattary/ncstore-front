@@ -24,6 +24,7 @@ import { setNewPagination } from '../../../actions/search/SetNewPagination';
 import './style.css';
 import {getCategories} from "../../../actions/category/GetCategories";
 import HomeCategoryPick from "../../components/home_compilation/HomeCategoryPick";
+import {setNewCategoriesNames} from "../../../actions/search/SetNewCategoryNames";
 
 type homeProps = {
     history: History;
@@ -38,6 +39,7 @@ const enum homeTasks {
     WAIT_FOR_FREE_PRODUCTS_TO_LOAD = 'WAIT_FOR_FREE_PRODUCT_TO_LOAD',
     DO_REQUEST_FOR_YOU_PRODUCTS = 'DO_REQUEST_FOR_YOU_PRODUCTS',
     WAIT_FOR_YOU_PRODUCTS_TO_LOAD = 'WAIT_FOR_YOU_PRODUCT_TO_LOAD',
+    GO_TO_CATEGORY = 'GO_TO_CATEGORY',
 }
 
 const Home: React.FC<homeProps> = ({ history }) => {
@@ -45,7 +47,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [task, setNextTask] = useTask();
 
-    const { searchQuery } = useSelector((state: AppState) => state.searchReducer);
+    const { searchQuery, searchUrl } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const { products, success, errorMessage } = useSelector((state: AppState) => state.productsReducer);
@@ -74,6 +76,13 @@ const Home: React.FC<homeProps> = ({ history }) => {
             setSuccessMessage(null);
         }
     }, [enqueueSnackbar, successCart, successMessage]);
+
+    useEffect(() => {
+        if (task === homeTasks.GO_TO_CATEGORY) {
+            history.push('/products'.concat(searchUrl));
+            setNextTask(DEFAULT_TASK_ABSENT, 0);
+        }
+    });
 
     useEffect(() => {
         if (task === homeTasks.WAIT_FOR_YOU_PRODUCTS_TO_LOAD && success) {
@@ -188,6 +197,12 @@ const Home: React.FC<homeProps> = ({ history }) => {
         );
     };
 
+    const handleCategoryClick = (categoryName: string) => {
+        dispatch(restoreDefaultSearchReducer())
+        dispatch(setNewCategoriesNames(Array.from([categoryName])));
+        setNextTask(homeTasks.GO_TO_CATEGORY, 0);
+    }
+
     const renderBestDiscount = () => {
         return (
             <>
@@ -247,11 +262,6 @@ const Home: React.FC<homeProps> = ({ history }) => {
             </>
         );
     };
-
-    const handleCategoryClick = (categoryName: string) => {
-        console.log(categoryName)
-        //TODO
-    }
 
     return (
         <Box
