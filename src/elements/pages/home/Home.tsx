@@ -20,11 +20,10 @@ import { setNewSortOrder } from '../../../actions/search/SetNewSortOrder';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
 import { setNewSortRule } from '../../../actions/search/SetNewSortRule';
 import { setNewPagination } from '../../../actions/search/SetNewPagination';
-
-import './style.css';
-import {getCategories} from "../../../actions/category/GetCategories";
 import HomeCategoryPick from "../../components/home_compilation/HomeCategoryPick";
 import {setNewCategoriesNames} from "../../../actions/search/SetNewCategoryNames";
+
+import './style.css';
 
 type homeProps = {
     history: History;
@@ -164,7 +163,6 @@ const Home: React.FC<homeProps> = ({ history }) => {
         dispatch(setNewPagination({ page: 0, size: 6 }));
         dispatch(setNewSortRule(SortRule.DISCOUNT));
         dispatch(setNewSortOrder(SortOrder.DESC));
-        dispatch(getCategories())
         setNextTask(homeTasks.DO_REQUEST_FOR_DISCOUNT_PRODUCTS, 0);
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line

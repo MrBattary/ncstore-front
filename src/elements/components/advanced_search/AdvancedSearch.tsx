@@ -16,7 +16,6 @@ type advancedSearchProps = {
     onFinishFailed: (event: any) => void;
     selectedCategories: Array<string>;
 };
-//                <CheckboxList items={categories.map((elem :CategoryFromList)=> elem.categoryName)} primaryListName="Category" isAllChecked={true}/>
 
 const AdvancedSearch: React.FC<advancedSearchProps> = ({categories, loading, onFinish, onFinishFailed, selectedCategories}) => {
     const [categoryListOpen, setCategoryListOpen] = React.useState(true);
@@ -39,7 +38,6 @@ const AdvancedSearch: React.FC<advancedSearchProps> = ({categories, loading, onF
                             allowClear
                             style={{ width: '100%' }}
                             placeholder="All categories"
-                            defaultValue={selectedCategories}
                         >
                             {categories.map((e: CategoryFromList) =>
                                 <Select.Option key={e.categoryName} value={e.categoryName}>
@@ -60,6 +58,7 @@ const AdvancedSearch: React.FC<advancedSearchProps> = ({categories, loading, onF
                 size='large'
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
+                initialValues={{categoriesNames: selectedCategories}}
                 style={{
                     display: 'flex',
                     flexDirection: 'column',

@@ -28,6 +28,7 @@ import { getCart } from '../../../actions/cart/GetCart';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
 import { setNewSearchText } from '../../../actions/search/SetNewSearchText';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+import {getCategories} from "../../../actions/category/GetCategories";
 
 type navigationBarProps = {
     window?: () => Window;
@@ -35,6 +36,8 @@ type navigationBarProps = {
 
 enum navigationBarTasks {
     DO_SEARCH = 'DO_SEARCH',
+    GET_CATEGORIES = 'GET_CATEGORIES',
+    WAIT_GET_CATEGORIES = 'WAIT_GET_CATEGORIES'
 }
 
 const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
@@ -44,6 +47,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     const { searchUrl } = useSelector((state: AppState) => state.searchReducer);
     const { cart } = useSelector((state: AppState) => state.cartReducer);
     const { token, roles, balance } = useSelector((state: AppState) => state.userReducer);
+    const { loading } = useSelector((state: AppState) => state.categoryReducer);
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [cartSize, setCartSize] = useState<number>(0);
@@ -73,6 +77,25 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
             setTask(DEFAULT_TASK_ABSENT, 0);
         }
     }, [history, searchUrl, setTask, task]);
+
+    useEffect(() => {
+        if (task === navigationBarTasks.GET_CATEGORIES) {
+            dispatch(getCategories())
+            setTask(navigationBarTasks.WAIT_GET_CATEGORIES, 0);
+        }
+    }, [setTask, task, dispatch]);
+
+    useEffect(() => {
+        if (task === navigationBarTasks.WAIT_GET_CATEGORIES && !loading) {
+            setTask(DEFAULT_TASK_ABSENT, 0);
+        }
+    }, [setTask, task, loading]);
+
+    useEffect(() => {
+        setTask(navigationBarTasks.GET_CATEGORIES,0);
+        // DO NOT REMOVE, Calls only once
+        // eslint-disable-next-line
+    }, []);
 
     const handleUserMenuOpen = (event: { currentTarget: React.SetStateAction<null | HTMLElement> }) => {
         setAnchorEl(event.currentTarget);
