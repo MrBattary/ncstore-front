@@ -13,7 +13,6 @@ import { UserRole } from '../../../types/UserRole';
 import { ProductFromList } from '../../../types/ProductsList';
 import ProductInfoCard from '../../components/info_product_card/ProductInfoCard';
 import { getProducts } from '../../../actions/products/GetProducts';
-import { Pagination } from '../../../types/Pagination';
 import ProductForm from '../../components/product_form/ProductForm';
 import { ProductWithoutId } from '../../../types/ProductWithoutId';
 import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
@@ -26,9 +25,13 @@ import { DiscountPrice } from '../../../types/DiscountPrice';
 import { ProductWithSupplier } from '../../../types/ProductWithSupplier';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 import { updateProduct } from '../../../actions/products/UpdateProduct';
-import { SortOrder, SortRule } from '../../../types/SortEnum';
 
 import './style.css';
+import { setNewSupplierId } from '../../../actions/search/SetNewSupplierId';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import SortRuleSelector from '../../components/sort_rule_selector/SortRuleSelector';
+import SortOrderButton from '../../components/sort_order_button/SortOrderButton';
+import { SortOrder } from '../../../types/SortEnum';
 
 type merchandiseProps = {
     history: History;
@@ -45,6 +48,7 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
+    const { searchQuery } = useSelector((state: AppState) => state.searchReducer);
     const { product, detailedProduct, products, success, loading, errorMessage } = useSelector(
         (state: AppState) => state.productsReducer
     );
@@ -54,17 +58,6 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     const [isUpdateProductFormVisible, setIsUpdateProductFormVisible] = useState<boolean>(false);
     const [isCreateProductFormVisible, setIsCreateProductFormVisible] = useState<boolean>(false);
     const [task, setNextTask] = useTask();
-
-    const defaultPagination: Pagination = useMemo(
-        () => ({
-            page: 0,
-            size: 20,
-        }),
-        []
-    );
-
-    const defaultSortRule: SortRule = SortRule.DATE;
-    const defaultSortOrder: SortOrder = SortOrder.ASC;
 
     // TODO: Replace this with normal request from the backend
     const categoriesList: string[] = useMemo(() => ['category1', 'category2', 'category3'], []);
@@ -76,22 +69,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             });
             setIsCreateProductFormVisible(false);
             dispatch(restoreDefaultProductsReducer());
-            dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
+            dispatch(getProducts(searchQuery));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [
-        enqueueSnackbar,
-        success,
-        product,
-        loading,
-        dispatch,
-        defaultPagination,
-        defaultSortRule,
-        defaultSortOrder,
-        userId,
-        task,
-        setNextTask,
-    ]);
+    }, [enqueueSnackbar, success, product, loading, dispatch, userId, task, setNextTask, searchQuery]);
 
     useEffect(() => {
         if (task === merchandiseTasks.WAIT_FOR_DELETED_PRODUCT && product && success) {
@@ -99,22 +80,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
                 variant: 'success',
             });
             dispatch(restoreDefaultProductsReducer());
-            dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
+            dispatch(getProducts(searchQuery));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [
-        enqueueSnackbar,
-        success,
-        product,
-        loading,
-        dispatch,
-        defaultPagination,
-        userId,
-        defaultSortRule,
-        defaultSortOrder,
-        task,
-        setNextTask,
-    ]);
+    }, [enqueueSnackbar, success, product, loading, dispatch, userId, task, setNextTask, searchQuery]);
 
     useEffect(() => {
         if (task === merchandiseTasks.WAIT_FOR_PRODUCT_FOR_UPDATE && success) {
@@ -141,22 +110,10 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
             setIsUpdateProductFormVisible(false);
             setDetailedProductForUpdateForm(null);
             dispatch(restoreDefaultProductsReducer());
-            dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
+            dispatch(getProducts(searchQuery));
             setNextTask(DEFAULT_TASK_ABSENT, 0);
         }
-    }, [
-        task,
-        loading,
-        dispatch,
-        defaultPagination,
-        userId,
-        defaultSortRule,
-        defaultSortOrder,
-        product,
-        enqueueSnackbar,
-        setNextTask,
-        success,
-    ]);
+    }, [task, loading, dispatch, userId, product, enqueueSnackbar, setNextTask, success, searchQuery]);
 
     useEffect(() => {
         if (errorMessage) {
@@ -173,13 +130,29 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
     }, [history, token]);
 
     useEffect(() => {
+        if (searchQuery.supplierId.length) {
+            dispatch(getProducts(searchQuery));
+        }
+    }, [dispatch, searchQuery]);
+
+    useEffect(() => {
         if (!roles.includes(UserRole.SUPPLIER)) {
             history.push('/');
         }
-        dispatch(getProducts(defaultPagination, '', userId, defaultSortRule, defaultSortOrder));
+        dispatch(restoreDefaultSearchReducer());
+        dispatch(setNewSupplierId(userId ? userId : ''));
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);
+
+    useEffect(
+        () => () => {
+            dispatch(restoreDefaultSearchReducer());
+        },
+        // DO NOT REMOVE, Destructor calls only once
+        // eslint-disable-next-line
+        []
+    );
 
     const addNewProduct = () => {
         setIsCreateProductFormVisible(true);
@@ -300,12 +273,25 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
 
     return (
         <main className='merchandise-content'>
-            <Box margin={2} display={'flex'} justifyContent={'space-between'}>
-                <Typography className='merchandise-content__header' variant='h4'>
-                    Your products
-                </Typography>
+            <Box margin={2} display='flex' justifyContent='space-between' alignItems='center'>
+                <div className='merchandise-content__merchandise-header'>
+                    <Typography className='merchandise-header__label' variant='h4'>
+                        Your products
+                    </Typography>
+                    <div className='merchandise-header__sort'>
+                        <SortRuleSelector
+                            defaultValue={searchQuery.sortRule}
+                            disabled={false}
+                            style={{ marginRight: '10px' }}
+                        />
+                        <SortOrderButton
+                            defaultValue={searchQuery.sortOrder as SortOrder.ASC | SortOrder.DESC}
+                            disabled={false}
+                        />
+                    </div>
+                </div>
                 <Button
-                    className='merchandise-content__add-button'
+                    className='merchandise-controls__add-button'
                     size='large'
                     variant='contained'
                     onClick={addNewProduct}

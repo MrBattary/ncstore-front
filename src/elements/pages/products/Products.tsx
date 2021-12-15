@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { History } from 'history';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSnackbar } from 'notistack';
+import { useLocation } from 'react-router-dom';
 
+import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { AppState } from '../../../reducers/rootReducer';
@@ -12,8 +13,12 @@ import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import { UserRole } from '../../../types/UserRole';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
+import { getProductsFromSearch } from '../../../actions/products/GetProducts';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSearchReducer';
 
 import './style.css';
+import ProductsSort from '../../components/products_sort/ProductsSort';
 
 type productsProps = {
     history: History;
@@ -22,12 +27,42 @@ type productsProps = {
 const Products: React.FC<productsProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
+    const location = useLocation();
 
+    const { searchQuery, searchUrl, initialized } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
-    const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
-    const { roles, token } = useSelector((state: AppState) => state.userReducer);
+    const { products, errorMessage } = useSelector((state: AppState) => state.productsReducer);
 
+    const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!initialized) {
+            dispatch(initDefaultSearchReducer(location.search));
+        }
+        // DO NOT REMOVE, Constructor calls only once
+        // eslint-disable-next-line
+    }, []);
+
+    useEffect(() => {
+        // /products/[?...] - retrieves search query
+        dispatch(getProductsFromSearch(location.search));
+    }, [dispatch, location.search]);
+
+    useEffect(() => {
+        if (initialized) {
+            history.push(searchUrl);
+        }
+    }, [history, initialized, searchUrl]);
+
+    useEffect(
+        () => () => {
+            dispatch(restoreDefaultSearchReducer());
+        },
+        // DO NOT REMOVE, Destructor calls only once
+        // eslint-disable-next-line
+        []
+    );
 
     useEffect(() => {
         if (successMessage && successCart) {
@@ -93,11 +128,25 @@ const Products: React.FC<productsProps> = ({ history }) => {
         </div>
     );
 
+    const renderSortButtons = (isHidden: boolean) => (
+        <div className='products__sort-selectors' style={{ visibility: isHidden ? 'hidden' : 'visible' }}>
+            <ProductsSort
+                defaultSortRule={searchQuery.sortRule}
+                defaultSortOrder={searchQuery.sortOrder}
+                disabled={false}
+            />
+        </div>
+    );
+
     const renderProductsPage = () => (
         <div className='products-content__products'>
-            <Typography className='products__label' variant='h5'>
-                Here is what we found
-            </Typography>
+            <div className='products__products-header'>
+                {renderSortButtons(true)}
+                <Typography className='products-header__label' variant='h5'>
+                    Here is what we found
+                </Typography>
+                {renderSortButtons(false)}
+            </div>
             {renderProductsList()}
         </div>
     );
@@ -119,7 +168,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
         }
     };
 
-    return loading ? null : (
+    return (
         <>
             <main className='products-content'>{renderProductsContent()}</main>
         </>

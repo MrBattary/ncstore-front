@@ -10,12 +10,13 @@ import Button from '@mui/material/Button';
 
 import { AppState } from '../../../reducers/rootReducer';
 import { getProductForSale } from '../../../actions/products/GetProduct';
-import { restoreDefaultProductsReducer } from '../../../actions/products/RestoreDefaultProductsReducer';
 import { UserRole } from '../../../types/UserRole';
 import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
 import useDelaySet from '../../../utils/DelayHook';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+import { setNewCategoriesNames } from '../../../actions/search/SetNewCategoryNames';
 
 import './style.css';
 
@@ -23,10 +24,15 @@ type productProps = {
     history: History;
 };
 
+enum productTasks {
+    GO_TO_CATEGORY = 'GO_TO_CATEGORY',
+}
+
 const Product: React.FC<productProps> = ({ history }) => {
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
 
+    const { searchUrl } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { productForSale, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
@@ -34,6 +40,14 @@ const Product: React.FC<productProps> = ({ history }) => {
     const [setAddToCartDelayedValue] = useDelaySet<number>(0, value => handleAddToCart(value), 300);
     const [addToCartClicks, setAddToCartClicks] = useState<number>(0);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [task, setTask] = useTask();
+
+    useEffect(() => {
+        if (task === productTasks.GO_TO_CATEGORY) {
+            history.push('/products'.concat(searchUrl));
+            setTask(DEFAULT_TASK_ABSENT, 0);
+        }
+    });
 
     useEffect(() => {
         if (errorMessage) {
@@ -54,7 +68,6 @@ const Product: React.FC<productProps> = ({ history }) => {
 
     useEffect(() => {
         // /products/[fcfc45e7-47a2-45d5-86b7-cfcdf24a8016] - retrieves uuid
-        dispatch(restoreDefaultProductsReducer());
         dispatch(getProductForSale(window.location.pathname.substr(10)));
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
@@ -65,7 +78,8 @@ const Product: React.FC<productProps> = ({ history }) => {
     };
 
     const goToCategory = (categoryName: string) => {
-        console.log(`Go to category with name: ${categoryName}`);
+        dispatch(setNewCategoriesNames([categoryName]));
+        setTask(productTasks.GO_TO_CATEGORY, 0);
     };
 
     const handleBuy = () => {
@@ -240,6 +254,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     if (loading) {
         return null;
     }
+
     return (
         <div className='product'>
             <div className='product__content'>{renderProductContent()}</div>
