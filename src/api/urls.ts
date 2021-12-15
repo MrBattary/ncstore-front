@@ -14,6 +14,9 @@ export const signInSubUrl = '/signin';
 export const personInfoSubUrl = '/person/info';
 export const companyInfoSubUrl = '/company/info';
 
+export const otherPersonInfoSubUrl = '/person/info/';
+export const otherCompanyInfoSubUrl = '/company/info/';
+
 /* Cart */
 export const cartSubUrl = '/cart';
 export const cartContinuingSubUrl = '/cart/';

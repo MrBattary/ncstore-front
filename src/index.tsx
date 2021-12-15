@@ -17,6 +17,7 @@ import Merchandise from './elements/pages/merchandise/Merchandise';
 import Product from './elements/pages/product/Product';
 import Cart from './elements/pages/cart/Cart';
 import Orders from './elements/pages/orders/Orders';
+import User from "./elements/pages/user/User";
 
 import 'antd/dist/antd.css';
 import './index.css';
@@ -39,6 +40,11 @@ ReactDOM.render(
                             exact
                             path='/products/:id([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})'
                             component={Product}
+                        />
+                        <Route
+                            exact
+                            path='/users/:id([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})'
+                            component={User}
                         />
                     </MainLayout>
                 </Switch>
