@@ -147,15 +147,6 @@ const Merchandise: React.FC<merchandiseProps> = ({ history }) => {
         // eslint-disable-next-line
     }, []);
 
-    useEffect(
-        () => () => {
-            dispatch(restoreDefaultSearchReducer());
-        },
-        // DO NOT REMOVE, Destructor calls only once
-        // eslint-disable-next-line
-        []
-    );
-
     const addNewProduct = () => {
         setIsCreateProductFormVisible(true);
     };
