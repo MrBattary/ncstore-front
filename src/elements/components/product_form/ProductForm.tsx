@@ -18,7 +18,7 @@ import './style.css';
 type newProductFormProps = {
     isDiscountForm: boolean;
     defaultValuesProduct: ProductWithoutId | ProductWithSupplier | null | undefined;
-    categoriesList: string[];
+    categoriesList: Array<string>;
     visible: boolean;
     confirmLoading: boolean;
     success: boolean;
@@ -110,6 +110,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
             title: 'Price',
             key: 'price',
             dataIndex: 'price',
+            render: (text: string) => <span>{text}$</span>,
         },
         {
             title: 'Remove',
@@ -135,6 +136,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
             title: 'Price',
             key: 'price',
             dataIndex: 'price',
+            render: (text: string) => <span>{text}$</span>,
         },
         {
             title: 'Start Time',
@@ -239,6 +241,10 @@ const ProductForm: React.FC<newProductFormProps> = ({
 
     const onFinishOuterForm = (e: any) => {
         onFinish({ ...e, normalPrices, discountPrices });
+        innerNormalPricesForm.setFieldsValue({
+            region: 'United States',
+            price: 0,
+        });
     };
 
     const renderFilteredCountryNamesForNormalPrices = () => {
@@ -268,7 +274,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
         if (isDiscountForm) {
             return (
                 <>
-                    <Form.Item className='form__field' label='Discount prices' name='discountPrices' required>
+                    <Form.Item className='form__field' label='Discount prices' name='discountPrices'>
                         <Table<DiscountPrice>
                             columns={discountPricesTableColumns}
                             dataSource={discountPrices}

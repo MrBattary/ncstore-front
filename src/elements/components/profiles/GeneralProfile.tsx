@@ -3,11 +3,10 @@ import { History } from 'history';
 
 import BusinessIcon from '@mui/icons-material/Business';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { Avatar, Box, Container, List, ListItem, ListItemText, Paper, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Container, Paper, Stack, Typography } from '@mui/material';
 
 import { PersonProfile } from '../../../types/PersonProfile';
 import { CompanyProfile } from '../../../types/CompanyProfile';
-import { UserRole } from '../../../types/UserRole';
 
 type profileProps = {
     history: History;
@@ -131,18 +130,6 @@ const Profile: React.FC<profileProps> = ({ history, profile }) => {
         }
     };
 
-    const renderRolesList = () => {
-        if (profile) {
-            return profile.roles
-                ? profile.roles.map((role: UserRole) => (
-                      <ListItem key={role}>
-                          <ListItemText primary={role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()} />
-                      </ListItem>
-                  ))
-                : null;
-        }
-    };
-
     return (
         <Container>
             <Paper elevation={10}>
@@ -157,7 +144,6 @@ const Profile: React.FC<profileProps> = ({ history, profile }) => {
                     <Stack spacing={1} marginBottom={2}>
                         {renderPersonNickname()}
                         {renderCompanyName()}
-                        <List style={{ margin: 0, padding: 0 }}>{renderRolesList()}</List>
                         {renderPersonNames()}
                         {renderCompanyDescription()}
                         {renderPersonBirthday()}
