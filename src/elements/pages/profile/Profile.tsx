@@ -19,6 +19,8 @@ import {getPaymentToken} from "../../../actions/users/Payment";
 import {Modal} from "antd";
 import {addBalance} from "../../../actions/users/BalanceAdd";
 import ProfileEmail from "../../components/profiles/ProfileEmail";
+import ProfileBecomeSupplier from "../../components/profiles/ProfileBecomeSupplier";
+import {UserRole} from "../../../types/UserRole";
 
 type profileProps = {
     history: History;
@@ -67,12 +69,11 @@ const Profile: React.FC<profileProps> = ({history}) => {
     }, [enqueueSnackbar, errorMessage, dispatch]);
 
     useEffect(() => {
-        if(isWaitingForPaymentToProceed && !loading){
+        if (isWaitingForPaymentToProceed && !loading) {
             setIsWaitingForPaymentToProceed(false)
-            if(success){
+            if (success) {
                 renderSuccessModal()
-            }
-            else{
+            } else {
                 renderErrorModal()
             }
         }
@@ -136,20 +137,45 @@ const Profile: React.FC<profileProps> = ({history}) => {
     }
 
 
+    const renderBecomeSupplier = () => {
+        if (profile) {
+            if (!profile.roles.includes(UserRole.SUPPLIER)) {
+                return (<ProfileBecomeSupplier loading={loading} isPerson={profile.userType === UserType.PERSON}
+                                               onFinish={handleBecomeCompany} onFinishFailed={() => {
+                }}/>);
+            }
+        }
+    }
+
+    const handleBecomeCompany = (e: any) => {
+        const { firstName, lastName, birthday } = e;
+        console.log(firstName, lastName, birthday)
+        //birthday: birthday ? birthday.format('YYYY-MM-DD') : null,
+        //TODO
+    }
 
     return loading || !profile ? null : (
         <Container>
-            <Stack spacing={8} sx={{marginTop:8, marginBottom:8}}>
+            <Stack spacing={8} sx={{paddingTop: 8, marginBottom: 8}}>
                 <GeneralProfile history={history} profile={profile}/>
                 <ProfileEmail email={profile.email}/>
-                <UserProfileBalance balance={balance ? balance.balance : 0} balanceCurrency={balance ? balance.currency : "$"} loading={loading}
-                                    onFinish={handleBalanceAdd} onFinishFailed={() => {
-                }}/>
+                <UserProfileBalance
+                    balance={balance ? balance.balance : 0}
+                    balanceCurrency={balance ? balance.currency : '$'}
+                    loading={loading}
+                    onFinish={handleBalanceAdd}
+                    onFinishFailed={() => {
+                    }}
+                />
                 <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {
                 }}/>
-                <PaymentModal isVisible={isPaymentFormVisible} handleOk={handleBalancePayment}
-                              handleCancel={() => setIsPaymentFormVisible(false)}
-                              paymentToken={paymentToken ? paymentToken : ''}/>
+                {renderBecomeSupplier()}
+                <PaymentModal
+                    isVisible={isPaymentFormVisible}
+                    handleOk={handleBalancePayment}
+                    handleCancel={() => setIsPaymentFormVisible(false)}
+                    paymentToken={paymentToken ? paymentToken : ''}
+                />
             </Stack>
         </Container>
     );
