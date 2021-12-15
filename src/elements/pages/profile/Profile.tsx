@@ -138,13 +138,13 @@ const Profile: React.FC<profileProps> = ({ history }) => {
         if (profile) {
             if (!profile.roles.includes(UserRole.SUPPLIER)) {
                 return (<ProfileBecomeSupplier loading={loading} isPerson={profile.userType === UserType.PERSON}
-                                               onFinish={handleBecomeCompany} onFinishFailed={() => {
+                                               onFinish={handleBecomeSupplier} onFinishFailed={() => {
                 }}/>);
             }
         }
     }
 
-    const handleBecomeCompany = (e: any) => {
+    const handleBecomeSupplier = (e: any) => {
         const { firstName, lastName, birthday } = e;
         console.log(firstName, lastName, birthday)
         //birthday: birthday ? birthday.format('YYYY-MM-DD') : null,
