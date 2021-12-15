@@ -150,7 +150,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
         <Container className='products-content__products'>
             <Grid container spacing={2}>
                 <Grid item xs={2}>
-                    <AdvancedSearch categories={categories} onFinish={handleAdvancedSearchApply} onFinishFailed={()=>{}} loading={loading}/>
+                    <AdvancedSearch categories={categories} onFinish={handleAdvancedSearchApply} onFinishFailed={()=>{}} loading={loading} selectedCategories={searchQuery.categoryNames}/>
                 </Grid>
                 <Grid item xs={10}>
                     <Box sx={{
