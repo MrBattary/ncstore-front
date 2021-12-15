@@ -198,7 +198,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
             }}
         >
             <CardMedia component='img' height='300' image='Home-Banner.jpg' alt={`NCStore`} />
-            <Stack spacing={10} sx={{ marginTop: 15 }}>
+            <Stack spacing={10} sx={{ marginTop: 15, maxWidth:'90%' }}>
                 <HomeCategoryPick categories={categories} onClick={handleCategoryClick}/>
                 {!discountProducts.length ? null : renderBestDiscount()}
                 {!newProducts.length ? null : renderNewest()}
