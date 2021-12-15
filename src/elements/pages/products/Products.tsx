@@ -21,6 +21,7 @@ import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSea
 
 import './style.css';
 import ProductsSort from '../../components/products_sort/ProductsSort';
+import {setNewCategoriesNames} from "../../../actions/search/SetNewCategoryNames";
 
 type productsProps = {
     history: History;
@@ -142,8 +143,10 @@ const Products: React.FC<productsProps> = ({ history }) => {
     );
 
     const handleAdvancedSearchApply = (e:any) => {
-        //const { categoriesNames } = e;
-
+        const { categoriesNames } = e;
+        if(categoriesNames){
+            dispatch(setNewCategoriesNames(categoriesNames))
+        }
     }
 
     const renderProductsPage = () => (
