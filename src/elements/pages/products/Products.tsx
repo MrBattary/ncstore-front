@@ -5,20 +5,22 @@ import {useLocation} from 'react-router-dom';
 
 import {useSnackbar} from 'notistack';
 
-import {Box, Container, Grid, Typography} from '@mui/material';
+import {Box, Container, Grid, Typography,Button} from '@mui/material';
 
 import {AppState} from '../../../reducers/rootReducer';
 import {ProductFromList} from '../../../types/ProductsList';
 import ProductCard from '../../components/product_card/ProductCard';
+import { UserRole } from '../../../types/UserRole';
+import { CartProduct } from '../../../types/CartProduct';
+import { getCart } from '../../../actions/cart/GetCart';
+import { getProductsFromSearch } from '../../../actions/products/GetProducts';
+import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSearchReducer';
 import {updateItemInCart} from '../../../actions/cart/UpdateItemInCart';
-import {UserRole} from '../../../types/UserRole';
 import AdvancedSearch from "../../components/advanced_search/AdvancedSearch";
-import {CartProduct} from '../../../types/CartProduct';
-import {getCart} from '../../../actions/cart/GetCart';
-import {getProductsFromSearch} from '../../../actions/products/GetProducts';
-import {restoreDefaultSearchReducer} from '../../../actions/search/RestoreDefaultSearchReducer';
-import {initDefaultSearchReducer} from '../../../actions/search/InitDefaultSearchReducer';
 import ProductsSort from '../../components/products_sort/ProductsSort';
+import { setNewPagination } from '../../../actions/search/SetNewPagination';
+
+import './style.css';
 import {setNewCategoriesNames} from "../../../actions/search/SetNewCategoryNames";
 
 import './style.css';
@@ -32,12 +34,11 @@ const Products: React.FC<productsProps> = ({history}) => {
     const {enqueueSnackbar} = useSnackbar();
     const location = useLocation();
 
-    const {searchQuery, searchUrl, initialized} = useSelector((state: AppState) => state.searchReducer);
-    const {cart, success: successCart} = useSelector((state: AppState) => state.cartReducer);
-    const {products, errorMessage, loading} = useSelector((state: AppState) => state.productsReducer);
-
-    const {roles, token} = useSelector((state: AppState) => state.userReducer);
-    const {categories} = useSelector((state: AppState) => state.categoryReducer);
+    const { searchQuery, searchUrl, initialized } = useSelector((state: AppState) => state.searchReducer);
+    const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
+    const { products, loading, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { categories } = useSelector((state: AppState) => state.categoryReducer);
+    const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     useEffect(() => {
@@ -58,15 +59,6 @@ const Products: React.FC<productsProps> = ({history}) => {
             history.push(searchUrl);
         }
     }, [history, initialized, searchUrl]);
-
-    useEffect(
-        () => () => {
-            dispatch(restoreDefaultSearchReducer());
-        },
-        // DO NOT REMOVE, Destructor calls only once
-        // eslint-disable-next-line
-        []
-    );
 
     useEffect(() => {
         if (successMessage && successCart) {
@@ -109,6 +101,14 @@ const Products: React.FC<productsProps> = ({history}) => {
         dispatch(getCart(token ? token : ''));
     };
 
+    const onGoBack = () => {
+        dispatch(setNewPagination({ page: searchQuery.pagination.page - 1, size: searchQuery.pagination.size }));
+    };
+
+    const onGoForward = () => {
+        dispatch(setNewPagination({ page: searchQuery.pagination.page + 1, size: searchQuery.pagination.size }));
+    };
+
     const renderProductsList = () => (
         <div className='products__products-list'>
             {products.map((product: ProductFromList) => (
@@ -137,7 +137,7 @@ const Products: React.FC<productsProps> = ({history}) => {
             <ProductsSort
                 defaultSortRule={searchQuery.sortRule}
                 defaultSortOrder={searchQuery.sortOrder}
-                disabled={false}
+                disabled={loading || products.length <= 1}
             />
         </div>
     );
@@ -171,6 +171,18 @@ const Products: React.FC<productsProps> = ({history}) => {
                             {renderSortButtons(false)}
                         </div>
                         {renderProductsContent()}
+                        <div className='products-and-controls__control-buttons'>
+                            <Button variant='outlined' onClick={onGoBack} disabled={!searchQuery.pagination.page || loading}>
+                                {'<'}
+                            </Button>
+                            <Button
+                                variant='outlined'
+                                onClick={onGoForward}
+                                disabled={searchQuery.pagination.size > products.length || loading}
+                            >
+                                {'>'}
+                            </Button>
+                        </div>
                     </Box>
                 </Grid>
             </Grid>
@@ -184,7 +196,7 @@ const Products: React.FC<productsProps> = ({history}) => {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-            {/* TODO: Add some picture here */}
+            <img src='./not-found.jpg' alt='Not found' />
             <Typography className='products-not-found__label' variant='h4' display='inline-block'>
                 Oops, we cant find anything...
             </Typography>

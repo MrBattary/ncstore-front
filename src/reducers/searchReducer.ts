@@ -56,11 +56,11 @@ const initialState: SearchStore = {
         categoryNames: [],
         searchText: '',
         supplierId: '',
-        pagination: { page: 0, size: 10 },
+        pagination: { page: 0, size: 9 },
         sortRule: SortRule.DEFAULT,
         sortOrder: SortOrder.ASC,
     },
-    searchUrl: buildSearchUrl([], '', '', { page: 0, size: 10 }, SortRule.DEFAULT, SortOrder.ASC),
+    searchUrl: buildSearchUrl([], '', '', { page: 0, size: 9 }, SortRule.DEFAULT, SortOrder.ASC),
     initialized: false,
 };
 
@@ -172,11 +172,11 @@ export const searchReducer = (state = initialState, action: SearchReducerTypes):
                     categoryNames: [],
                     searchText: '',
                     supplierId: '',
-                    pagination: { page: 0, size: 10 },
+                    pagination: { page: 0, size: 9 },
                     sortRule: SortRule.DEFAULT,
                     sortOrder: SortOrder.ASC,
                 },
-                searchUrl: buildSearchUrl([], '', '', { page: 0, size: 10 }, SortRule.DEFAULT, SortOrder.ASC),
+                searchUrl: buildSearchUrl([], '', '', { page: 0, size: 9 }, SortRule.DEFAULT, SortOrder.ASC),
             };
         }
         default:

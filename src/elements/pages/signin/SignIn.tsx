@@ -51,7 +51,7 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
     };
 
     return (
-        <Container style={{ minHeight: '100vh', paddingTop: '8vh' }}>
+        <Container style={{ height: '100%', paddingTop: '8vh' }}>
             <Paper>
                 <Box
                     sx={{

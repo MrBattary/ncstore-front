@@ -29,10 +29,11 @@ import {setNewSupplierId} from '../../../actions/search/SetNewSupplierId';
 import {restoreDefaultSearchReducer} from '../../../actions/search/RestoreDefaultSearchReducer';
 import SortRuleSelector from '../../components/sort_rule_selector/SortRuleSelector';
 import SortOrderButton from '../../components/sort_order_button/SortOrderButton';
-import {SortOrder} from '../../../types/SortEnum';
+import { setNewPagination } from '../../../actions/search/SetNewPagination';
 
 import './style.css';
 import {CategoryFromList} from "../../../types/CategoriesGet";
+import {SortOrder} from "../../../types/SortEnum";
 
 type merchandiseProps = {
     history: History;
@@ -60,6 +61,8 @@ const Merchandise: React.FC<merchandiseProps> = ({history}) => {
     const [isUpdateProductFormVisible, setIsUpdateProductFormVisible] = useState<boolean>(false);
     const [isCreateProductFormVisible, setIsCreateProductFormVisible] = useState<boolean>(false);
     const [task, setNextTask] = useTask();
+
+    const loadMoreSize = 10;
 
 
     useEffect(() => {
@@ -145,15 +148,6 @@ const Merchandise: React.FC<merchandiseProps> = ({history}) => {
         // eslint-disable-next-line
     }, []);
 
-    useEffect(
-        () => () => {
-            dispatch(restoreDefaultSearchReducer());
-        },
-        // DO NOT REMOVE, Destructor calls only once
-        // eslint-disable-next-line
-        []
-    );
-
     const addNewProduct = () => {
         setIsCreateProductFormVisible(true);
     };
@@ -232,6 +226,10 @@ const Merchandise: React.FC<merchandiseProps> = ({history}) => {
         setDetailedProductForUpdateForm(null);
     };
 
+    const onLoadMore = () => {
+        dispatch(setNewPagination({ page: 0, size: searchQuery.pagination.size + loadMoreSize }));
+    };
+
     const showRemoveConfirm = (productId: string) => {
         Modal.confirm({
             title: 'ATTENTION',
@@ -265,7 +263,7 @@ const Merchandise: React.FC<merchandiseProps> = ({history}) => {
 
     const renderProductsNotFound = () => (
         <div className='merchandise__merchandise-not-found'>
-            {/* TODO: Add some picture here */}
+            <img src='./no-content.jpg' alt='No content' />
             <Typography className='merchandise-not-found__label' variant='h4' display='inline-block'>
                 It seems you are not selling anything yet...
             </Typography>
@@ -282,12 +280,12 @@ const Merchandise: React.FC<merchandiseProps> = ({history}) => {
                     <div className='merchandise-header__sort'>
                         <SortRuleSelector
                             defaultValue={searchQuery.sortRule}
-                            disabled={false}
-                            style={{marginRight: '10px'}}
+                            disabled={loading || products.length <= 1}
+                            style={{ marginRight: '10px' }}
                         />
                         <SortOrderButton
                             defaultValue={searchQuery.sortOrder as SortOrder.ASC | SortOrder.DESC}
-                            disabled={false}
+                            disabled={loading || products.length <= 1}
                         />
                     </div>
                 </div>
@@ -302,9 +300,20 @@ const Merchandise: React.FC<merchandiseProps> = ({history}) => {
                     Add new product
                 </Button>
             </Box>
-            <div className='merchandise-content__merchandise'>
-                <Divider/>
-                {products.length ? renderProductsInfoCardList() : renderProductsNotFound()}
+            <div className='merchandise-content__merchandise-and-controls'>
+                <div className='merchandise-and-controls__merchandise'>
+                    <Divider />
+                    {products.length ? renderProductsInfoCardList() : renderProductsNotFound()}
+                </div>
+                <Button
+                    variant='outlined'
+                    size={'large'}
+                    onClick={onLoadMore}
+                    disabled={searchQuery.pagination.size > products.length || loading}
+                    style={{ marginTop: 30 }}
+                >
+                    Load more
+                </Button>
             </div>
             <ProductForm
                 isDiscountForm={true}
