@@ -37,7 +37,7 @@ const Products: React.FC<productsProps> = ({history}) => {
     const {products, errorMessage, loading} = useSelector((state: AppState) => state.productsReducer);
 
     const {roles, token} = useSelector((state: AppState) => state.userReducer);
-    const {categories} = useSelector((state: AppState) => state.categoryReducer)
+    const {categories} = useSelector((state: AppState) => state.categoryReducer);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     useEffect(() => {

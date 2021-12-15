@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
-import { DatePicker, Form, Input, InputNumber, Modal, Select, Table } from 'antd';
-import { useForm } from 'antd/es/form/Form';
+import {DatePicker, Form, Input, InputNumber, Modal, Select, Table} from 'antd';
+import {useForm} from 'antd/es/form/Form';
 import countries from 'countries-list';
-import { NormalPrice } from '../../../types/NormalPrice';
+import {NormalPrice} from '../../../types/NormalPrice';
 import Button from '@mui/material/Button';
-import { Delete } from '@mui/icons-material';
-import { Moment } from 'moment';
+import {Delete} from '@mui/icons-material';
+import {Moment} from 'moment';
 import moment from 'moment/moment';
 
-import { DiscountPrice } from '../../../types/DiscountPrice';
-import { ProductWithoutId } from '../../../types/ProductWithoutId';
-import { ProductWithSupplier } from '../../../types/ProductWithSupplier';
+import {DiscountPrice} from '../../../types/DiscountPrice';
+import {ProductWithoutId} from '../../../types/ProductWithoutId';
+import {ProductWithSupplier} from '../../../types/ProductWithSupplier';
 
 import './style.css';
 
 type newProductFormProps = {
     isDiscountForm: boolean;
     defaultValuesProduct: ProductWithoutId | ProductWithSupplier | null | undefined;
-    categoriesList: string[];
+    categoriesList: Array<string>;
     visible: boolean;
     confirmLoading: boolean;
     success: boolean;
@@ -34,16 +34,16 @@ type InnerDiscountForm = {
 };
 
 const ProductForm: React.FC<newProductFormProps> = ({
-    isDiscountForm,
-    defaultValuesProduct,
-    categoriesList,
-    visible,
-    confirmLoading,
-    success,
-    onFinish,
-    onFinishFailed,
-    onCancel,
-}) => {
+                                                        isDiscountForm,
+                                                        defaultValuesProduct,
+                                                        categoriesList,
+                                                        visible,
+                                                        confirmLoading,
+                                                        success,
+                                                        onFinish,
+                                                        onFinishFailed,
+                                                        onCancel,
+                                                    }) => {
     const countryCodes = Object.keys(countries.countries);
     // @ts-ignore
     const countryNames: string[] = countryCodes.map(code => countries.countries[code].name);
@@ -91,7 +91,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
     }, [success, form, countryNames]);
 
     const normalPricesTableColumns = [
-        { title: 'Country', rowKey: 'region', dataIndex: 'region' },
+        {title: 'Country', rowKey: 'region', dataIndex: 'region'},
         {
             title: 'Price',
             key: 'price',
@@ -104,7 +104,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
             render: (text: any, record: { region: string }) => (
                 <Button
                     variant='outlined'
-                    startIcon={<Delete />}
+                    startIcon={<Delete/>}
                     onClick={e => {
                         handleRemoveRowFromNormalPricesTable(record.region, e);
                     }}
@@ -116,7 +116,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
     ];
 
     const discountPricesTableColumns = [
-        { title: 'Country', key: 'rowKey', dataIndex: 'region' },
+        {title: 'Country', key: 'rowKey', dataIndex: 'region'},
         {
             title: 'Price',
             key: 'price',
@@ -141,7 +141,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
             render: (text: any, record: { region: string }) => (
                 <Button
                     variant='outlined'
-                    startIcon={<Delete />}
+                    startIcon={<Delete/>}
                     onClick={e => {
                         handleRemoveRowFromDiscountPricesTable(record.region, e);
                     }}
@@ -227,7 +227,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
     };
 
     const onFinishOuterForm = (e: any) => {
-        onFinish({ ...e, normalPrices, discountPrices });
+        onFinish({...e, normalPrices, discountPrices});
     };
 
     const renderFilteredCountryNamesForNormalPrices = () => {
@@ -261,8 +261,8 @@ const ProductForm: React.FC<newProductFormProps> = ({
                         <Table<DiscountPrice>
                             columns={discountPricesTableColumns}
                             dataSource={discountPrices}
-                            pagination={{ pageSize: 20 }}
-                            scroll={{ y: 240 }}
+                            pagination={{pageSize: 20}}
+                            scroll={{y: 240}}
                         />
                     </Form.Item>
                     <Form.Item>
@@ -270,7 +270,8 @@ const ProductForm: React.FC<newProductFormProps> = ({
                             form={innerDiscountPricesForm}
                             className='form__inner-form'
                             onFinish={onFinishInnerDiscountPricesForm}
-                            onFinishFailed={() => {}}
+                            onFinishFailed={() => {
+                            }}
                             layout='inline'
                             size='large'
                         >
@@ -278,7 +279,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                 className='inner-form__field'
                                 label='Country'
                                 name='region'
-                                rules={[{ required: true, message: 'Please enter the country!' }]}
+                                rules={[{required: true, message: 'Please enter the country!'}]}
                             >
                                 <Select
                                     showSearch
@@ -326,13 +327,13 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                     </>
                                 }
                             >
-                                <InputNumber min={0} />
+                                <InputNumber min={0}/>
                             </Form.Item>
                             <Form.Item
                                 name='times'
                                 className='inner-form__time-picker'
                                 label='Start and end of discount'
-                                rules={[{ type: 'array' as const, required: true, message: 'Please select time!' }]}
+                                rules={[{type: 'array' as const, required: true, message: 'Please select time!'}]}
                             >
                                 <DatePicker.RangePicker
                                     showTime
@@ -344,7 +345,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                 <Button
                                     variant={'outlined'}
                                     onClick={innerDiscountPricesForm.submit}
-                                    sx={{ marginTop: 2 }}
+                                    sx={{marginTop: 2}}
                                 >
                                     Add discount price
                                 </Button>
@@ -377,7 +378,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                     label='Product name'
                     name='productName'
                     rules={[
-                        { required: true, message: 'Please enter the product name!' },
+                        {required: true, message: 'Please enter the product name!'},
                         () => ({
                             validator(_, value) {
                                 if (value.length <= 3) {
@@ -420,7 +421,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                         }),
                     ]}
                 >
-                    <Input.TextArea minLength={50} name='productDescription' />
+                    <Input.TextArea minLength={50} name='productDescription'/>
                 </Form.Item>
                 <Form.Item
                     className='form__field'
@@ -448,8 +449,8 @@ const ProductForm: React.FC<newProductFormProps> = ({
                     <Table<NormalPrice>
                         columns={normalPricesTableColumns}
                         dataSource={normalPrices}
-                        pagination={{ pageSize: 20 }}
-                        scroll={{ y: 240 }}
+                        pagination={{pageSize: 20}}
+                        scroll={{y: 240}}
                     />
                 </Form.Item>
                 <Form.Item>
@@ -457,7 +458,8 @@ const ProductForm: React.FC<newProductFormProps> = ({
                         form={innerNormalPricesForm}
                         className='form__inner-form'
                         onFinish={onFinishInnerNormalPricesForm}
-                        onFinishFailed={() => {}}
+                        onFinishFailed={() => {
+                        }}
                         layout='inline'
                         size='large'
                     >
@@ -465,7 +467,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                             className='inner-form__field'
                             label='Country'
                             name='region'
-                            rules={[{ required: true, message: 'Please enter the country!' }]}
+                            rules={[{required: true, message: 'Please enter the country!'}]}
                         >
                             <Select
                                 showSearch
@@ -503,10 +505,10 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                 </>
                             }
                         >
-                            <InputNumber min={0} />
+                            <InputNumber min={0}/>
                         </Form.Item>
                         <Form.Item className='inner-form__button'>
-                            <Button variant={'outlined'} onClick={innerNormalPricesForm.submit} sx={{ marginTop: 2 }}>
+                            <Button variant={'outlined'} onClick={innerNormalPricesForm.submit} sx={{marginTop: 2}}>
                                 Add price
                             </Button>
                         </Form.Item>
@@ -517,7 +519,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
                     className='form__field'
                     name='categoriesNames'
                     label='Categories'
-                    rules={[{ type: 'array' }]}
+                    rules={[{type: 'array'}]}
                 >
                     <Select mode='multiple' placeholder='May you want to select categories'>
                         {renderCategories()}
