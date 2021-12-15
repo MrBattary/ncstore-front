@@ -1,9 +1,4 @@
-.content__orders {
-    margin: 0 5%;
-    padding-top: 5vh;
-}
-
-.orders__orders-content-empty {
+.not-found-content {
     display: flex;
     flex-direction: column;
     align-items: center;

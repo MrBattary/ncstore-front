@@ -176,7 +176,7 @@ const Products: React.FC<productsProps> = ({ history }) => {
 
     const renderProductsNotFound = () => (
         <div className='products-content__products-not-found'>
-            {/* TODO: Add some picture here */}
+            <img src='./not-found.jpg' alt='Not found' />
             <Typography className='products-not-found__label' variant='h4' display='inline-block'>
                 Oops, we cant find anything...
             </Typography>
