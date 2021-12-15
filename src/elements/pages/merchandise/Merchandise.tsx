@@ -25,13 +25,13 @@ import { DiscountPrice } from '../../../types/DiscountPrice';
 import { ProductWithSupplier } from '../../../types/ProductWithSupplier';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 import { updateProduct } from '../../../actions/products/UpdateProduct';
-
-import './style.css';
 import { setNewSupplierId } from '../../../actions/search/SetNewSupplierId';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
 import SortRuleSelector from '../../components/sort_rule_selector/SortRuleSelector';
 import SortOrderButton from '../../components/sort_order_button/SortOrderButton';
 import { SortOrder } from '../../../types/SortEnum';
+
+import './style.css';
 
 type merchandiseProps = {
     history: History;
