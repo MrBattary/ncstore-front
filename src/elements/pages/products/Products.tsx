@@ -1,27 +1,24 @@
-import React, {useEffect, useState} from 'react';
-import {History} from 'history';
-import {useDispatch, useSelector} from 'react-redux';
-import {useLocation} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { History } from 'history';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
-import {useSnackbar} from 'notistack';
+import { useSnackbar } from 'notistack';
+import { Box, Container, Grid, Typography, Button } from '@mui/material';
 
-import {Box, Container, Grid, Typography,Button} from '@mui/material';
-
-import {AppState} from '../../../reducers/rootReducer';
-import {ProductFromList} from '../../../types/ProductsList';
+import { AppState } from '../../../reducers/rootReducer';
+import { ProductFromList } from '../../../types/ProductsList';
 import ProductCard from '../../components/product_card/ProductCard';
 import { UserRole } from '../../../types/UserRole';
 import { CartProduct } from '../../../types/CartProduct';
 import { getCart } from '../../../actions/cart/GetCart';
 import { getProductsFromSearch } from '../../../actions/products/GetProducts';
 import { initDefaultSearchReducer } from '../../../actions/search/InitDefaultSearchReducer';
-import {updateItemInCart} from '../../../actions/cart/UpdateItemInCart';
-import AdvancedSearch from "../../components/advanced_search/AdvancedSearch";
+import { updateItemInCart } from '../../../actions/cart/UpdateItemInCart';
+import AdvancedSearch from '../../components/advanced_search/AdvancedSearch';
 import ProductsSort from '../../components/products_sort/ProductsSort';
 import { setNewPagination } from '../../../actions/search/SetNewPagination';
-
-import './style.css';
-import {setNewCategoriesNames} from "../../../actions/search/SetNewCategoryNames";
+import { setNewCategoriesNames } from '../../../actions/search/SetNewCategoryNames';
 
 import './style.css';
 
@@ -29,9 +26,9 @@ type productsProps = {
     history: History;
 };
 
-const Products: React.FC<productsProps> = ({history}) => {
+const Products: React.FC<productsProps> = ({ history }) => {
     const dispatch = useDispatch();
-    const {enqueueSnackbar} = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const location = useLocation();
 
     const { searchQuery, searchUrl, initialized } = useSelector((state: AppState) => state.searchReducer);
@@ -91,12 +88,12 @@ const Products: React.FC<productsProps> = ({history}) => {
         if (indexOfItemFromCart >= 0) {
             dispatch(
                 updateItemInCart(
-                    {productId: productId, productCount: cart[indexOfItemFromCart].productCount + productCount},
+                    { productId: productId, productCount: cart[indexOfItemFromCart].productCount + productCount },
                     token ? token : ''
                 )
             );
         } else {
-            dispatch(updateItemInCart({productId: productId, productCount: productCount}, token ? token : ''));
+            dispatch(updateItemInCart({ productId: productId, productCount: productCount }, token ? token : ''));
         }
         dispatch(getCart(token ? token : ''));
     };
@@ -133,7 +130,7 @@ const Products: React.FC<productsProps> = ({history}) => {
     );
 
     const renderSortButtons = (isHidden: boolean) => (
-        <div className='products__sort-selectors' style={{visibility: isHidden ? 'hidden' : 'visible'}}>
+        <div className='products__sort-selectors' style={{ visibility: isHidden ? 'hidden' : 'visible' }}>
             <ProductsSort
                 defaultSortRule={searchQuery.sortRule}
                 defaultSortOrder={searchQuery.sortOrder}
@@ -143,26 +140,33 @@ const Products: React.FC<productsProps> = ({history}) => {
     );
 
     const handleAdvancedSearchApply = (e: any) => {
-        const {categoriesNames} = e;
+        const { categoriesNames } = e;
         if (categoriesNames) {
-            dispatch(setNewCategoriesNames(categoriesNames))
+            dispatch(setNewCategoriesNames(categoriesNames));
         }
-    }
+    };
 
     const renderProductsPage = () => (
         <Container className='products-content__products'>
             <Grid container spacing={2}>
                 <Grid item xs={2}>
-                    <AdvancedSearch categories={categories} onFinish={handleAdvancedSearchApply} onFinishFailed={() => {
-                    }} loading={loading} selectedCategories={searchQuery.categoryNames}/>
+                    <AdvancedSearch
+                        categories={categories}
+                        onFinish={handleAdvancedSearchApply}
+                        onFinishFailed={() => {}}
+                        loading={loading}
+                        selectedCategories={searchQuery.categoryNames}
+                    />
                 </Grid>
                 <Grid item xs={10}>
-                    <Box sx={{
-                        paddingTop: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}>
+                    <Box
+                        sx={{
+                            paddingTop: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
                         <div className='products__products-header'>
                             {renderSortButtons(true)}
                             <Typography className='products-header__label' variant='h5'>
@@ -170,18 +174,26 @@ const Products: React.FC<productsProps> = ({history}) => {
                             </Typography>
                             {renderSortButtons(false)}
                         </div>
-                        {renderProductsContent()}
-                        <div className='products-and-controls__control-buttons'>
-                            <Button variant='outlined' onClick={onGoBack} disabled={!searchQuery.pagination.page || loading}>
-                                {'<'}
-                            </Button>
-                            <Button
-                                variant='outlined'
-                                onClick={onGoForward}
-                                disabled={searchQuery.pagination.size > products.length || loading}
-                            >
-                                {'>'}
-                            </Button>
+                        <div className='products__products-and-controls'>
+                            <div className='products-and-controls__wrapper'>
+                                {products.length ? renderProductsList() : renderProductsNotFound()}
+                            </div>
+                            <div className='products-and-controls__control-buttons'>
+                                <Button
+                                    variant='outlined'
+                                    onClick={onGoBack}
+                                    disabled={!searchQuery.pagination.page || loading}
+                                >
+                                    {'<'}
+                                </Button>
+                                <Button
+                                    variant='outlined'
+                                    onClick={onGoForward}
+                                    disabled={searchQuery.pagination.size > products.length || loading}
+                                >
+                                    {'>'}
+                                </Button>
+                            </div>
                         </div>
                     </Box>
                 </Grid>
@@ -190,26 +202,20 @@ const Products: React.FC<productsProps> = ({history}) => {
     );
 
     const renderProductsNotFound = () => (
-        <Box sx={{
-            paddingTop: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        }}>
+        <Box
+            sx={{
+                paddingTop: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+            }}
+        >
             <img src='./not-found.jpg' alt='Not found' />
             <Typography className='products-not-found__label' variant='h4' display='inline-block'>
                 Oops, we cant find anything...
             </Typography>
         </Box>
     );
-
-    const renderProductsContent = () => {
-        if (products ? products.length : false) {
-            return renderProductsList();
-        } else {
-            return renderProductsNotFound();
-        }
-    };
 
     return (
         <>
