@@ -138,7 +138,7 @@ const Orders: React.FC<ordersProps> = ({ history }) => {
         <div className='orders__orders-content-empty'>
             <img src='./no-content.jpg' alt='No content' />
             <Typography className='orders-content-empty__label' variant='h4' display='inline-block'>
-                It seems you are bought anything yet
+                It seems you are not bought anything yet
             </Typography>
             <Button style={{ fontSize: 24 }} onClick={() => history.push('/')}>
                 Let's buy something!
