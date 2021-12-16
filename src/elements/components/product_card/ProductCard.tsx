@@ -41,10 +41,12 @@ const ProductCard: React.FC<productCardProps> = ({
     };
 
     const handleBuy = (e: React.MouseEvent) => {
+        e.preventDefault();
         onBuy(1);
     };
 
     const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
         const newNumberOfAddToCartClicks = addToCartClicks + 1;
         setAddToCartClicks(newNumberOfAddToCartClicks);
         setAddToCartClicksDelayedValue(newNumberOfAddToCartClicks);

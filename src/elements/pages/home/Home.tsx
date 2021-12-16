@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { History } from 'history';
 
 import CardMedia from '@mui/material/CardMedia';
-import { Box, Stack } from '@mui/material';
+import {Box, Stack} from '@mui/material';
 
 import HomeCompilation from '../../components/home_compilation/HomeCompilation';
 import { getProducts } from '../../../actions/products/GetProducts';
@@ -20,6 +20,8 @@ import { setNewSortOrder } from '../../../actions/search/SetNewSortOrder';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
 import { setNewSortRule } from '../../../actions/search/SetNewSortRule';
 import { setNewPagination } from '../../../actions/search/SetNewPagination';
+import HomeCategoryPick from "../../components/home_compilation/HomeCategoryPick";
+import {setNewCategoriesNames} from "../../../actions/search/SetNewCategoryNames";
 
 import './style.css';
 
@@ -36,6 +38,7 @@ const enum homeTasks {
     WAIT_FOR_FREE_PRODUCTS_TO_LOAD = 'WAIT_FOR_FREE_PRODUCT_TO_LOAD',
     DO_REQUEST_FOR_YOU_PRODUCTS = 'DO_REQUEST_FOR_YOU_PRODUCTS',
     WAIT_FOR_YOU_PRODUCTS_TO_LOAD = 'WAIT_FOR_YOU_PRODUCT_TO_LOAD',
+    GO_TO_CATEGORY = 'GO_TO_CATEGORY',
 }
 
 const Home: React.FC<homeProps> = ({ history }) => {
@@ -43,10 +46,12 @@ const Home: React.FC<homeProps> = ({ history }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [task, setNextTask] = useTask();
 
-    const { searchQuery } = useSelector((state: AppState) => state.searchReducer);
+    const { searchQuery, searchUrl } = useSelector((state: AppState) => state.searchReducer);
     const { cart, success: successCart } = useSelector((state: AppState) => state.cartReducer);
     const { roles, token } = useSelector((state: AppState) => state.userReducer);
     const { products, success, errorMessage } = useSelector((state: AppState) => state.productsReducer);
+    const { categories } = useSelector((state: AppState) => state.categoryReducer);
+
 
     const [discountProducts, setDiscountProducts] = useState<ProductsList>([]);
     const [newProducts, setNewProducts] = useState<ProductsList>([]);
@@ -70,6 +75,13 @@ const Home: React.FC<homeProps> = ({ history }) => {
             setSuccessMessage(null);
         }
     }, [enqueueSnackbar, successCart, successMessage]);
+
+    useEffect(() => {
+        if (task === homeTasks.GO_TO_CATEGORY) {
+            history.push('/products'.concat(searchUrl));
+            setNextTask(DEFAULT_TASK_ABSENT, 0);
+        }
+    });
 
     useEffect(() => {
         if (task === homeTasks.WAIT_FOR_YOU_PRODUCTS_TO_LOAD && success) {
@@ -183,6 +195,12 @@ const Home: React.FC<homeProps> = ({ history }) => {
         );
     };
 
+    const handleCategoryClick = (categoryName: string) => {
+        dispatch(restoreDefaultSearchReducer())
+        dispatch(setNewCategoriesNames(Array.from([categoryName])));
+        setNextTask(homeTasks.GO_TO_CATEGORY, 0);
+    }
+
     const renderBestDiscount = () => {
         return (
             <>
@@ -253,7 +271,8 @@ const Home: React.FC<homeProps> = ({ history }) => {
             }}
         >
             <CardMedia component='img' height='300' image='Home-Banner.jpg' alt={`NCStore`} />
-            <Stack spacing={10} sx={{ marginTop: 15 }}>
+            <Stack spacing={10} sx={{ marginTop: 15, maxWidth:'90%' }}>
+                <HomeCategoryPick categories={categories} onClick={handleCategoryClick}/>
                 {!discountProducts.length ? null : renderBestDiscount()}
                 {!newProducts.length ? null : renderNewest()}
                 {!freeProducts.length ? null : renderFree()}

@@ -18,7 +18,7 @@ import './style.css';
 type newProductFormProps = {
     isDiscountForm: boolean;
     defaultValuesProduct: ProductWithoutId | ProductWithSupplier | null | undefined;
-    categoriesList: string[];
+    categoriesList: Array<string>;
     visible: boolean;
     confirmLoading: boolean;
     success: boolean;
@@ -66,7 +66,15 @@ const ProductForm: React.FC<newProductFormProps> = ({
                 categoriesNames: defaultValuesProduct.categoriesNames,
             });
             setNormalPrices(defaultValuesProduct.normalPrices);
-            filterAndSetFilteredCountryNamesForNormalPrices(defaultValuesProduct.normalPrices);
+            setFilteredCountryNamesForNormalPrices(
+                filterCountryNamesForNormalPrices(defaultValuesProduct.normalPrices)
+            );
+            innerNormalPricesForm.setFieldsValue({
+                region: defaultValuesProduct.normalPrices.some(elem => elem.region === 'United States')
+                    ? ''
+                    : 'United States',
+                price: 0,
+            });
             if (isDiscountForm) {
                 setDiscountPrices(defaultValuesProduct.discountPrices);
                 filterAndSetFilteredCountryNamesForDiscountPrices(
@@ -74,7 +82,13 @@ const ProductForm: React.FC<newProductFormProps> = ({
                     defaultValuesProduct.normalPrices,
                     defaultValuesProduct.discountPrices
                 );
+                innerDiscountPricesForm.setFieldsValue({ price: null });
             }
+        } else {
+            innerNormalPricesForm.setFieldsValue({
+                region: 'United States',
+                price: 0,
+            });
         }
         // DO NOT REMOVE
         // eslint-disable-next-line
@@ -96,6 +110,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
             title: 'Price',
             key: 'price',
             dataIndex: 'price',
+            render: (text: string) => <span>{text}$</span>,
         },
         {
             title: 'Remove',
@@ -121,6 +136,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
             title: 'Price',
             key: 'price',
             dataIndex: 'price',
+            render: (text: string) => <span>{text}$</span>,
         },
         {
             title: 'Start Time',
@@ -171,13 +187,10 @@ const ProductForm: React.FC<newProductFormProps> = ({
         );
     };
 
-    const filterAndSetFilteredCountryNamesForNormalPrices = (newNormalPrices: NormalPrice[]) => {
-        setFilteredCountryNamesForNormalPrices(
-            countryNames.filter(
-                (countryName: string) => !newNormalPrices.some(normalPrice => normalPrice.region === countryName)
-            )
+    const filterCountryNamesForNormalPrices = (newNormalPrices: NormalPrice[]) =>
+        countryNames.filter(
+            (countryName: string) => !newNormalPrices.some(normalPrice => normalPrice.region === countryName)
         );
-    };
 
     const filterDiscountPrices = (discountPricesValue: DiscountPrice[], normalPricesValue: NormalPrice[]) =>
         discountPricesValue.filter(discountPrice =>
@@ -188,7 +201,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
         e.preventDefault();
         const newNormalPrices = normalPrices.filter(normalPrice => normalPrice.region !== normalPriceRegion);
         setNormalPrices(newNormalPrices);
-        filterAndSetFilteredCountryNamesForNormalPrices(newNormalPrices);
+        setFilteredCountryNamesForNormalPrices(filterCountryNamesForNormalPrices(newNormalPrices));
         const newDiscountPrices = filterDiscountPrices(discountPrices, newNormalPrices);
         filterAndSetFilteredCountryNamesForDiscountPrices(newDiscountPrices, newNormalPrices, newDiscountPrices);
         setDiscountPrices(newDiscountPrices);
@@ -205,7 +218,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
         if (!normalPrices.some(normalPrice => normalPrice.region === value.region)) {
             const newNormalPrices = [...normalPrices, value];
             setNormalPrices(newNormalPrices);
-            filterAndSetFilteredCountryNamesForNormalPrices(newNormalPrices);
+            setFilteredCountryNamesForNormalPrices(filterCountryNamesForNormalPrices(newNormalPrices));
             filterAndSetFilteredCountryNamesForDiscountPrices(discountPrices, newNormalPrices, discountPrices);
             innerNormalPricesForm.resetFields();
         }
@@ -228,6 +241,10 @@ const ProductForm: React.FC<newProductFormProps> = ({
 
     const onFinishOuterForm = (e: any) => {
         onFinish({ ...e, normalPrices, discountPrices });
+        innerNormalPricesForm.setFieldsValue({
+            region: 'United States',
+            price: 0,
+        });
     };
 
     const renderFilteredCountryNamesForNormalPrices = () => {
@@ -257,7 +274,7 @@ const ProductForm: React.FC<newProductFormProps> = ({
         if (isDiscountForm) {
             return (
                 <>
-                    <Form.Item className='form__field' label='Discount prices' name='discountPrices' required>
+                    <Form.Item className='form__field' label='Discount prices' name='discountPrices'>
                         <Table<DiscountPrice>
                             columns={discountPricesTableColumns}
                             dataSource={discountPrices}
@@ -326,7 +343,13 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                     </>
                                 }
                             >
-                                <InputNumber min={0} />
+                                <InputNumber
+                                    formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                    parser={(value: string | undefined) =>
+                                        parseInt(value ? value.replace(/\$\s?|(,*)/g, '') : '0', 10)
+                                    }
+                                    min={0}
+                                />
                             </Form.Item>
                             <Form.Item
                                 name='times'
@@ -503,7 +526,13 @@ const ProductForm: React.FC<newProductFormProps> = ({
                                 </>
                             }
                         >
-                            <InputNumber min={0} />
+                            <InputNumber
+                                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={(value: string | undefined) =>
+                                    parseInt(value ? value.replace(/\$\s?|(,*)/g, '') : '0', 10)
+                                }
+                                min={0}
+                            />
                         </Form.Item>
                         <Form.Item className='inner-form__button'>
                             <Button variant={'outlined'} onClick={innerNormalPricesForm.submit} sx={{ marginTop: 2 }}>

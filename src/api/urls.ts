@@ -1,3 +1,5 @@
+// PROD ONLY
+// export const coreUrl = 'https://ncstore.westeurope.cloudapp.azure.com/api';
 export const coreUrl = 'http://ncstore.local/api';
 
 /* Products */
@@ -32,3 +34,6 @@ export const paymentSubUrl = '/payment';
 /* Order */
 export const ordersSubUrl = '/orders';
 export const orderSubUrl = '/orders/';
+
+/* Category */
+export const categorySubUrl = '/category';

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Order } from '../../../types/Order';
+import React from 'react';
+
 import { Button, Modal, Table } from 'antd';
-import { Link, Tooltip, Typography } from '@mui/material';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Link, Typography } from '@mui/material';
 import moment from 'moment';
+
+import { Order } from '../../../types/Order';
+import TextWithCopyTooltip from '../../pages/text_with_copy-tooltip/TextWithCopyTooltip';
 
 import './style.css';
 
@@ -15,13 +17,6 @@ type orderModalProps = {
 };
 
 const OrderModal: React.FC<orderModalProps> = ({ isModalVisible, order, onClick, onHandleCancel }) => {
-    const [isVisibleCopiedTooltip, setVisibleCopiedTooltip] = useState<boolean>(false);
-
-    const copyKeyToClipboard = () => {
-        setVisibleCopiedTooltip(true);
-        setTimeout(() => setVisibleCopiedTooltip(false), 1000);
-    };
-
     const columns = [
         {
             title: 'Product',
@@ -49,20 +44,7 @@ const OrderModal: React.FC<orderModalProps> = ({ isModalVisible, order, onClick,
         {
             title: 'License key',
             dataIndex: 'licenseKey',
-            render: (text: any) => (
-                <CopyToClipboard text={text} onCopy={copyKeyToClipboard}>
-                    <Tooltip
-                        title={'Copied!'}
-                        open={isVisibleCopiedTooltip}
-                        disableFocusListener
-                        disableHoverListener
-                        disableTouchListener
-                        placement='right'
-                    >
-                        <p className='order-content__license-key'>{text}</p>
-                    </Tooltip>
-                </CopyToClipboard>
-            ),
+            render: (text: any) => <TextWithCopyTooltip text={text} />,
         },
     ];
 
