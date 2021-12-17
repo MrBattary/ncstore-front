@@ -75,7 +75,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     }, []);
 
     const goToSupplierPage = (supplierId: string | null | undefined) => {
-        history.push('/users/' + supplierId);
+        history.push('/user/' + supplierId);
     };
 
     const goToCategory = (categoryName: string) => {

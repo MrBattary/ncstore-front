@@ -114,7 +114,7 @@ const ProductCard: React.FC<productCardProps> = ({
                     component='img'
                     height='140'
                     // TODO: Handle images
-                    image='default-product-image.jpg'
+                    image='/default-product-image.jpg'
                     alt={`product ${productName}`}
                 />
                 <CardContent>

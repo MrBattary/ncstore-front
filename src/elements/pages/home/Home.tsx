@@ -270,7 +270,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
                 alignItems: 'center',
             }}
         >
-            <CardMedia component='img' height='300' image='Home-Banner.jpg' alt={`NCStore`} />
+            <CardMedia component='img' height='300' image='/Home-Banner.jpg' alt={`NCStore`} />
             <Stack spacing={10} sx={{ marginTop: 15, maxWidth:'90%' }}>
                 <HomeCategoryPick categories={categories} onClick={handleCategoryClick}/>
                 {!discountProducts.length ? null : renderBestDiscount()}
