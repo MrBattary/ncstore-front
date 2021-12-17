@@ -35,7 +35,6 @@ const User: React.FC<profileProps> = ({history}) => {
 
     const {
         otherUserProfile,
-        loading,
         success: userSuccess,
         errorMessage,
     } = useSelector((state: AppState) => state.userReducer);
@@ -81,15 +80,25 @@ const User: React.FC<profileProps> = ({history}) => {
         history.push(`/products/${productId}`);
     };
 
+    const handleBuy = (productId: string, productName: string, productCount: number) => {
+    };
+
+    const handleAddToCart = (productId: string, productName: string, productCount: number) => {
+    };
+
     const renderSupplierProducts = () => {
         if (otherUserProfile) {
             if (otherUserProfile.roles.includes(UserRole.SUPPLIER)) {
                 return (
                     <>
-                        <HomeCompilation compilationName="Products of that supplier" isDisplayButtons={false}
-                                         products={products} onClick={goToProduct} onBuy={() => {
-                        }} onAddToCart={() => {
-                        }}/>
+                        <HomeCompilation
+                            compilationName='Products of that supplier'
+                            products={products}
+                            isDisplayButtons={false}
+                            onClick={goToProduct}
+                            onBuy={handleBuy}
+                            onAddToCart={handleAddToCart}
+                        />
                     </>
                 )
             }
@@ -97,7 +106,7 @@ const User: React.FC<profileProps> = ({history}) => {
     }
 
 
-    return loading || !otherUserProfile || !products ? null : (
+    return !userSuccess || !productSuccess || !otherUserProfile || !products ? null : (
         <Container>
             <Stack spacing={8} sx={{marginTop: 8, marginBottom: 8}}>
                 <GeneralProfile history={history} profile={otherUserProfile}/>
