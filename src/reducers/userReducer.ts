@@ -9,11 +9,12 @@ import { GetPersonProfile } from '../actions/users/GetPersonProfile';
 import { GetCompanyProfile } from '../actions/users/GetCompanyProfile';
 import { PersonProfile } from '../types/PersonProfile';
 import { CompanyProfile } from '../types/CompanyProfile';
-import {ChangePassword} from "../actions/users/PasswordChange";
-import {GetPaymentToken} from "../actions/users/Payment";
-import {AddBalance} from "../actions/users/BalanceAdd";
-import {GetBalance} from "../actions/users/GetBalance";
-import {Balance} from "../types/Balance";
+import { ChangePassword } from '../actions/users/PasswordChange';
+import { GetPaymentToken } from '../actions/users/Payment';
+import { AddBalance } from '../actions/users/BalanceAdd';
+import { GetBalance } from '../actions/users/GetBalance';
+import { Balance } from '../types/Balance';
+import { GetOtherUserProfile } from '../actions/users/GetOtherUserProfile';
 
 interface UserStore {
     userId: string | null;
@@ -23,6 +24,7 @@ interface UserStore {
     profile: PersonProfile | CompanyProfile | null;
     paymentToken: string | null;
     balance: Balance | null;
+    otherUserProfile: PersonProfile | CompanyProfile | null;
     loading: boolean;
     success: boolean;
     errorMessage: string | null;
@@ -38,6 +40,7 @@ export type UserReducerTypes =
     | GetPaymentToken
     | AddBalance
     | GetBalance
+    | GetOtherUserProfile
     | RestoreDefaultUserReducer;
 
 const initialState: UserStore = {
@@ -48,6 +51,7 @@ const initialState: UserStore = {
     profile: null,
     paymentToken: null,
     balance: null,
+    otherUserProfile: null,
     loading: false,
     success: false,
     errorMessage: null,
@@ -119,6 +123,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.GET_PAYMENT_TOKEN_ERROR:
         case types.ADD_BALANCE_ERROR:
         case types.GET_BALANCE_ERROR:
+        case types.GET_OTHER_USER_PROFILE_ERROR:
         case types.CHANGE_USER_PASSWORD_ERROR: {
             return {
                 ...state,
@@ -136,7 +141,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
             };
         }
         case types.GET_PAYMENT_TOKEN_REQUEST:
-        case types.CHANGE_USER_PASSWORD_REQUEST:{
+        case types.CHANGE_USER_PASSWORD_REQUEST: {
             return {
                 ...state,
                 loading: true,
@@ -144,7 +149,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 errorMessage: null,
             };
         }
-        case types.CHANGE_USER_PASSWORD_RECEIVE:{
+        case types.CHANGE_USER_PASSWORD_RECEIVE: {
             return {
                 ...state,
                 userType: null,
@@ -154,7 +159,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 success: true,
             };
         }
-        case types.GET_PAYMENT_TOKEN_RECEIVE:{
+        case types.GET_PAYMENT_TOKEN_RECEIVE: {
             return {
                 ...state,
                 paymentToken: action.payload.paymentToken,
@@ -162,21 +167,38 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
                 success: true,
             };
         }
-        case types.ADD_BALANCE_RECEIVE:{
+        case types.ADD_BALANCE_RECEIVE: {
             return {
                 ...state,
                 balance: action.payload,
                 loading: false,
                 success: true,
-            }
+            };
         }
-        case types.GET_BALANCE_RECEIVE:{
+        case types.GET_BALANCE_RECEIVE: {
             return {
                 ...state,
                 balance: action.payload,
                 loading: false,
                 success: true,
-            }
+            };
+        }
+        case types.GET_OTHER_USER_PROFILE_REQUEST: {
+            return {
+                ...state,
+                otherUserProfile: null,
+                loading: true,
+                success: false,
+                errorMessage: null,
+            };
+        }
+        case types.GET_OTHER_USER_PROFILE_RECEIVE: {
+            return {
+                ...state,
+                otherUserProfile: action.payload,
+                loading: false,
+                success: true,
+            };
         }
         default:
             return state;

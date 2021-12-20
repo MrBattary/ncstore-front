@@ -11,7 +11,7 @@ type notFoundProps = {
 
 const NotFound: React.FC<notFoundProps> = ({ history }) => (
     <main className='not-found-content'>
-        <img src='./not-found.jpg' alt='Not found' />
+        <img src='/not-found.jpg' alt='Not found' />
         <Typography className='empty-cart__label' variant='h4' display='inline-block'>
             It seems you are lost, but we can bring you home
         </Typography>

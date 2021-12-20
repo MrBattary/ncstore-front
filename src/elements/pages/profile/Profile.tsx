@@ -19,6 +19,8 @@ import { getPaymentToken } from '../../../actions/users/Payment';
 import { Modal } from 'antd';
 import { addBalance } from '../../../actions/users/BalanceAdd';
 import ProfileEmail from '../../components/profiles/ProfileEmail';
+import ProfileBecomeSupplier from '../../components/profiles/ProfileBecomeSupplier';
+import { UserRole } from '../../../types/UserRole';
 
 type profileProps = {
     history: History;
@@ -131,6 +133,28 @@ const Profile: React.FC<profileProps> = ({ history }) => {
         }
     };
 
+    const renderBecomeSupplier = () => {
+        if (profile) {
+            if (!profile.roles.includes(UserRole.SUPPLIER)) {
+                return (
+                    <ProfileBecomeSupplier
+                        loading={loading}
+                        isPerson={profile.userType === UserType.PERSON}
+                        onFinish={handleBecomeSupplier}
+                        onFinishFailed={() => {}}
+                    />
+                );
+            }
+        }
+    };
+
+    const handleBecomeSupplier = (e: any) => {
+        const { firstName, lastName, birthday } = e;
+        console.log(firstName, lastName, birthday);
+        //birthday: birthday ? birthday.format('YYYY-MM-DD') : null,
+        //TODO
+    };
+
     return loading || !profile ? null : (
         <Container>
             <Stack spacing={8} sx={{ paddingTop: 8, marginBottom: 8 }}>
@@ -144,6 +168,7 @@ const Profile: React.FC<profileProps> = ({ history }) => {
                     onFinishFailed={() => {}}
                 />
                 <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {}} />
+                {renderBecomeSupplier()}
                 <PaymentModal
                     isVisible={isPaymentFormVisible}
                     handleOk={handleBalancePayment}

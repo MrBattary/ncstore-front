@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Link from '@mui/material/Link';
-import { Checkbox, Col, DatePicker, Form, Input } from 'antd';
+import { Checkbox, Col, Form, Input } from 'antd';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
 import { UserRole } from '../../../types/UserRole';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import AdditionalFormItemsForSupplierPerson from "./AdditionalFormItemsForSupplierPerson";
 
 type signUpPersonFormProps = {
     onFinish: (event: any) => void;
@@ -30,36 +31,7 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
     const renderAdditionalFieldsForSupplierPerson = () => {
         if (rolesArray.includes(UserRole.SUPPLIER)) {
             return (
-                <>
-                    <Form.Item
-                        className='sign-up__field'
-                        label='Firstname'
-                        name='firstName'
-                        rules={[{ required: true, message: 'Please enter your firstname!' }]}
-                    >
-                        <Input name='firstName' />
-                    </Form.Item>
-                    <Form.Item
-                        className='sign-up__field'
-                        label='Lastname'
-                        name='lastName'
-                        rules={[{ required: true, message: 'Please enter your lastname!' }]}
-                    >
-                        <Input name='lastName' />
-                    </Form.Item>
-                    <Form.Item
-                        className='sign-up__field'
-                        label='Birthday'
-                        name='birthday'
-                        rules={[{ required: true, message: 'Please select date!' }]}
-                    >
-                        <DatePicker
-                            name='birthday'
-                            format='YYYY-MM-DD'
-                            disabledDate={today => !today || today.isAfter(new Date())}
-                        />
-                    </Form.Item>
-                </>
+                <AdditionalFormItemsForSupplierPerson/>
             );
         }
     };
