@@ -1,23 +1,23 @@
-import React, {useEffect} from 'react';
-import {History} from 'history';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect } from 'react';
+import { History } from 'history';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {Box, Button, Container, Paper, Stack} from '@mui/material';
-import {useSnackbar} from 'notistack';
+import { Box, Button, Container, Paper, Stack } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
-import {AppState} from '../../../reducers/rootReducer';
-import {restoreDefaultUserReducer} from '../../../actions/users/RestoreDefaultUserReducer';
-import GeneralProfile from "../../components/profiles/GeneralProfile";
-import {getOtherUserProfile} from "../../../actions/users/GetOtherUserProfile";
-import {UserRole} from "../../../types/UserRole";
-import {getProducts} from "../../../actions/products/GetProducts";
-import {restoreDefaultSearchReducer} from "../../../actions/search/RestoreDefaultSearchReducer";
-import {setNewSupplierId} from "../../../actions/search/SetNewSupplierId";
-import useTask, {DEFAULT_TASK_ABSENT} from "../../../utils/TaskHook";
-import {setNewPagination} from "../../../actions/search/SetNewPagination";
-import Typography from "@mui/material/Typography";
-import {ProductFromList} from "../../../types/ProductsList";
-import ProductCard from "../../components/product_card/ProductCard";
+import { AppState } from '../../../reducers/rootReducer';
+import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
+import GeneralProfile from '../../components/profiles/GeneralProfile';
+import { getOtherUserProfile } from '../../../actions/users/GetOtherUserProfile';
+import { UserRole } from '../../../types/UserRole';
+import { getProducts } from '../../../actions/products/GetProducts';
+import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
+import { setNewSupplierId } from '../../../actions/search/SetNewSupplierId';
+import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+import { setNewPagination } from '../../../actions/search/SetNewPagination';
+import Typography from '@mui/material/Typography';
+import { ProductFromList } from '../../../types/ProductsList';
+import ProductCard from '../../components/product_card/ProductCard';
 
 type profileProps = {
     history: History;
@@ -29,11 +29,11 @@ const enum userTasks {
     WAIT_FOR_GET_PRODUCTS = 'WAIT_FOR_PRODUCTS_TO_LOAD',
 }
 
-const User: React.FC<profileProps> = ({history}) => {
-    const {enqueueSnackbar} = useSnackbar();
+const User: React.FC<profileProps> = ({ history }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
-    const {searchQuery} = useSelector((state: AppState) => state.searchReducer);
-    const {products, success: productSuccess, loading} = useSelector((state: AppState) => state.productsReducer);
+    const { searchQuery } = useSelector((state: AppState) => state.searchReducer);
+    const { products, success: productSuccess, loading } = useSelector((state: AppState) => state.productsReducer);
     const [task, setNextTask] = useTask();
 
     const {
@@ -59,21 +59,21 @@ const User: React.FC<profileProps> = ({history}) => {
 
     useEffect(() => {
         if (task === userTasks.DO_GET_PRODUCTS) {
-            dispatch(getProducts(searchQuery))
+            dispatch(getProducts(searchQuery));
             setNextTask(userTasks.WAIT_FOR_GET_PRODUCTS, 0);
         }
     }, [setNextTask, task, dispatch, searchQuery]);
 
     useEffect(() => {
         if (task === userTasks.WAIT_FOR_PROFILE && userSuccess) {
-            dispatch(restoreDefaultSearchReducer())
-            dispatch(setNewSupplierId(window.location.pathname.substr(6)))
+            dispatch(restoreDefaultSearchReducer());
+            dispatch(setNewSupplierId(window.location.pathname.substr(6)));
             setNextTask(userTasks.DO_GET_PRODUCTS, 0);
         }
     }, [userSuccess, setNextTask, task, dispatch]);
 
     useEffect(() => {
-        dispatch(getOtherUserProfile(window.location.pathname.substr(6)))
+        dispatch(getOtherUserProfile(window.location.pathname.substr(6)));
         setNextTask(userTasks.WAIT_FOR_PROFILE, 0);
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
@@ -81,12 +81,6 @@ const User: React.FC<profileProps> = ({history}) => {
 
     const goToProduct = (productId: string) => {
         history.push(`/products/${productId}`);
-    };
-
-    const handleBuy = (productId: string, productName: string, productCount: number) => {
-    };
-
-    const handleAddToCart = (productId: string, productName: string, productCount: number) => {
     };
 
     const onGoBack = () => {
@@ -103,20 +97,26 @@ const User: React.FC<profileProps> = ({history}) => {
         if (otherUserProfile) {
             if (otherUserProfile.roles.includes(UserRole.SUPPLIER)) {
                 return (
-                    <Paper elevation={5} sx={{
-                        padding: 3,
-                        marginTop: 15,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}>
-                        <Typography variant='h3' sx={{marginBottom:1}}>Products of that supplier</Typography>
-                        <Box sx={{
+                    <Paper
+                        elevation={5}
+                        sx={{
+                            padding: 3,
+                            marginTop: 15,
                             display: 'flex',
-                            flexWrap: 'wrap',
-                            alignItems: 'stretch',
-                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            alignItems: 'center',
                         }}
+                    >
+                        <Typography variant='h3' sx={{ marginBottom: 1 }}>
+                            Products of that supplier
+                        </Typography>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                alignItems: 'stretch',
+                                justifyContent: 'center',
+                            }}
                         >
                             {products.map((product: ProductFromList) => (
                                 <ProductCard
@@ -127,17 +127,18 @@ const User: React.FC<profileProps> = ({history}) => {
                                     priceCurrency={product.priceCurrency}
                                     isDisplayButtons={false}
                                     onClick={() => goToProduct(product.productId)}
-                                    onBuy={clicks => handleBuy(product.productId, product.productName, clicks)}
-                                    onAddToCart={clicks => handleAddToCart(product.productId, product.productName, clicks)}
+                                    onBuy={() => {}}
+                                    onAddToCart={() => {}}
                                 />
                             ))}
                         </Box>
-                        <Box sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            width: '130px',
-                        }}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                width: '130px',
+                            }}
                         >
                             <Button
                                 variant='outlined'
@@ -155,16 +156,15 @@ const User: React.FC<profileProps> = ({history}) => {
                             </Button>
                         </Box>
                     </Paper>
-                )
+                );
             }
         }
-    }
-
+    };
 
     return !userSuccess || !otherUserProfile || !products ? null : (
         <Container>
-            <Stack spacing={8} sx={{marginTop: 8, marginBottom: 8}}>
-                <GeneralProfile history={history} profile={otherUserProfile}/>
+            <Stack spacing={8} sx={{ marginTop: 8, marginBottom: 8 }}>
+                <GeneralProfile history={history} profile={otherUserProfile} />
                 {renderSupplierProducts()}
             </Stack>
         </Container>

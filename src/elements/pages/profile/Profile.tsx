@@ -5,22 +5,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Stack } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
-import {AppState} from '../../../reducers/rootReducer';
-import {restoreDefaultUserReducer} from '../../../actions/users/RestoreDefaultUserReducer';
-import {getPersonProfile} from '../../../actions/users/GetPersonProfile';
-import {getCompanyProfile} from '../../../actions/users/GetCompanyProfile';
-import {UserType} from '../../../types/UserType';
-import GeneralProfile from "../../components/profiles/GeneralProfile";
-import UserProfileBalance from "../../components/profiles/UserProfileBalance";
-import ProfileChangePassword from "../../components/profiles/ProfileChangePassword";
-import {changePassword} from "../../../actions/users/PasswordChange";
-import PaymentModal from "../../components/payment/PaymentModal";
-import {getPaymentToken} from "../../../actions/users/Payment";
-import {Modal} from "antd";
-import {addBalance} from "../../../actions/users/BalanceAdd";
-import ProfileEmail from "../../components/profiles/ProfileEmail";
-import ProfileBecomeSupplier from "../../components/profiles/ProfileBecomeSupplier";
-import {UserRole} from "../../../types/UserRole";
+import { AppState } from '../../../reducers/rootReducer';
+import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
+import { getPersonProfile } from '../../../actions/users/GetPersonProfile';
+import { getCompanyProfile } from '../../../actions/users/GetCompanyProfile';
+import { UserType } from '../../../types/UserType';
+import GeneralProfile from '../../components/profiles/GeneralProfile';
+import UserProfileBalance from '../../components/profiles/UserProfileBalance';
+import ProfileChangePassword from '../../components/profiles/ProfileChangePassword';
+import { changePassword } from '../../../actions/users/PasswordChange';
+import PaymentModal from '../../components/payment/PaymentModal';
+import { getPaymentToken } from '../../../actions/users/Payment';
+import { Modal } from 'antd';
+import { addBalance } from '../../../actions/users/BalanceAdd';
+import ProfileEmail from '../../components/profiles/ProfileEmail';
+import ProfileBecomeSupplier from '../../components/profiles/ProfileBecomeSupplier';
+import { UserRole } from '../../../types/UserRole';
 
 type profileProps = {
     history: History;
@@ -133,39 +133,41 @@ const Profile: React.FC<profileProps> = ({ history }) => {
         }
     };
 
-
     const renderBecomeSupplier = () => {
         if (profile) {
             if (!profile.roles.includes(UserRole.SUPPLIER)) {
-                return (<ProfileBecomeSupplier loading={loading} isPerson={profile.userType === UserType.PERSON}
-                                               onFinish={handleBecomeSupplier} onFinishFailed={() => {
-                }}/>);
+                return (
+                    <ProfileBecomeSupplier
+                        loading={loading}
+                        isPerson={profile.userType === UserType.PERSON}
+                        onFinish={handleBecomeSupplier}
+                        onFinishFailed={() => {}}
+                    />
+                );
             }
         }
-    }
+    };
 
     const handleBecomeSupplier = (e: any) => {
         const { firstName, lastName, birthday } = e;
-        console.log(firstName, lastName, birthday)
+        console.log(firstName, lastName, birthday);
         //birthday: birthday ? birthday.format('YYYY-MM-DD') : null,
         //TODO
-    }
+    };
 
     return loading || !profile ? null : (
         <Container>
-            <Stack spacing={8} sx={{paddingTop: 8, marginBottom: 8}}>
-                <GeneralProfile history={history} profile={profile}/>
-                <ProfileEmail email={profile.email}/>
+            <Stack spacing={8} sx={{ paddingTop: 8, marginBottom: 8 }}>
+                <GeneralProfile history={history} profile={profile} />
+                <ProfileEmail email={profile.email} />
                 <UserProfileBalance
                     balance={balance ? balance.balance : 0}
                     balanceCurrency={balance ? balance.currency : '$'}
                     loading={loading}
                     onFinish={handleBalanceAdd}
-                    onFinishFailed={() => {
-                    }}
+                    onFinishFailed={() => {}}
                 />
-                <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {
-                }}/>
+                <ProfileChangePassword loading={loading} onFinish={handlePasswordChange} onFinishFailed={() => {}} />
                 {renderBecomeSupplier()}
                 <PaymentModal
                     isVisible={isPaymentFormVisible}

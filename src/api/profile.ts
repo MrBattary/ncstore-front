@@ -1,6 +1,6 @@
 import { getHTTP } from '../fetcher/fetcher';
 import { combineUrls } from './utilities';
-import {companyInfoSubUrl, coreUrl, otherCompanyInfoSubUrl, otherPersonInfoSubUrl, personInfoSubUrl} from './urls';
+import { companyInfoSubUrl, coreUrl, otherCompanyInfoSubUrl, otherPersonInfoSubUrl, personInfoSubUrl } from './urls';
 import { PersonProfile } from '../types/PersonProfile';
 import { CompanyProfile } from '../types/CompanyProfile';
 import headers from '../fetcher/headers';
@@ -21,7 +21,7 @@ const profileApi = {
     getPersonProfile,
     getCompanyProfile,
     getOtherPersonProfile,
-    getOtherCompanyProfile
+    getOtherCompanyProfile,
 };
 
 export default profileApi;

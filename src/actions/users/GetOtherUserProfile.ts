@@ -7,7 +7,7 @@ import {
 } from './userActionTypes';
 import profileApi from '../../api/profile';
 import { PersonProfile } from '../../types/PersonProfile';
-import {CompanyProfile} from "../../types/CompanyProfile";
+import { CompanyProfile } from '../../types/CompanyProfile';
 
 export type GetOtherUserProfileRequestAction = {
     type: typeof GET_OTHER_USER_PROFILE_REQUEST;
@@ -35,8 +35,8 @@ export const getOtherUserProfile = (userId: string) => async (dispatch: Dispatch
         //it means our user is not company? so we can do this:
         try {
             const data = await profileApi.getOtherPersonProfile(userId);
-            dispatch({type: GET_OTHER_USER_PROFILE_RECEIVE, payload: data});
-        }catch (e) {
+            dispatch({ type: GET_OTHER_USER_PROFILE_RECEIVE, payload: data });
+        } catch (e) {
             if (e instanceof Error) {
                 dispatch({ type: GET_OTHER_USER_PROFILE_ERROR, errorMessage: e.message });
             } else {

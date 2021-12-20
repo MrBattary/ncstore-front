@@ -1,11 +1,10 @@
 import React from 'react';
+
 import { DatePicker, Form, Input } from 'antd';
 
-type additionalFormItemsForSupplierPerson = {
-};
+type additionalFormItemsForSupplierPersonProps = {};
 
-const AdditionalFormItemsForSupplierPerson: React.FC<additionalFormItemsForSupplierPerson> = () => {
-
+const AdditionalFormItemsForSupplierPerson: React.FC<additionalFormItemsForSupplierPersonProps> = () => {
     return (
         <>
             <Form.Item
