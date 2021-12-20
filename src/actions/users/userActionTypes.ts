@@ -1,0 +1,47 @@
+/* Sign up */
+
+export const SIGN_UP_REQUEST = 'Request/SIGN_UP';
+export const SIGN_UP_RECEIVE = 'Receive/SIGN_UP';
+export const SIGN_UP_ERROR = 'SIGN_UP_ERROR';
+
+/* Sign in */
+
+export const SIGN_IN_REQUEST = 'Request/SIGN_IN';
+export const SIGN_IN_RECEIVE = 'Receive/SIGN_IN';
+export const SIGN_IN_ERROR = 'SIGN_IN_ERROR';
+
+/* Sign out */
+
+export const SIGN_OUT_REQUEST = 'Request/SIGN_OUT';
+export const SIGN_OUT_RECEIVE = 'Receive/SIGN_OUT';
+
+/* Profile */
+
+export const GET_PERSON_PROFILE_REQUEST = 'Request/GET_PERSON_PROFILE';
+export const GET_PERSON_PROFILE_RECEIVE = 'Receive/GET_PERSON_PROFILE';
+export const GET_PERSON_PROFILE_ERROR = 'GET_PERSON_PROFILE_ERROR';
+
+export const GET_COMPANY_PROFILE_REQUEST = 'Request/GET_COMPANY_PROFILE';
+export const GET_COMPANY_PROFILE_RECEIVE = 'Receive/GET_COMPANY_PROFILE';
+export const GET_COMPANY_PROFILE_ERROR = 'GET_COMPANY_PROFILE_ERROR';
+
+export const CHANGE_USER_PASSWORD_REQUEST = "Request/CHANGE_USER_PASSWORD";
+export const CHANGE_USER_PASSWORD_RECEIVE = "Receive/CHANGE_USER_PASSWORD";
+export const CHANGE_USER_PASSWORD_ERROR = "CHANGE_USER_PASSWORD_ERROR";
+
+export const GET_BALANCE_REQUEST = "Request/GET_BALANCE";
+export const GET_BALANCE_RECEIVE = "Receive/GET_BALANCE";
+export const GET_BALANCE_ERROR = "GET_BALANCE_ERROR";
+
+/*Payment*/
+export const GET_PAYMENT_TOKEN_REQUEST = 'Request/GET_PAYMENT_TOKEN';
+export const GET_PAYMENT_TOKEN_RECEIVE = 'Receive/GET_PAYMENT_TOKEN';
+export const GET_PAYMENT_TOKEN_ERROR = 'GET_PAYMENT_TOKEN_ERROR';
+
+export const ADD_BALANCE_REQUEST = 'Request/BALANCE_ADD_TOKEN';
+export const ADD_BALANCE_RECEIVE = 'Receive/BALANCE_ADD_TOKEN';
+export const ADD_BALANCE_ERROR = 'BALANCE_ADD_ERROR';
+
+/* Other */
+
+export const RESTORE_DEFAULT_USER_REDUCER = 'RESTORE_DEFAULT_USER_REDUCER';
