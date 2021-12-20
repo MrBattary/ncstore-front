@@ -1,9 +1,13 @@
-function checkStatus(response: any) {
+const checkStatus = async (response: any) => {
     if (response.status >= 200 && response.status < 300) {
         return response;
     }
-    throw new Error(response.statusText);
-}
+    if (response.status < 500) {
+        throw new Error(await response.text());
+    } else {
+        throw new Error(response.statusText);
+    }
+};
 
 export const getHTTP = <T>(url: string, header: Headers) =>
     fetch(url, {
