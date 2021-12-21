@@ -18,8 +18,9 @@ import Product from './elements/pages/product/Product';
 import Cart from './elements/pages/cart/Cart';
 import Orders from './elements/pages/orders/Orders';
 import NotFound from './elements/pages/notfound/NotFound';
-import User from "./elements/pages/user/User";
+import User from './elements/pages/user/User';
 
+import 'localization/i18n';
 import 'antd/dist/antd.css';
 import './index.css';
 
