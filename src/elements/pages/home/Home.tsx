@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { History } from 'history';
+import { useTranslation } from 'react-i18next';
 
 import CardMedia from '@mui/material/CardMedia';
 import { Box, Stack } from '@mui/material';
@@ -42,6 +43,7 @@ const enum homeTasks {
 }
 
 const Home: React.FC<homeProps> = ({ history }) => {
+    const { t } = useTranslation('homePage');
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
     const [task, setNextTask] = useTask();
@@ -204,7 +206,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
         return (
             <>
                 <HomeCompilation
-                    compilationName='Best discount'
+                    compilationName={t('best')}
                     products={discountProducts}
                     isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
                     onAddToCart={handleAddToCart}
@@ -219,7 +221,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
         return (
             <>
                 <HomeCompilation
-                    compilationName='New in the store'
+                    compilationName={t('new')}
                     products={newProducts}
                     isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
                     onAddToCart={handleAddToCart}
@@ -234,7 +236,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
         return (
             <>
                 <HomeCompilation
-                    compilationName='Free'
+                    compilationName={t('free')}
                     products={freeProducts}
                     isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
                     onAddToCart={handleAddToCart}
@@ -249,7 +251,7 @@ const Home: React.FC<homeProps> = ({ history }) => {
         return (
             <>
                 <HomeCompilation
-                    compilationName='For you'
+                    compilationName={t('forYou')}
                     products={forYouProducts}
                     isDisplayButtons={roles.includes(UserRole.CUSTOMER)}
                     onAddToCart={handleAddToCart}
