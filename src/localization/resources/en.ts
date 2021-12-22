@@ -97,7 +97,14 @@ const en = {
             },
             company: {
                 tabName: 'Company',
-                companyName: {},
+                companyName: {
+                    label: 'Company Name',
+                    required: 'Please enter company name!',
+                },
+                foundationDate: {
+                    label: 'Company Foundation Date',
+                    required: 'Please select date!',
+                },
             },
         },
     },

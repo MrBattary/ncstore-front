@@ -19,6 +19,7 @@ type signUpPersonFormProps = {
 
 const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishFailed, onClickToSignIn, loading }) => {
     const { t } = useTranslation('signUp');
+
     const [rolesArray, setRolesArray] = useState<UserRole[]>([]);
 
     const checkRole = (e: CheckboxChangeEvent) => {
