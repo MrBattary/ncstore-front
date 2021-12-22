@@ -174,7 +174,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <Typography align='center'>
-                    Balance : {balance ? balance.balance : 0} {balance ? balance.currency : '$'}
+                    {t('authorized.balance')} : {balance ? balance.balance : 0} {balance ? balance.currency : '$'}
                 </Typography>
             </Box>
         );
