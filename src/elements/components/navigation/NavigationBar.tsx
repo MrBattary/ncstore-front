@@ -28,7 +28,8 @@ import { getCart } from '../../../actions/cart/GetCart';
 import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefaultSearchReducer';
 import { setNewSearchText } from '../../../actions/search/SetNewSearchText';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
-import {getCategories} from "../../../actions/category/GetCategories";
+import { getCategories } from '../../../actions/category/GetCategories';
+import { getBalance } from '../../../actions/users/GetBalance';
 
 type navigationBarProps = {
     window?: () => Window;
@@ -37,7 +38,7 @@ type navigationBarProps = {
 enum navigationBarTasks {
     DO_SEARCH = 'DO_SEARCH',
     GET_CATEGORIES = 'GET_CATEGORIES',
-    WAIT_GET_CATEGORIES = 'WAIT_GET_CATEGORIES'
+    WAIT_GET_CATEGORIES = 'WAIT_GET_CATEGORIES',
 }
 
 const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
@@ -68,6 +69,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     useEffect(() => {
         if (token) {
             dispatch(getCart(token));
+            dispatch(getBalance(token));
         }
     }, [dispatch, token]);
 
@@ -80,7 +82,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
 
     useEffect(() => {
         if (task === navigationBarTasks.GET_CATEGORIES) {
-            dispatch(getCategories())
+            dispatch(getCategories());
             setTask(navigationBarTasks.WAIT_GET_CATEGORIES, 0);
         }
     }, [setTask, task, dispatch]);
@@ -92,7 +94,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     }, [setTask, task, loading]);
 
     useEffect(() => {
-        setTask(navigationBarTasks.GET_CATEGORIES,0);
+        setTask(navigationBarTasks.GET_CATEGORIES, 0);
         // DO NOT REMOVE, Calls only once
         // eslint-disable-next-line
     }, []);
