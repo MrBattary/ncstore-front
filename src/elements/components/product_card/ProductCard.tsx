@@ -33,13 +33,17 @@ const ProductCard: React.FC<productCardProps> = ({
     onBuy,
     onAddToCart,
 }) => {
-    const [setAddToCartClicksDelayedValue] = useDelaySet<number>(0, value => onAddToCart(value), 300);
+    const [setAddToCartClicksDelayedValue] = useDelaySet<number>(0, value => delayedAddToCartCallback(value), 300);
     const [addToCartClicks, setAddToCartClicks] = useState<number>(0);
+
+    const delayedAddToCartCallback = (value: number) => {
+        onAddToCart(value);
+        setAddToCartClicks(0);
+    };
 
     const goToProduct = (e: React.MouseEvent) => {
         onClick(e);
     };
-
     const handleBuy = (e: React.MouseEvent) => {
         e.preventDefault();
         onBuy(1);
@@ -114,7 +118,7 @@ const ProductCard: React.FC<productCardProps> = ({
                     component='img'
                     height='140'
                     // TODO: Handle images
-                    image='default-product-image.jpg'
+                    image='/default-product-image.jpg'
                     alt={`product ${productName}`}
                 />
                 <CardContent>

@@ -75,7 +75,7 @@ const Product: React.FC<productProps> = ({ history }) => {
     }, []);
 
     const goToSupplierPage = (supplierId: string | null | undefined) => {
-        console.log(`Go to supplier with id: ${supplierId}`);
+        history.push('/user/' + supplierId);
     };
 
     const goToCategory = (categoryName: string) => {
@@ -207,7 +207,6 @@ const Product: React.FC<productProps> = ({ history }) => {
                                     <Link
                                         variant='h5'
                                         underline='hover'
-                                        component='p'
                                         style={{ marginBottom: 2 }}
                                         onClick={() => goToSupplierPage(productForSale?.supplierId)}
                                     >

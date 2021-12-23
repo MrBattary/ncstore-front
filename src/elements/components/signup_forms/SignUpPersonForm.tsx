@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { Checkbox, Col, Form, Input } from 'antd';
 import Link from '@mui/material/Link';
-import { Checkbox, Col, DatePicker, Form, Input } from 'antd';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Typography from '@mui/material/Typography';
+
 import { UserRole } from '../../../types/UserRole';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import AdditionalFormItemsForSupplierPerson from './AdditionalFormItemsForSupplierPerson';
 
 type signUpPersonFormProps = {
     onFinish: (event: any) => void;
@@ -14,6 +18,8 @@ type signUpPersonFormProps = {
 };
 
 const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishFailed, onClickToSignIn, loading }) => {
+    const { t } = useTranslation('signUp');
+
     const [rolesArray, setRolesArray] = useState<UserRole[]>([]);
 
     const checkRole = (e: CheckboxChangeEvent) => {
@@ -29,44 +35,13 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
 
     const renderAdditionalFieldsForSupplierPerson = () => {
         if (rolesArray.includes(UserRole.SUPPLIER)) {
-            return (
-                <>
-                    <Form.Item
-                        className='sign-up__field'
-                        label='Firstname'
-                        name='firstName'
-                        rules={[{ required: true, message: 'Please enter your firstname!' }]}
-                    >
-                        <Input name='firstName' />
-                    </Form.Item>
-                    <Form.Item
-                        className='sign-up__field'
-                        label='Lastname'
-                        name='lastName'
-                        rules={[{ required: true, message: 'Please enter your lastname!' }]}
-                    >
-                        <Input name='lastName' />
-                    </Form.Item>
-                    <Form.Item
-                        className='sign-up__field'
-                        label='Birthday'
-                        name='birthday'
-                        rules={[{ required: true, message: 'Please select date!' }]}
-                    >
-                        <DatePicker
-                            name='birthday'
-                            format='YYYY-MM-DD'
-                            disabledDate={today => !today || today.isAfter(new Date())}
-                        />
-                    </Form.Item>
-                </>
-            );
+            return <AdditionalFormItemsForSupplierPerson />;
         }
     };
 
     const renderLinkToLogin = () => (
         <Link className='login__link' underline='hover' variant='inherit' onClick={onClickToSignIn}>
-            Sign in instead
+            {t('tabs.common.register.link')}
         </Link>
     );
 
@@ -81,13 +56,13 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
             >
                 <Form.Item
                     className='sign-up__field'
-                    label='Email'
+                    label={t('tabs.common.email.label')}
                     name='email'
                     rules={[
-                        { required: true, message: 'Please enter your email address!' },
+                        { required: true, message: t('tabs.common.email.required') },
                         {
                             type: 'email',
-                            message: 'Please enter the correct email!',
+                            message: t('tabs.common.email.error'),
                         },
                     ]}
                 >
@@ -95,28 +70,28 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                 </Form.Item>
                 <Form.Item
                     className='sign-up__field'
-                    label='Password'
+                    label={t('tabs.common.password.label')}
                     name='password'
                     rules={[
-                        { required: true, message: 'Please input your password!' },
-                        { min: 8, message: 'Password must be minimum 8 characters!' },
+                        { required: true, message: t('tabs.common.password.required') },
+                        { min: 8, message: t('tabs.common.password.error') },
                     ]}
                 >
                     <Input.Password name='password' />
                 </Form.Item>
                 <Form.Item
                     className='sign-up__field'
-                    label='Confirm Password'
+                    label={t('tabs.common.passwordConfirm.label')}
                     name='password-confirm'
                     dependencies={['password']}
                     rules={[
-                        { required: true, message: 'Please confirm password!' },
+                        { required: true, message: t('tabs.common.passwordConfirm.required') },
                         ({ getFieldValue }) => ({
                             validator(_, value) {
                                 if (!value || getFieldValue('password') === value) {
                                     return Promise.resolve();
                                 }
-                                return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                                return Promise.reject(new Error(t('tabs.common.passwordConfirm.error')));
                             },
                         }),
                     ]}
@@ -125,21 +100,21 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                 </Form.Item>
                 <Form.Item
                     className='sign-up__field'
-                    label='Nickname'
+                    label={t('tabs.person.nickname.label')}
                     name='nickName'
-                    rules={[{ required: true, message: 'Please enter your nickname!' }]}
+                    rules={[{ required: true, message: t('tabs.person.nickname.required') }]}
                 >
                     <Input name='nickName' />
                 </Form.Item>
                 <Form.Item
                     className='sign-up__field'
-                    label='Roles'
+                    label={t('tabs.common.roles.label')}
                     name='roles'
-                    rules={[{ required: true, message: 'Please choose at least one role!' }]}
+                    rules={[{ required: true, message: t('tabs.common.roles.error') }]}
                     tooltip={
                         <>
-                            <div>Customer - can purchase software</div>
-                            <div>Supplier - can sell software, but additional information may be required</div>
+                            <div>{t('tabs.common.roles.help.first')}</div>
+                            <div>{t('tabs.common.roles.help.second')}</div>
                         </>
                     }
                 >
@@ -151,7 +126,7 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                                 disabled={rolesArray.includes(UserRole.CUSTOMER) && rolesArray.length === 1}
                                 value={UserRole.CUSTOMER}
                             >
-                                Customer
+                                {t('tabs.common.roles.customer')}
                             </Checkbox>
                             <Checkbox
                                 onChange={checkRole}
@@ -159,7 +134,7 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                                 disabled={rolesArray.includes(UserRole.SUPPLIER) && rolesArray.length === 1}
                                 value={UserRole.SUPPLIER}
                             >
-                                Supplier
+                                {t('tabs.common.roles.supplier')}
                             </Checkbox>
                         </Col>
                     </Checkbox.Group>
@@ -172,10 +147,12 @@ const SignUpPersonForm: React.FC<signUpPersonFormProps> = ({ onFinish, onFinishF
                     variant='contained'
                     sx={{ margin: 2, marginBottom: 3 }}
                 >
-                    Sign up
+                    {t('tabs.common.submit.label')}
                 </LoadingButton>
                 <Form.Item className='sign-up__login'>
-                    <Typography className='login__label'>Already have an account? {renderLinkToLogin()}</Typography>
+                    <Typography className='login__label'>
+                        {t('tabs.common.register.text')} {renderLinkToLogin()}
+                    </Typography>
                 </Form.Item>
             </Form>
         </div>

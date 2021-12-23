@@ -113,9 +113,6 @@ const Cart: React.FC<cartProps> = ({ history }) => {
     useEffect(() => {
         if (token) {
             dispatch(getCart(token));
-            if (!balance) {
-                dispatch(getBalance(token));
-            }
             if (!paymentToken) {
                 dispatch(getPaymentToken(token));
             }

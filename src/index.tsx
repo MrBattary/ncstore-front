@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
 
 import store from './store/store';
+import './localization/i18n';
 
 import MainLayout from './elements/layouts/MainLayout';
 import Home from './elements/pages/home/Home';
@@ -19,6 +20,7 @@ import Cart from './elements/pages/cart/Cart';
 import Orders from './elements/pages/orders/Orders';
 import NotFound from './elements/pages/notfound/NotFound';
 
+import User from './elements/pages/user/User';
 import 'antd/dist/antd.css';
 import './index.css';
 
@@ -37,6 +39,11 @@ ReactDOM.render(
                         <Route exact path='/cart' component={Cart} />
                         <Route exact path='/orders' component={Orders} />
                         <Route exact path='/products/*' component={Product} />
+                        <Route
+                            exact
+                            path='/user/:id([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})'
+                            component={User}
+                        />
                         <Route exact path='*' component={NotFound} />
                     </Switch>
                 </MainLayout>

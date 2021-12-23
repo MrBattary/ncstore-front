@@ -10,14 +10,17 @@ import { signIn } from '../../../actions/users/SignIn';
 import SignInForm from '../../components/signin_form/SignInForm';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
 import { getBalance } from '../../../actions/users/GetBalance';
+import { useTranslation } from 'react-i18next';
 
 type signInProps = {
     history: History;
 };
 
 const SignIn: React.FC<signInProps> = ({ history }) => {
+    const { t } = useTranslation('signIn');
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
+
     const { token, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
 
     useEffect(() => {
@@ -64,7 +67,7 @@ const SignIn: React.FC<signInProps> = ({ history }) => {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component='h1' variant='h4' sx={{ marginBottom: 4, marginTop: 1 }}>
-                        Sign In
+                        {t('pageName')}
                     </Typography>
                     <SignInForm
                         onFinish={handleSubmit}
