@@ -15,6 +15,10 @@ import { AddBalance } from '../actions/users/BalanceAdd';
 import { GetBalance } from '../actions/users/GetBalance';
 import { Balance } from '../types/Balance';
 import { GetOtherUserProfile } from '../actions/users/GetOtherUserProfile';
+import CookieEnum from '../types/CookieEnum';
+import UserCookies from '../utils/UserCookies';
+
+const userCookies = new UserCookies(1200);
 
 interface UserStore {
     userId: string | null;
@@ -44,10 +48,10 @@ export type UserReducerTypes =
     | RestoreDefaultUserReducer;
 
 const initialState: UserStore = {
-    userId: null,
-    userType: null,
-    token: null,
-    roles: [],
+    userId: userCookies.getCookieOrDefaultValue(CookieEnum.USER_ID, null),
+    userType: userCookies.getCookieOrDefaultValue(CookieEnum.USER_TYPE, null),
+    token: userCookies.getCookieOrDefaultValue(CookieEnum.TOKEN, null),
+    roles: userCookies.getCookieOrDefaultValue(CookieEnum.ROLES, []),
     profile: null,
     paymentToken: null,
     balance: null,
@@ -100,6 +104,7 @@ export const userReducer = (state = initialState, action: UserReducerTypes): Use
         case types.SIGN_OUT_RECEIVE: {
             return {
                 ...state,
+                userId: null,
                 userType: null,
                 token: null,
                 roles: [],

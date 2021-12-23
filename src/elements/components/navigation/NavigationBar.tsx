@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { AppState } from '../../../reducers/rootReducer';
 
@@ -29,7 +30,7 @@ import { restoreDefaultSearchReducer } from '../../../actions/search/RestoreDefa
 import { setNewSearchText } from '../../../actions/search/SetNewSearchText';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
 import { getCategories } from '../../../actions/category/GetCategories';
-import { useTranslation } from 'react-i18next';
+import { getBalance } from '../../../actions/users/GetBalance';
 
 type navigationBarProps = {
     window?: () => Window;
@@ -70,6 +71,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     useEffect(() => {
         if (token) {
             dispatch(getCart(token));
+            dispatch(getBalance(token));
         }
     }, [dispatch, token]);
 
