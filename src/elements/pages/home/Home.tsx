@@ -144,7 +144,11 @@ const Home: React.FC<homeProps> = ({ history }) => {
     useEffect(() => {
         if (task === homeTasks.WAIT_FOR_DISCOUNT_PRODUCTS_TO_LOAD && success) {
             if (products) {
-                setDiscountProducts(products.slice());
+                setDiscountProducts(
+                    products
+                        .filter((product: ProductFromList) => product.discountPrice!=null)
+                        .slice()
+                );
                 dispatch(setNewSortRule(SortRule.DATE));
                 dispatch(setNewSortOrder(SortOrder.DESC));
                 setNextTask(homeTasks.DO_REQUEST_FOR_NEW_PRODUCTS, 0);
