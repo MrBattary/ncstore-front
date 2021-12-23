@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
 
 import store from './store/store';
+import './localization/i18n';
 
 import MainLayout from './elements/layouts/MainLayout';
 import Home from './elements/pages/home/Home';
@@ -18,8 +19,8 @@ import Product from './elements/pages/product/Product';
 import Cart from './elements/pages/cart/Cart';
 import Orders from './elements/pages/orders/Orders';
 import NotFound from './elements/pages/notfound/NotFound';
-import User from "./elements/pages/user/User";
 
+import User from './elements/pages/user/User';
 import 'antd/dist/antd.css';
 import './index.css';
 

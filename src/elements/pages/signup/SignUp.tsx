@@ -13,6 +13,7 @@ import SignUpPersonForm from '../../components/signup_forms/SignUpPersonForm';
 import { signUpCompany, signUpPerson } from '../../../actions/users/SignUp';
 import { restoreDefaultUserReducer } from '../../../actions/users/RestoreDefaultUserReducer';
 import useTask, { DEFAULT_TASK_ABSENT } from '../../../utils/TaskHook';
+import { useTranslation } from 'react-i18next';
 
 type signUpProps = {
     history: History;
@@ -23,8 +24,10 @@ enum signUpTasks {
 }
 
 const SignUp: React.FC<signUpProps> = ({ history }) => {
+    const { t } = useTranslation('signUp');
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
+
     const { token, success, loading, errorMessage } = useSelector((state: AppState) => state.userReducer);
 
     const [tab, setTab] = useState(UserType.PERSON);
@@ -51,11 +54,11 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
             dispatch(restoreDefaultUserReducer());
             setTask(DEFAULT_TASK_ABSENT, 0);
             history.push('/signin');
-            enqueueSnackbar('Successfully registered!', {
+            enqueueSnackbar(t('success'), {
                 variant: 'success',
             });
         }
-    }, [success, dispatch, history, enqueueSnackbar, task, setTask]);
+    }, [success, dispatch, history, enqueueSnackbar, task, setTask, t]);
 
     const pushToSignIn = () => {
         if (!loading) {
@@ -135,7 +138,7 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography variant='h4' sx={{ marginBottom: 4, marginTop: 1 }}>
-                        Sign up
+                        {t('pageName')}
                     </Typography>
                     <Box
                         sx={{
@@ -146,8 +149,8 @@ const SignUp: React.FC<signUpProps> = ({ history }) => {
                         }}
                     >
                         <ButtonGroup variant='text' disabled={loading} sx={{ marginBottom: 3, marginTop: -3 }}>
-                            <Button onClick={() => setTab(UserType.PERSON)}>Person</Button>
-                            <Button onClick={() => setTab(UserType.COMPANY)}>Company</Button>
+                            <Button onClick={() => setTab(UserType.PERSON)}>{t('tabs.person.tabName')}</Button>
+                            <Button onClick={() => setTab(UserType.COMPANY)}>{t('tabs.company.tabName')}</Button>
                         </ButtonGroup>
                         {renderForm()}
                     </Box>

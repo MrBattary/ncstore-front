@@ -5,6 +5,7 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
 import './style.css';
+import { useTranslation } from 'react-i18next';
 
 type signInFormProps = {
     onFinish: (event: any) => void;
@@ -14,9 +15,11 @@ type signInFormProps = {
 };
 
 const SignInForm: React.FC<signInFormProps> = ({ onFinish, onFinishFailed, onClickToSignUp, loading }) => {
+    const { t } = useTranslation('signIn');
+
     const renderLinkToRegister = () => (
         <Link className='register__link' underline='hover' variant='inherit' onClick={onClickToSignUp}>
-            Register instead
+            {t('form.register.link')}
         </Link>
     );
 
@@ -31,13 +34,13 @@ const SignInForm: React.FC<signInFormProps> = ({ onFinish, onFinishFailed, onCli
             >
                 <Form.Item
                     className='sign-in__field'
-                    label='Email'
+                    label={t('form.email.label')}
                     name='email'
                     rules={[
-                        { required: true, message: 'Please enter your email!' },
+                        { required: true, message: t('form.email.required') },
                         {
                             type: 'email',
-                            message: 'Please enter the correct email!',
+                            message: t('form.email.error'),
                         },
                     ]}
                 >
@@ -45,9 +48,9 @@ const SignInForm: React.FC<signInFormProps> = ({ onFinish, onFinishFailed, onCli
                 </Form.Item>
                 <Form.Item
                     className='sign-in__field'
-                    label='Password'
+                    label={t('form.password.label')}
                     name='password'
-                    rules={[{ required: true, message: 'Please enter password!' }]}
+                    rules={[{ required: true, message: t('form.password.required') }]}
                 >
                     <Input.Password name='password' />
                 </Form.Item>
@@ -58,11 +61,11 @@ const SignInForm: React.FC<signInFormProps> = ({ onFinish, onFinishFailed, onCli
                     variant='contained'
                     sx={{ margin: 2, marginBottom: 3 }}
                 >
-                    Sign in
+                    {t('form.submit.label')}
                 </LoadingButton>
                 <Form.Item className='sign-in__register'>
                     <Typography className='register__label'>
-                        Don`t have an account yet? {renderLinkToRegister()}
+                        {t('form.register.text')} {renderLinkToRegister()}
                     </Typography>
                 </Form.Item>
             </Form>

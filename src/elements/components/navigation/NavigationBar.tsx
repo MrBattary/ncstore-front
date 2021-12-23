@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { AppState } from '../../../reducers/rootReducer';
 
@@ -42,6 +43,7 @@ enum navigationBarTasks {
 }
 
 const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
+    const { t } = useTranslation('navBar');
     const history = useHistory();
     const dispatch = useDispatch();
 
@@ -174,7 +176,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <Typography align='center'>
-                    Balance : {balance ? balance.balance : 0} {balance ? balance.currency : '$'}
+                    {t('authorized.balance')} : {balance ? balance.balance : 0} {balance ? balance.currency : '$'}
                 </Typography>
             </Box>
         );
@@ -210,8 +212,8 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleUserMenuClose}
             >
-                <MenuItem onClick={goToTheProfile}>Profile</MenuItem>
-                <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
+                <MenuItem onClick={goToTheProfile}>{t('authorized.profile')}</MenuItem>
+                <MenuItem onClick={handleSignOut}>{t('authorized.signOut')}</MenuItem>
             </Menu>
         </Stack>
     );
@@ -226,10 +228,10 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
     const renderUnauthorisedUserMenu = (
         <Stack spacing={1} direction='row'>
             <Button color='inherit' onClick={handleSignIn}>
-                Sign in
+                {t('unauthorized.signIn')}
             </Button>
             <Button variant='outlined' color='inherit' onClick={handleSignUp}>
-                Sign up
+                {t('unauthorized.signUp')}
             </Button>
         </Stack>
     );
@@ -258,7 +260,7 @@ const NavigationBar: React.FC<navigationBarProps> = ({ window }) => {
                             >
                                 NCStore
                             </Link>
-                            <SearchField onSearch={handleSearch} placeholder='Search...' />
+                            <SearchField onSearch={handleSearch} placeholder={t('search')} />
                         </Stack>
                         {renderMenu()}
                     </Toolbar>
